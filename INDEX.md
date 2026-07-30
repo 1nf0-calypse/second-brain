@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-30 | Phase: IMPLEMENTATION
+Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 
 ## Aktive Artefakte
 
@@ -43,18 +43,55 @@ Letzte Aktualisierung: 2026-07-30 | Phase: IMPLEMENTATION
 | 2026-07-30 | Gate 5.5 (Cross-Artefakt-Analyse) | FAIL | 1 | 0 | 0 |
 | 2026-07-30 | Gate 5 (Re-Refinement mit SP-000002) | PASS | 0 | 0 | 0 |
 | 2026-07-30 | Gate 5.5 (Cross-Artefakt-Analyse, SP-000002) | PASS | 0 | 0 | 0 |
+| 2026-07-30 | Gate 6 (Implementation → Testing) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | APPROVED | Backend-Implementierung im Sprint-Worktree |
+| `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | APPROVED | QA-Testplanung für Sprint 1 |
 
 ## Archiv
 
 | Datei | ID | Status | Archiviert |
 |-------|-----|--------|-----------|
 | `sprints/SP-000001-sprint-1-foundation.md` | SP-000001 | SUPERSEDED | 2026-07-30 |
+
+---
+
+## Übergabe: FE/BE → QA
+
+**Datum:** 2026-07-30  
+**Von:** Frontend Developer und Backend Developer (FE/BE)  
+**An:** QA Engineer (QA)  
+**Nächster Befehl:** `/test-plan second-brain 1`
+
+### Übergebene Artefakte
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| US-000011 | implementiert | `apps/sidecar/`, `apps/obsidian-plugin/` | Read-only Setup, Vertrag, UI-Zustände und sichere Root-Prüfung |
+| US-000005 | implementiert | `apps/sidecar/src/indexing/` | Initialindex, Delta, Delete und sicherer Rebuild |
+| Tests | bestanden | `tests/` | Unit, Security, Integration, Compatibility und E2E |
+
+### Kritische Informationen für Empfänger
+
+- Claude Desktop ist der einzige implementierte Sprint-1-Client.
+- SQLite stammt aus `node:sqlite` in Node.js 24; kein separates natives Paket.
+- Vault-Inhalte werden nicht geloggt; MCP-stdout bleibt protokollrein.
+
+### Offene Fragen (vererbt)
+
+Keine offenen Implementierungs-BLOCKER.
+
+### Nicht-Ziele
+
+ChatGPT, Mistral, Suche, Mutationen, Graph und Provider-Datenflüsse sind nicht implementiert.
+
+### Empfehlungen
+
+QA soll insbesondere echte Obsidian-/Claude-Desktop-Clickpfade unter Windows, 200 % Zoom,
+320 px Pane-Breite und Dateihashes vor/nach Index-Rebuild prüfen.
 
 ---
 

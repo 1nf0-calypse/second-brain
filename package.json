@@ -1,0 +1,38 @@
+{
+  "name": "second-brain",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc --noEmit && node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "vitest run tests/e2e",
+    "test:coverage": "vitest run --coverage",
+    "migrate": "node dist/sidecar/bootstrap/main.js --migrate"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.1.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "esbuild": "^0.25.8",
+    "eslint": "^10.8.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.65.0",
+    "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.1",
+    "obsidian": "^1.8.7",
+    "zod": "^3.25.76"
+  }
+}

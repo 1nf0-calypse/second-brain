@@ -3,11 +3,11 @@
 # Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
 
 project: second-brain
-current-phase: IMPLEMENTATION
-previous-phase: ANALYSIS
+current-phase: TESTING
+previous-phase: IMPLEMENTATION
 phase-started: 2026-07-30
 sprint: 1
-last-agent: ORCH
+last-agent: FE+BE
 last-artifact: SP-000002
 worktree-path: projects/second-brain/.worktrees/sprint-1
 worktree-branch: feature/sprint-1
@@ -41,4 +41,7 @@ history:
     started: 2026-07-30
     completed: 2026-07-30
   - phase: IMPLEMENTATION
+    started: 2026-07-30
+    completed: 2026-07-30
+  - phase: TESTING
     started: 2026-07-30

@@ -1,0 +1,9 @@
+{
+  "id": "second-brain",
+  "name": "Second Brain",
+  "version": "0.1.0",
+  "minAppVersion": "1.8.0",
+  "description": "Local, read-only MCP setup and incremental index foundation.",
+  "author": "Second Brain contributors",
+  "isDesktopOnly": true
+}
