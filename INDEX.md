@@ -44,6 +44,8 @@ Letzte Aktualisierung: 2026-07-31 | Phase: DONE
 | `docs/DOC-000002-local-index.md` | DOC-000002 | 1.0 | APPROVED | MW | Lokalen Index aktualisieren und sicher neu aufbauen |
 | `docs/GS-000001.md` | GS-000001 | 1.0 | APPROVED | MW | Einstieg in Installation, Verbindung und Index |
 | `docs/RN-000001-sprint-1.md` | RN-000001 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 1 |
+| `retros/RETRO-000001-sprint-1.md` | RETRO-000001 | 1.0 | REVIEW | AC | Sprint-1-Retrospektive |
+| `retros/PC-000001-implicit-approval-integrated-analysis.md` | PC-000001 | 1.0 | DRAFT | AC | Vorschlag für implizite Freigabe und integrierte Analyse |
 
 ## Gate-History
 

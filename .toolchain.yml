@@ -86,9 +86,9 @@ artifacts:
     RN: 2
     GS: 2
     FAQ: 1
-    RETRO: 1
+    RETRO: 2
     IMPD: 1
-    PC: 1
+    PC: 2
 
 # ─────────────────────────────────────
 # Hook-Konfiguration
