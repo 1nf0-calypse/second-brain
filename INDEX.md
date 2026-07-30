@@ -31,6 +31,9 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 | `ux/UX-000002-claude-desktop-setup-slice.md` | UX-000002 | 1.0 | APPROVED | UX | Expliziter Claude-Desktop-Setup-Flow für US-000011 |
 | `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | 1.0 | APPROVED | BA+FE+BE | Verbindlicher Sprint-1-Backlog mit US-000011 und US-000005 |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
+| `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
+| `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | OFFEN | QA | Plugin-Paket nicht installierbar |
+| `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | OFFEN | QA | Nativer Setup-Prozessstart ungültig |
 
 ## Gate-History
 
@@ -45,12 +48,14 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 | 2026-07-30 | Gate 5 (Re-Refinement mit SP-000002) | PASS | 0 | 0 | 0 |
 | 2026-07-30 | Gate 5.5 (Cross-Artefakt-Analyse, SP-000002) | PASS | 0 | 0 | 0 |
 | 2026-07-30 | Gate 6 (Implementation → Testing) | PASS | 0 | 0 | 0 |
+| 2026-07-30 | Gate 7 (Testing → Review) | FAIL | 2 | 0 | 0 |
 
 ## In Bearbeitung
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| `testing/TP-000001-sprint-1.md` | TP-000001 | APPROVED | Testausführung und TR-000001 |
+| `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | OFFEN | FE/BE-Fix und QA-Re-Test |
+| `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | OFFEN | FE/BE-Fix und QA-Re-Test |
 
 ## Archiv
 

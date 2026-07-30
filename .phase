@@ -8,7 +8,7 @@ previous-phase: IMPLEMENTATION
 phase-started: 2026-07-30
 sprint: 1
 last-agent: QA
-last-artifact: TP-000001
+last-artifact: TR-000001
 worktree-path: projects/second-brain/.worktrees/sprint-1
 worktree-branch: feature/sprint-1
 
