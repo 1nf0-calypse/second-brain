@@ -8,6 +8,14 @@ import { describe, expect, it } from 'vitest';
 import { packageObsidianPlugin } from '../../scripts/package-plugin.mjs';
 
 describe('Obsidian plugin package', () => {
+  it('hält das Community-Manifest und die Build-Quelle synchron', async () => {
+    const rootManifest = JSON.parse(await readFile('manifest.json', 'utf8')) as unknown;
+    const sourceManifest = JSON.parse(
+      await readFile('apps/obsidian-plugin/manifest.json', 'utf8')
+    ) as unknown;
+    expect(sourceManifest).toEqual(rootManifest);
+  });
+
   it('enthält Manifest, Styles, Plugin-Bundle und den erwarteten Sidecar-Pfad', async () => {
     const root = await mkdtemp(join(tmpdir(), 'second-brain-package-'));
     const sourceRoot = join(root, 'source');
@@ -17,7 +25,7 @@ describe('Obsidian plugin package', () => {
     await mkdir(pluginOutput, { recursive: true });
     await mkdir(join(root, 'dist', 'sidecar'), { recursive: true });
     await Promise.all([
-      writeFile(join(sourceRoot, 'manifest.json'), '{"id":"second-brain"}'),
+      writeFile(join(sourceRoot, 'manifest.json'), '{"id":"second-brain-mcp"}'),
       writeFile(join(sourceRoot, 'styles.css'), '.second-brain {}'),
       writeFile(join(pluginOutput, 'main.js'), 'plugin'),
       writeFile(sidecarBundle, 'sidecar')
@@ -26,7 +34,7 @@ describe('Obsidian plugin package', () => {
     await packageObsidianPlugin({ sourceRoot, pluginOutput, sidecarBundle });
 
     await expect(readFile(join(pluginOutput, 'manifest.json'), 'utf8')).resolves.toContain(
-      'second-brain'
+      'second-brain-mcp'
     );
     await expect(readFile(join(pluginOutput, 'styles.css'), 'utf8')).resolves.toContain(
       '.second-brain'

@@ -1,13 +1,15 @@
-# Second Brain
+# Second Brain MCP
 
-Second Brain is a local, MCP-first Obsidian plugin that connects an existing vault to
+Second Brain MCP is a local, MCP-first Obsidian plugin that connects an existing vault to
 supported AI clients and maintains a local incremental index without migrating or modifying
 the original notes.
 
 ## Project history
 
 Second Brain was originally created by Ruowen Wang and released through version 2.1.21.
-This project is a continued development maintained by Frederik Hirche.
+Second Brain MCP is an independent Community Plugin continuation developed and maintained
+by Frederik Hirche. It uses the distinct Obsidian plugin ID `second-brain-mcp`, so the
+original `second-brain` Community Plugin remains available and unchanged.
 
 - Original project: <https://github.com/graceruowenwang/obsidian-second-brain>
 - Continued development: <https://github.com/1nf0-calypse/second-brain>
@@ -55,9 +57,10 @@ The installable plugin is created in `dist/obsidian-plugin/` and contains:
 ## Local Claude Desktop setup
 
 1. Build the project.
-2. Install the contents of `dist/obsidian-plugin/` in the Obsidian plugin directory.
+2. Install the contents of `dist/obsidian-plugin/` in
+   `.obsidian/plugins/second-brain-mcp/`.
 3. Restart or disable and re-enable the plugin so Obsidian loads the new bundle.
-4. Open the command palette and run **Second Brain: Open setup**.
+4. Open the command palette and run **Second Brain MCP: Open setup**.
 5. Select the local vault.
 6. Merge the displayed `mcpServers` entry into the existing top-level Claude Desktop
    configuration. Do not append it as a second JSON object.
@@ -82,4 +85,4 @@ node dist/obsidian-plugin/sidecar/main.js
 
 ## License
 
-Second Brain is distributed under the MIT License. See [LICENSE](LICENSE).
+Second Brain MCP is distributed under the MIT License. See [LICENSE](LICENSE).
