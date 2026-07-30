@@ -4,7 +4,6 @@
 export interface PluginPackagePaths {
   readonly sourceRoot: string;
   readonly pluginOutput: string;
-  readonly sidecarBundle: string;
 }
 
 /**

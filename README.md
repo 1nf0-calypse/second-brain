@@ -52,7 +52,9 @@ The installable plugin is created in `dist/obsidian-plugin/` and contains:
 - `manifest.json`
 - `main.js`
 - `styles.css`
-- `sidecar/main.js`
+
+The Community Plugin bundle embeds the local sidecar in `main.js`. On first load, the
+plugin materializes `sidecar/main.js` inside its own plugin directory.
 
 ## Local Claude Desktop setup
 

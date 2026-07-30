@@ -2,9 +2,12 @@
 // Artefakte:    US-000011; US-000005; UX-000002
 // Agent:        FE — 2026-07-30
 import { FileSystemAdapter, Plugin } from 'obsidian';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { SETUP_VIEW_TYPE, SetupView } from './ui/setup-view.js';
 import { NodeSetupTransport } from './ipc/node-setup-transport.js';
+
+declare const __SECOND_BRAIN_SIDECAR_SOURCE__: string;
 
 export default class SecondBrainPlugin extends Plugin {
   /**
@@ -13,18 +16,23 @@ export default class SecondBrainPlugin extends Plugin {
    * @throws Obsidian-Registrierungsfehler.
    * @sideEffect Registriert UI-Elemente im Workspace.
    */
-  public onload(): void {
+  public async onload(): Promise<void> {
     if (!(this.app.vault.adapter instanceof FileSystemAdapter)) {
       throw new Error('Second Brain requires a local desktop vault.');
     }
-    const sidecarEntry = join(
+    const pluginDirectory = join(
       this.app.vault.adapter.getBasePath(),
       '.obsidian',
       'plugins',
-      this.manifest.id,
-      'sidecar',
+      this.manifest.id
+    );
+    const sidecarDirectory = join(pluginDirectory, 'sidecar');
+    const sidecarEntry = join(
+      sidecarDirectory,
       'main.js'
     );
+    await mkdir(sidecarDirectory, { recursive: true });
+    await writeFile(sidecarEntry, __SECOND_BRAIN_SIDECAR_SOURCE__, 'utf8');
     this.registerView(
       SETUP_VIEW_TYPE,
       (leaf) => new SetupView(leaf, new NodeSetupTransport(sidecarEntry), sidecarEntry)
