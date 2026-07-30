@@ -30,7 +30,7 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 | `ux/UX-000001-mvp-interaction-design.md` | UX-000001 | 1.0 | APPROVED | UX | Journeys, Zustände, Microcopy und WCAG 2.2 AA |
 | `ux/UX-000002-claude-desktop-setup-slice.md` | UX-000002 | 1.0 | APPROVED | UX | Expliziter Claude-Desktop-Setup-Flow für US-000011 |
 | `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | 1.0 | APPROVED | BA+FE+BE | Verbindlicher Sprint-1-Backlog mit US-000011 und US-000005 |
-| `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | REVIEW | QA | Testplan für Setup, Index, Security, UI und Performance |
+| `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 
 ## Gate-History
 
@@ -50,7 +50,7 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| `testing/TP-000001-sprint-1.md` | TP-000001 | REVIEW | Stakeholder-Freigabe |
+| `testing/TP-000001-sprint-1.md` | TP-000001 | APPROVED | Testausführung und TR-000001 |
 
 ## Archiv
 

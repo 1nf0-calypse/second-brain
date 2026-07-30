@@ -2,7 +2,7 @@
 id: TP-000001
 title: Testplan Second Brain Sprint 1
 version: 1.0
-status: REVIEW
+status: APPROVED
 author-agent: QA (QA Engineer)
 date: 2026-07-30
 project: second-brain
@@ -266,7 +266,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 - [x] Gate 6 PASS.
 - [x] FE/BE→QA-Handoff vorhanden.
 - [x] Automatisierte Vitest- und Playwright-Infrastruktur vorhanden.
-- [ ] Stakeholder-Freigabe dieses Testplans.
+- [x] Stakeholder-Freigabe dieses Testplans am 2026-07-30 erteilt.
 
 **Austritt aus Testphase:**
 
@@ -301,7 +301,7 @@ Keine offene Frage ist ein BLOCKER für die Testplanung.
 - [x] Testumgebung und Befehle vollständig.
 - [x] Keine offenen Planungs-BLOCKER.
 - [x] `testing/INDEX.md` und Projekt-`INDEX.md` aktualisiert.
-- [ ] Stakeholder-Freigabe ausstehend; Status bleibt `REVIEW`.
+- [x] Stakeholder-Freigabe am 2026-07-30 erteilt; Status ist `APPROVED`.
 
 ---
 
@@ -310,13 +310,13 @@ Keine offene Frage ist ein BLOCKER für die Testplanung.
 **Datum:** 2026-07-30  
 **Von:** QA Engineer (QA)  
 **An:** QA Engineer (QA)  
-**Nächster Befehl:** `/test-plan second-brain 1` bis zur Freigabe, danach `/test-run second-brain 1`
+**Nächster Befehl:** `/test-run second-brain 1`
 
 ### Übergebene Artefakte
 
 | Artefakt-ID | Status | Pfad | Hinweise |
 |---|---|---|---|
-| TP-000001 | REVIEW | `testing/TP-000001-sprint-1.md` | 12 manuelle Fälle, 7 Security-Smokes, 6 Performance-Messungen |
+| TP-000001 | APPROVED | `testing/TP-000001-sprint-1.md` | 12 manuelle Fälle, 7 Security-Smokes, 6 Performance-Messungen |
 | Playwright | bereit | `playwright.config.ts`, `tests/e2e/` | Headed bevorzugt, HTML-Report in `testing/playwright-report/` |
 | Implementierung | committed | `apps/`, `packages/` | Commit `671ae67` |
 

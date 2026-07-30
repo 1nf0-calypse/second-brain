@@ -10,4 +10,4 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 
 | Datei | ID | Version | Status | Agent | Kurzbeschreibung |
 |---|---|---|---|---|---|
-| `TP-000001-sprint-1.md` | TP-000001 | 1.0 | REVIEW | QA | Sprint-1-Testplan für Setup und lokalen Index |
+| `TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Sprint-1-Testplan für Setup und lokalen Index |
