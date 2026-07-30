@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-30 | Phase: REVIEW
+Letzte Aktualisierung: 2026-07-30 | Phase: IMPLEMENTATION
 
 ## Aktive Artefakte
 
@@ -35,6 +35,7 @@ Letzte Aktualisierung: 2026-07-30 | Phase: REVIEW
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
 | `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
+| `reviews/RV-000001-sprint-1.md` | RV-000001 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme conditional; acht MAJOR-Funde vor Merge |
 
 ## Gate-History
 
@@ -52,12 +53,13 @@ Letzte Aktualisierung: 2026-07-30 | Phase: REVIEW
 | 2026-07-30 | Gate 7 (Testing → Review) | FAIL | 2 | 0 | 0 |
 | 2026-07-30 | Gate 7 (Bugfix-Rücklauf) | CONDITIONAL / TESTING | 0 | 1 | 0 |
 | 2026-07-30 | Gate 7 (Desktop-P0-Nachlauf) | PASS | 0 | 0 | 0 |
+| 2026-07-30 | Gate 8 (Review) | REQUEST_CHANGES | 0 | 8 | 1 |
 
 ## In Bearbeitung
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| `reviews/RV-000001-sprint-1.md` | RV-000001 | AUSSTEHEND | Code Review |
+| `reviews/RV-000001-sprint-1.md` | RV-000001 | REQUEST_CHANGES | FE/BE-Korrekturen und Re-Review |
 
 ## Archiv
 
