@@ -2,7 +2,7 @@
 id: BUG-000001
 title: Bug — Obsidian-Plugin-Paket ist nicht installierbar
 version: 1.0
-status: BEHOBEN
+status: VERIFIZIERT
 author-agent: QA (QA Engineer)
 date: 2026-07-30
 project: second-brain
@@ -88,12 +88,13 @@ das Paket in ein temporäres Verzeichnis und prüft alle vier erforderlichen Dat
 
 ## Verifikation
 
-**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** Ausstehend durch QA.
+**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** 2026-07-30 — Ergebnis: Der
+Fehler tritt nicht mehr auf. `npm run build` erzeugt Manifest, Styles, Plugin-Bundle und
+`sidecar/main.js` am erwarteten Ort.
 
 **Regressionstest ergänzt:** Ja (`tests/integration/plugin-package.test.ts`)
 
-**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Durch FE/BE reproduziert;
-unabhängige QA-Verifikation ausstehend.
+**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Verifiziert.
 
 ## Status-Verlauf
 
@@ -102,6 +103,7 @@ unabhängige QA-Verifikation ausstehend.
 | 2026-07-30 | OFFEN | Durch QA im P0-Systemtest erfasst |
 | 2026-07-30 | IN_BEARBEITUNG | Root-Cause vor Codeänderung dokumentiert |
 | 2026-07-30 | BEHOBEN | Paketierungsstufe und Regressionstest ergänzt |
+| 2026-07-30 | VERIFIZIERT | QA hat Reproduktionsschritte und Paketvertrag erfolgreich geprüft |
 
 ## Übergabe: FE/BE → QA
 

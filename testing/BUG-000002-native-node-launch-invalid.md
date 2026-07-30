@@ -2,7 +2,7 @@
 id: BUG-000002
 title: Bug — Nativer Setup-Pfad startet keinen verlässlichen Node-Sidecar
 version: 1.0
-status: BEHOBEN
+status: VERIFIZIERT
 author-agent: QA (QA Engineer)
 date: 2026-07-30
 project: second-brain
@@ -93,13 +93,14 @@ das Fehlen von Platzhaltern.
 
 ## Verifikation
 
-**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** Ausstehend durch QA.
+**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** 2026-07-30 — Ergebnis: Der
+Fehler tritt nicht mehr auf. Der reale Node-Kindprozess liefert den versionierten
+`setup:read`-Handshake, und die Konfiguration enthält den realen Sidecar-Pfad ohne Platzhalter.
 
 **Regressionstest ergänzt:** Ja (`tests/integration/node-setup-transport.test.ts`,
 `tests/e2e/setup-flow.test.ts`, `tests/compatibility/setup-contract.test.ts`)
 
-**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Durch FE/BE reproduziert;
-unabhängige QA-Verifikation ausstehend.
+**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Verifiziert.
 
 ## Status-Verlauf
 
@@ -108,6 +109,7 @@ unabhängige QA-Verifikation ausstehend.
 | 2026-07-30 | OFFEN | Durch QA bei Prüfung des nativen P0-Pfads erfasst |
 | 2026-07-30 | IN_BEARBEITUNG | Root-Cause vor Codeänderung dokumentiert |
 | 2026-07-30 | BEHOBEN | Explizite Node-Runtime und realer Sidecar-Pfad implementiert |
+| 2026-07-30 | VERIFIZIERT | QA hat Prozessstart, Vertrag und Konfigurationspfad geprüft |
 
 ## Übergabe: FE/BE → QA
 

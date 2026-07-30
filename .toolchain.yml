@@ -77,7 +77,7 @@ artifacts:
     UX: 3
     SP: 3
     TP: 2
-    TR: 2
+    TR: 3
     RV: 1
     BUG: 3
     DEBT: 1

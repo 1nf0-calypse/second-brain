@@ -32,8 +32,9 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 | `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | 1.0 | APPROVED | BA+FE+BE | Verbindlicher Sprint-1-Backlog mit US-000011 und US-000005 |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
-| `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | BEHOBEN | FE+BE | Vollständiges Plugin-Paket; QA-Verifikation ausstehend |
-| `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | BEHOBEN | FE+BE | Explizite Node-Runtime und realer Sidecar-Pfad; QA-Verifikation ausstehend |
+| `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | CONDITIONAL | QA | Bugfixes verifiziert; echter Desktop-P0-Pfad noch offen |
+| `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
+| `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
 
 ## Gate-History
 
@@ -49,13 +50,13 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 | 2026-07-30 | Gate 5.5 (Cross-Artefakt-Analyse, SP-000002) | PASS | 0 | 0 | 0 |
 | 2026-07-30 | Gate 6 (Implementation → Testing) | PASS | 0 | 0 | 0 |
 | 2026-07-30 | Gate 7 (Testing → Review) | FAIL | 2 | 0 | 0 |
+| 2026-07-30 | Gate 7 (Bugfix-Rücklauf) | CONDITIONAL / TESTING | 0 | 1 | 0 |
 
 ## In Bearbeitung
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | BEHOBEN | QA-Verifikation |
-| `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | BEHOBEN | QA-Verifikation |
+| `testing/TR-000002-sprint-1.md` | TR-000002 | CONDITIONAL | Echter Obsidian↔Claude-P0-Systempfad |
 
 ## Archiv
 
