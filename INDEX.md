@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-30 | Phase: DOCUMENTATION
+Letzte Aktualisierung: 2026-07-31 | Phase: DONE
 
 ## Aktive Artefakte
 
@@ -40,6 +40,10 @@ Letzte Aktualisierung: 2026-07-30 | Phase: DOCUMENTATION
 | `reviews/RV-000001-sprint-1.md` | RV-000001 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme conditional; acht MAJOR-Funde vor Merge |
 | `reviews/RV-000002-sprint-1-rereview.md` | RV-000002 | 1.0 | APPROVED | RV | Beide Stories nach Plugin-Neustart akzeptiert; Merge freigegeben |
 | `retros/DEBT-000001-sprint-1-review-followups.md` | DEBT-000001 | 1.0 | ACTIVE | RV | Akzeptierte Transport-, Timeout- und Codehygiene-Folgearbeiten |
+| `docs/DOC-000001-claude-desktop-setup.md` | DOC-000001 | 1.0 | APPROVED | MW | Claude Desktop lokal verbinden und Fehler beheben |
+| `docs/DOC-000002-local-index.md` | DOC-000002 | 1.0 | APPROVED | MW | Lokalen Index aktualisieren und sicher neu aufbauen |
+| `docs/GS-000001.md` | GS-000001 | 1.0 | APPROVED | MW | Einstieg in Installation, Verbindung und Index |
+| `docs/RN-000001-sprint-1.md` | RN-000001 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 1 |
 
 ## Gate-History
 
@@ -60,12 +64,13 @@ Letzte Aktualisierung: 2026-07-30 | Phase: DOCUMENTATION
 | 2026-07-30 | Gate 8 (Review) | REQUEST_CHANGES | 0 | 8 | 1 |
 | 2026-07-30 | Gate 8 (Re-Review) | REJECTED | 0 | 4 | 2 |
 | 2026-07-30 | Gate 8 (korrigierte Nutzerabnahme) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 9 (Documentation → Done) | PASS | 0 | 0 | 1 |
 
 ## In Bearbeitung
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| Dokumentationsartefakte | — | OFFEN | Feature-Guide, Getting Started und Release Notes |
+| Screenshot-Aufnahmen | — | MINOR | 6 markierte Produktaufnahmen vor öffentlicher Veröffentlichung |
 
 ## Archiv
 

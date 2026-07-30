@@ -1,7 +1,7 @@
 ---
 id: DECISIONS
 title: Entscheidungsprotokoll — Second Brain
-version: 1.0
+version: 1.1
 status: ACTIVE
 author-agent: PM (Product Manager)
 date: 2026-07-30
@@ -17,6 +17,15 @@ Leichtgewichtiges, chronologisches Protokoll aller wesentlichen Entscheidungen i
 ---
 
 ## Aktive Entscheidungen
+
+### D-000006 — Nutzerbegriffe und Dokumentationsumfang für Sprint 1
+
+**Datum:** 2026-07-31 | **Kategorie:** Dokumentation | **Status:** ACTIVE
+Die Nutzerdokumentation verwendet die sichtbaren Produktbegriffe **Second Brain MCP**,
+**lokaler Dienst** und **lokaler Index**. Sie dokumentiert ausschließlich die freigegebenen
+Sprint-1-Funktionen für Claude Desktop und Indexierung; geplante Clients und Funktionen
+werden als noch nicht enthalten gekennzeichnet. Der Plugin-Neustart nach Paket-Updates ist
+ein verbindlicher Installationsschritt.
 
 ### D-000005 — MIT als Projektlizenz
 
@@ -53,6 +62,7 @@ vollständigen Frontend-Ausarbeitung priorisiert.
 
 | ID | Datum | Kategorie | Kurztitel | Agent | Status |
 |----|-------|---------|---------|-------|--------|
+| D-000006 | 2026-07-31 | Dokumentation | Nutzerbegriffe und Sprint-1-Umfang | MW | ACTIVE |
 | D-000005 | 2026-07-30 | Lizenz | MIT als Projektlizenz | PM | ACTIVE |
 | D-000004 | 2026-07-30 | Datenschutz | Transparenter externer KI-Datenfluss | PM | ACTIVE |
 | D-000003 | 2026-07-30 | Produkt/Sicherheit | Drei Autonomiestufen | PM | ACTIVE |
@@ -71,4 +81,11 @@ Entscheidungen, die revidiert oder überschrieben wurden, bleiben hier sichtbar.
 
 ---
 
-*Erstellt von: PM-Agent | Datum: 2026-07-30 | Letzte Aktualisierung: 2026-07-30*
+*Erstellt von: PM-Agent | Datum: 2026-07-30 | Letzte Aktualisierung: 2026-07-31*
+
+## Änderungshistorie
+
+| Version | Datum | Änderung | Agent |
+|---|---|---|---|
+| 1.1 | 2026-07-31 | D-000006 zu Terminologie und Dokumentationsumfang ergänzt | MW |
+| 1.0 | 2026-07-30 | Initiale Version | PM |
