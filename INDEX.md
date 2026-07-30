@@ -31,9 +31,10 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 | `ux/UX-000002-claude-desktop-setup-slice.md` | UX-000002 | 1.0 | APPROVED | UX | Expliziter Claude-Desktop-Setup-Flow für US-000011 |
 | `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | 1.0 | APPROVED | BA+FE+BE | Verbindlicher Sprint-1-Backlog mit US-000011 und US-000005 |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
-| `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | DRAFT | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
+| `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
+| `testing/TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |
 | `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
 | `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
 | `reviews/RV-000001-sprint-1.md` | RV-000001 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme conditional; acht MAJOR-Funde vor Merge |
@@ -60,7 +61,7 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | DRAFT | Stakeholder-Freigabe und Testausführung |
+| `testing/TR-000003-sprint-1-review-fixes.md` | TR-000003 | CONDITIONAL | Bestätigung der manuellen Desktop-Fälle |
 
 ## Archiv
 

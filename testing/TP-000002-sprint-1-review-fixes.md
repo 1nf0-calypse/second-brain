@@ -2,7 +2,7 @@
 id: TP-000002
 title: Testplan Second Brain Sprint 1 Review-Korrekturen
 version: 1.0
-status: DRAFT
+status: APPROVED
 author-agent: QA (QA Engineer)
 date: 2026-07-30
 project: second-brain
@@ -86,8 +86,8 @@ npm audit
 | Vorbedingungen | Plugin aktiv, Setup über Befehlspalette geöffnet, gültiger Test-Vault gewählt |
 | Testschritte | 1. `Test local service` wählen. 2. Erfolgstext lesen. 3. Claude Desktop noch nicht starten. |
 | Erwartetes Ergebnis | Erfolg bestätigt nur den lokalen Dienst und fordert zur separaten Verifikation in Claude Desktop auf; keine Behauptung einer bereits bestehenden Claude-Verbindung. |
-| Tatsächliches Ergebnis | *(wird bei `/test-run` befüllt)* |
-| Status | ⬜ Nicht getestet |
+| Tatsächliches Ergebnis | Playwright-Harness bestanden; echte Obsidian-View offen. |
+| Status | ⚠️ Automatisiert bestanden, manuell offen |
 
 ### TC-000014: Bestehende Claude-Konfiguration sicher zusammenführen — P0
 
@@ -96,8 +96,8 @@ npm audit
 | Vorbedingungen | Gültige `claude_desktop_config.json` mit bestehenden Top-Level-Einstellungen sichern |
 | Testschritte | 1. Setup-Anleitung lesen. 2. `Copy configuration` wählen. 3. Den `second-brain`-Eintrag in das vorhandene `mcpServers`-Objekt integrieren. 4. Datei mit JSON-Parser validieren. 5. Claude Desktop neu starten. 6. `second_brain_setup_status` aufrufen. |
 | Erwartetes Ergebnis | Genau ein gültiges Top-Level-JSON-Objekt; bestehende Einstellungen bleiben erhalten; Anleitung warnt ausdrücklich vor einem zweiten JSON-Objekt; MCP-Werkzeug antwortet erfolgreich. |
-| Tatsächliches Ergebnis | *(wird bei `/test-run` befüllt)* |
-| Status | ⬜ Nicht getestet |
+| Tatsächliches Ergebnis | Merge-Warnhinweis im Playwright-Harness bestanden; echter Claude-Aufruf offen. |
+| Status | ⚠️ Automatisiert bestanden, manuell offen |
 
 ### TC-000015: Index in Obsidian aktualisieren und neu aufbauen — P0
 
@@ -106,8 +106,8 @@ npm audit
 | Vorbedingungen | Setup-View geöffnet, Vault gewählt, Hashmanifest vorhanden |
 | Testschritte | 1. `Update local index` wählen. 2. Statuszahlen prüfen. 3. Notiz hinzufügen. 4. erneut aktualisieren. 5. `Rebuild local index` wählen. |
 | Erwartetes Ergebnis | Aktionen sind direkt bedienbar; Loading und Ergebnis werden live angekündigt; Delta ist nachvollziehbar; Rebuild meldet unveränderte Originaldateien; Hashmanifest bleibt identisch, abgesehen von der bewusst neu erstellten Notiz. |
-| Tatsächliches Ergebnis | *(wird bei `/test-run` befüllt)* |
-| Status | ⬜ Nicht getestet |
+| Tatsächliches Ergebnis | Update-/Rebuild-Clickpfad im Playwright-Harness bestanden; echte Obsidian-View offen. |
+| Status | ⚠️ Automatisiert bestanden, manuell offen |
 
 ### TC-000016: No-op verarbeitet unveränderte Inhalte nicht vollständig neu — P0
 
@@ -116,8 +116,8 @@ npm audit
 | Vorbedingungen | Erfolgreicher Initialindex mit mindestens 500 synthetischen Dateien |
 | Testschritte | 1. Keine Vault-Datei ändern. 2. Read-Spy aktivieren. 3. Index aktualisieren. |
 | Erwartetes Ergebnis | `changedFiles = 0`; exakt 0 Inhaltslesevorgänge für unveränderte Dateien; Originalhashes unverändert. |
-| Tatsächliches Ergebnis | *(wird bei `/test-run` befüllt)* |
-| Status | ⬜ Nicht getestet |
+| Tatsächliches Ergebnis | Vitest-Read-Spy: 0 Inhaltsreads; `changedFiles = 0`. |
+| Status | ✅ Bestanden |
 
 ### TC-000017: Fehlgeschlagener Rebuild erhält letzten gültigen Index — P0
 
@@ -126,8 +126,8 @@ npm audit
 | Vorbedingungen | Gültiger Index vorhanden; ein reproduzierbarer Lesefehler ist vorbereitet |
 | Testschritte | 1. Rebuild starten und den Lesefehler auslösen. 2. Fehlermeldung prüfen. 3. Fehlerursache entfernen. 4. normale Synchronisierung ausführen. |
 | Erwartetes Ergebnis | Rebuild schlägt sicher fehl; vorheriger Index bleibt gültig; anschließende Synchronisierung meldet bei unverändertem Vault `changedFiles = 0`; keine Originaldatei wurde verändert. |
-| Tatsächliches Ergebnis | *(wird bei `/test-run` befüllt)* |
-| Status | ⬜ Nicht getestet |
+| Tatsächliches Ergebnis | Erzwungener Lesefehler ließ bestehenden Index intakt; anschließender Lauf meldete `changedFiles = 0`. |
+| Status | ✅ Bestanden |
 
 ### TC-000018: Gesperrte oder unlesbare Datei und Retry — P1
 
@@ -136,8 +136,8 @@ npm audit
 | Vorbedingungen | Vault mit Datei, deren Lesen reproduzierbar verweigert wird |
 | Testschritte | 1. Rebuild starten. 2. Fehler und Recovery-Hinweis prüfen. 3. Zugriff wieder erlauben. 4. Rebuild erneut starten. |
 | Erwartetes Ergebnis | Erster Lauf meldet sicheren Fehler und bewahrt vorherigen Index sowie Vault; zweiter Lauf ist erfolgreich. |
-| Tatsächliches Ergebnis | *(wird bei `/test-run` befüllt)* |
-| Status | ⬜ Nicht getestet |
+| Tatsächliches Ergebnis | Injizierte Dateizugriffsverweigerung und anschließender erfolgreicher Retry bestanden. |
+| Status | ✅ Bestanden (automatisiert); echter Windows-Lock offen |
 
 ### TC-000019: Installierter Test-Vault bleibt lintbar — P1
 
@@ -146,8 +146,8 @@ npm audit
 | Vorbedingungen | gebautes Plugin liegt unter `testing/system-vault/.obsidian/plugins/second-brain/` |
 | Testschritte | `npm run lint` im Sprint-Worktree ausführen |
 | Erwartetes Ergebnis | Exitcode 0; generierte Bundles werden nicht als Quellcode gelintet; echte Projektquellen bleiben vollständig geprüft. |
-| Tatsächliches Ergebnis | *(wird bei `/test-run` befüllt)* |
-| Status | ⬜ Nicht getestet |
+| Tatsächliches Ergebnis | Lint Exitcode 0 bei installiertem Plugin-Paket im Test-Vault. |
+| Status | ✅ Bestanden |
 
 ### TC-000020: Bediengrenzen und Accessibility-Regression — P1
 
@@ -206,7 +206,7 @@ verbindlich.
 - [x] Testumgebung und Ausführungsbefehle sind definiert.
 - [x] Keine Planungs-BLOCKER.
 - [x] Constitution-Prinzipien zu Lokalität und Datenintegrität sind eingehalten.
-- [ ] Stakeholder-Freigabe des Nachtestplans ausstehend.
+- [x] Stakeholder-Freigabe am 2026-07-30 erteilt.
 
 ---
 
@@ -221,7 +221,7 @@ verbindlich.
 
 | Artefakt-ID | Status | Pfad | Hinweise |
 |---|---|---|---|
-| TP-000002 | DRAFT | `testing/TP-000002-sprint-1-review-fixes.md` | Nachtest für alle Gate-8-Korrekturen |
+| TP-000002 | APPROVED | `testing/TP-000002-sprint-1-review-fixes.md` | Nachtest für alle Gate-8-Korrekturen |
 | RV-000001 | REQUEST_CHANGES | `reviews/RV-000001-sprint-1.md` | Quelle der Regressionen |
 | Implementierung | committed | Commit `389015f` | FE/BE-Korrekturen |
 
@@ -233,7 +233,7 @@ verbindlich.
 
 ### Offene Fragen (vererbt)
 
-Keine BLOCKER-Frage; die Planfreigabe durch den Stakeholder steht aus.
+Keine BLOCKER-Frage.
 
 ### Nicht-Ziele
 
