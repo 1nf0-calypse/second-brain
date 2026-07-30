@@ -1,0 +1,105 @@
+# .toolchain.yml — AI Development Tool Chain Konfiguration
+#
+# VERWENDUNG:
+# Diese Datei wird beim Anlegen eines neuen Projekts aus projects/_template/
+# übernommen (siehe /kickoff). Sie ist bereits eine Kopie der Root-Vorlage.
+#
+# Die meisten Felder werden automatisch vom Architect-Agent (ADR-001) befüllt.
+# Manuell zu setzen: toolchain-path und project.
+
+# ─────────────────────────────────────
+# Pflichtfelder
+# ─────────────────────────────────────
+
+project:
+  name: second-brain                # Eindeutiger Projektname (kebab-case)
+  description: "MCP-first Obsidian plugin for a local, writable RAG knowledge graph" # 1 Satz
+  created: 2026-07-30
+  toolchain-version: 1.0
+
+# Pfad zur Tool Chain (relativ zum Projekt-Root oder absolut)
+toolchain-path: ../../               # Anpassen wenn Projekt außerhalb von projects/ liegt
+
+# ─────────────────────────────────────
+# Tech-Stack (vom Architect-Agent befüllt nach ADR-001)
+# ─────────────────────────────────────
+
+stack:
+  language: TypeScript
+  runtime: Node.js 24 LTS
+  frontend: Obsidian Plugin API with native UI
+  backend: Local Node.js sidecar modular monolith
+  database: SQLite with FTS5 and vector adapter port
+  api-style: MCP externally; versioned JSON-RPC internally
+  hosting: Local Windows desktop and sidecar; no containers
+
+# ─────────────────────────────────────
+# Befehle (vom Architect-Agent befüllt)
+# ─────────────────────────────────────
+
+commands:
+  install: npm ci
+  dev: npm run dev
+  lint: npm run lint
+  lint-fix: npm run lint -- --fix
+  test: npm test
+  test-watch: npm run test:watch
+  test-e2e: npm run test:e2e
+  coverage: npm run test:coverage
+  build: npm run build
+  migrate: npm run migrate
+
+# ─────────────────────────────────────
+# Coding-Standards (vom Architect-Agent befüllt)
+# ─────────────────────────────────────
+
+standards:
+  indent: spaces-2                  # spaces-2 | spaces-4 | tabs
+  quotes: single                    # single | double
+  line-length: 100
+  strict-types: true
+  comment-language: de              # de | en
+
+# ─────────────────────────────────────
+# Artefakt-Konfiguration
+# ─────────────────────────────────────
+
+artifacts:
+  directory: .                      # Relativ zum Projektordner
+  prefix-pattern: "[A-Z]+-[0-9]+"  # Regex für Artefakt-IDs
+  next-ids:                         # Nächste freie Nummer pro Typ
+    SB: 2
+    CON: 2
+    REQ: 2
+    US: 12
+    ADR: 6
+    GAP: 1
+    UX: 3
+    SP: 3
+    TP: 1
+    TR: 1
+    RV: 1
+    BUG: 1
+    DEBT: 1
+    SRP: 1
+    DOC: 1
+    RN: 1
+    GS: 1
+    FAQ: 1
+    RETRO: 1
+    IMPD: 1
+    PC: 1
+
+# ─────────────────────────────────────
+# Hook-Konfiguration
+# ─────────────────────────────────────
+
+hooks:
+  pre-commit:
+    lint: true                      # Lint im pre-commit ausführen?
+    secret-scan: true               # Secret-Scan aktiv?
+    header-check: true              # Datei-Header-Check aktiv?
+    todo-format-check: true         # TODO-Format prüfen?
+
+  post-commit:
+    index-reminder: true            # INDEX.md-Update-Erinnerung?

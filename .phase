@@ -1,0 +1,44 @@
+# .phase — AI Development Tool Chain Zustandsdatei
+# Automatisch vom Orchestrator gepflegt. Nicht manuell editieren.
+# Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
+
+project: second-brain
+current-phase: IMPLEMENTATION
+previous-phase: ANALYSIS
+phase-started: 2026-07-30
+sprint: 1
+last-agent: ORCH
+last-artifact: SP-000002
+worktree-path: projects/second-brain/.worktrees/sprint-1
+worktree-branch: feature/sprint-1
+
+# Phasen-History (wird vom Orchestrator gepflegt)
+history:
+  - phase: INIT
+    started: 2026-07-30
+    completed: 2026-07-30
+  - phase: DISCOVERY
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [SB-000001, CON-000001]
+  - phase: REQUIREMENTS
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [REQ-000001, US-000001, US-000002, US-000003, US-000004, US-000005, US-000006, US-000007, US-000008, US-000009, US-000010]
+  - phase: ARCHITECTURE
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [ADR-000001, ADR-000002, ADR-000003, ADR-000004, ADR-000005, STRUCTURE]
+  - phase: UX
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [UX-000001]
+  - phase: REFINEMENT
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [SP-000001, SP-000002]
+  - phase: ANALYSIS
+    started: 2026-07-30
+    completed: 2026-07-30
+  - phase: IMPLEMENTATION
+    started: 2026-07-30

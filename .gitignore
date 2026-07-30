@@ -1,0 +1,51 @@
+# .gitignore — Projekt-Repository (Vorlage)
+#
+# Dies ist das Git-Repository EINES Projekts (nicht der Tool Chain selbst).
+# Solange kein ADR-000001-tech-stack.md APPROVED ist, bleiben die Ignores
+# bewusst breit/technologieneutral. Nach der Architektur-Phase um
+# stack-spezifische Einträge ergänzen (z. B. via gitignore.io).
+
+# ─────────────────────────────────────
+# Betriebssystem
+# ─────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─────────────────────────────────────
+# Editor / IDE
+# ─────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# ─────────────────────────────────────
+# Umgebungsvariablen / Secrets
+# ─────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ─────────────────────────────────────
+# Abhängigkeiten & Build-Output (typische Namen über Ökosysteme hinweg)
+# ─────────────────────────────────────
+node_modules/
+__pycache__/
+.venv/
+venv/
+dist/
+build/
+coverage/
+
+# ─────────────────────────────────────
+# Logs, temporäre Dateien
+# ─────────────────────────────────────
+*.log
+*.tmp
+.cache/
+
+# ─────────────────────────────────────
+# Sprint-Worktrees (Phase 6–9, siehe toolchain/workflows/full-sprint.md
+# Abschnitt "Worktree-Isolation") — werden bei Release (Phase 10) entfernt
+# ─────────────────────────────────────
+.worktrees/

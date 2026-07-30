@@ -1,0 +1,20 @@
+# .toolchain-config — AI Development Tool Chain
+# Projektspezifische Konfiguration für die Tool Chain Hooks.
+# Diese Datei ins Repository einchecken.
+
+# Lint-Befehl (wird im pre-commit ausgeführt)
+# Beispiele:
+#   npm run lint
+#   ruff check .
+#   golangci-lint run
+lint=
+
+# Test-Befehl (für /test-run)
+# Beispiele:
+#   npm test
+#   pytest
+#   go test ./...
+test=
+
+# Coverage-Befehl
+coverage=
