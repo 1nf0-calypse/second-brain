@@ -145,7 +145,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Windows, Obsidian, Claude Desktop, gebautes Plugin/Sidecar, synthetischer Vault |
 | Schritte | 1. Plugin installieren. 2. Setup öffnen. 3. Vault wählen. 4. Konfiguration kopieren. 5. In Claude Desktop eintragen/reload. 6. Verbindung testen. |
 | Erwartet | `Claude Desktop connected with read-only setup access.`; Vertragsversion sichtbar; Vault-Hashes unverändert |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden — Obsidian 1.12.7 + Claude Desktop 1.24012.9.0, synthetischer Vault |
 
 ### TC-000002: Kein zusätzlicher API-Key und keine Client-Übertreibung — P0
 
@@ -154,7 +154,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Setup-View geöffnet |
 | Schritte | UI und generierte Konfiguration vollständig prüfen |
 | Erwartet | Kein LLM-API-Key; keine Umgehungsbehauptung; ChatGPT/Mistral ausdrücklich nicht im Sprint |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden |
 
 ### TC-000003: Ungültiger Vault und inkompatibler Vertrag — P0
 
@@ -163,7 +163,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Ordner ohne `.obsidian`; danach Vertrag `2.0.0` |
 | Schritte | Jeweils Verbindungstest starten |
 | Erwartet | Konkrete Recovery-Meldung; Fokus auf Status; keine Dateiänderung |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden |
 
 ### TC-000004: Traversal, absoluter Fremdpfad und Symlink-Escape — P0
 
@@ -172,7 +172,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Synthetischer Vault und externe Markerdatei |
 | Schritte | Zugriffe über `..`, absoluten Pfad und Symlink auf Markerdatei anfordern |
 | Erwartet | Jeder Zugriff blockiert; kein externer Inhalt in Response oder Logs |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden |
 
 ### TC-000005: Initialindex ohne Vault-Mutation — P0
 
@@ -181,7 +181,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | 500 synthetische Dateien; SHA-256-Manifest erstellt |
 | Schritte | Initialindex ausführen; Status und DB prüfen; Hashmanifest vergleichen |
 | Erwartet | 500 Dateien indexiert; lokale SQLite-Datei; alle Originalhashes identisch |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden |
 
 ### TC-000006: Inkrementelles create/change/delete/no-op — P0
 
@@ -190,7 +190,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Erfolgreicher Initialindex |
 | Schritte | Je eine Datei erstellen, ändern und löschen; synchronisieren; danach No-op-Lauf |
 | Erwartet | Exakte Delta-Zahlen; unveränderte Dateien nicht als geändert; No-op meldet 0 |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden |
 
 ### TC-000007: Beschädigter Index und sicherer Rebuild — P0
 
@@ -199,7 +199,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Index vorhanden; Vault-Hashmanifest gespeichert |
 | Schritte | Indexkopie beschädigen; Rebuild starten; DB-Integrität und Hashes prüfen |
 | Erwartet | Rebuild erfolgreich; Originaldateien unverändert; verständlicher Status |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden |
 
 ### TC-000008: Sämtliche UI-Zustände und Recovery — P1
 
@@ -208,7 +208,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Setup-View und kontrollierbarer Sidecar |
 | Schritte | Empty, Validating, Ready, Instructions, Testing, Success, Error und Offline auslösen |
 | Erwartet | Verbindliche UX-000002-Microcopy; Controls korrekt gesperrt; keine Doppelübermittlung |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden |
 
 ### TC-000009: Tastatur, Fokus, 320 px und 200 % Zoom — P1
 
@@ -217,7 +217,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Obsidian-Setup-View |
 | Schritte | Nur Tastatur; Fehler/Erfolg; Pane 320 px; Zoom 200 %; Reduced Motion |
 | Erwartet | Logische Fokusreihenfolge, Live-Status, kein Inhalts-/Aktionsverlust, keine Drag-only-Aktion |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden — native View bei 200 % / 320 px, beide Aktionen sichtbar |
 
 ### TC-000010: Leere, sehr lange und Unicode-Pfade — P1
 
@@ -226,7 +226,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Testordner mit Leerzeichen, Umlauten und langem Pfad |
 | Schritte | Leere Eingabe, gültigen Unicode-Pfad und Pfad nahe Windows-Grenze testen |
 | Erwartet | Leer bleibt gesperrt; gültige Pfade funktionieren; Fehler sind konkret und nicht destruktiv |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden |
 
 ### TC-000011: Gesperrte/unlesbare Datei während Indexlauf — P1
 
@@ -235,7 +235,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Vault mit exklusiv gesperrter Datei |
 | Schritte | Synchronisierung starten; Sperre lösen; erneut starten |
 | Erwartet | Erster Lauf sicherer Fehler/keine Vault-Mutation; zweiter Lauf erfolgreich |
-| Status | ⬜ Nicht getestet |
+| Status | ⬜ Nicht getestet — P1, kein Gate-7-Blocker |
 
 ### TC-000012: stdout, stderr und Secret-Sanitization — P0
 
@@ -244,7 +244,7 @@ inkrementelles Delta darf nicht in einen Vollscan unveränderter Dateiinhalte au
 | Vorbedingungen | Sidecar mit synthetischem Secretmarker im Vault |
 | Schritte | MCP-Handshake, Fehler und Indexlauf ausführen; stdout/stderr erfassen |
 | Erwartet | stdout nur Protokoll/Handshake; stderr strukturiert; kein Vault-Rohinhalt oder Secretmarker |
-| Status | ⬜ Nicht getestet |
+| Status | ✅ Bestanden |
 
 ## 7. Sicherheits-Smoke-Tests
 

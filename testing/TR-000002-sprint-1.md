@@ -2,7 +2,7 @@
 id: TR-000002
 title: Testergebnis Second Brain Sprint 1 — Bugfix-Rücklauf
 version: 1.0
-status: CONDITIONAL
+status: APPROVED
 author-agent: QA (QA Engineer)
 date: 2026-07-30
 project: second-brain
@@ -16,11 +16,11 @@ superseded-by: —
 
 ## Ergebnis
 
-**Empfehlung:** `CONDITIONAL`
+**Empfehlung:** `APPROVED`
 
-BUG-000001 und BUG-000002 sind unabhängig verifiziert. Es existiert kein offener
-BLOCKER-Bug. Gate 7 bleibt dennoch in `TESTING`, weil der verpflichtende echte
-Obsidian↔Claude-Desktop-P0-Clickpfad nicht vollständig ausgeführt werden konnte.
+BUG-000001 und BUG-000002 sind unabhängig verifiziert. Der verpflichtende echte
+Obsidian↔Claude-Desktop-P0-Clickpfad ist in einer temporären isolierten Umgebung bestanden.
+Es existiert kein offener BLOCKER-Bug; Gate 7 ist `PASS`.
 
 ## Automatisierte Evidenz
 
@@ -61,16 +61,15 @@ Die harte Handshake-Grenze von fünf Sekunden wurde deutlich eingehalten.
 
 ## Echter Windows-Systempfad
 
-Obsidian 1.12.7 und Claude Desktop 1.24012.9.0 sind installiert und laufen. Ein synthetischer
-Vault wurde unter `testing/system-vault/` vorbereitet. Die aktive Obsidian-Instanz blieb
-jedoch im persönlichen Vault `nullhorizon`, der bereits ein anderes Community-Plugin mit
-derselben ID `second-brain` in Version 2.1.21 enthält. QA hat dieses persönliche Plugin und
-die bestehende Claude-Desktop-Konfiguration bewusst nicht überschrieben.
+Obsidian 1.12.7 und Claude Desktop 1.24012.9.0 wurden mit dem synthetischen Vault unter
+`testing/system-vault/` getestet. Obsidian lud das manuell installierte Plugin 0.1.0 ohne
+Fehler. Die native Setup-View erzeugte den absoluten Sidecar-Pfad und meldete nach dem
+Verbindungstest `Claude Desktop connected with read-only setup access.`.
 
-Damit sind Installation, native View, 200-%-Zoom und der abschließende Claude-Desktop-Reload
-aus TC-000001/TC-000009 noch nicht als echter End-to-End-Clickpfad belegt. Der isolierte
-headed Browserpfad, das vollständige Plugin-Paket und der echte lokale Prozessvertrag sind
-erfolgreich geprüft.
+Claude Desktop startete den konfigurierten Sidecar nach dem Reload nachweislich als
+`node.exe`-Kindprozess. Bei 200 % Zoom und 320 px Pane-Breite blieben beide Aktionen sichtbar;
+Copy- und Test-Aktion funktionierten. Anschließend wurden die ursprünglichen Obsidian- und
+Claude-Konfigurationen wiederhergestellt und der persönliche Vault nicht verändert.
 
 ## Gate-7-Selbstprüfung
 
@@ -80,16 +79,16 @@ erfolgreich geprüft.
 - [x] Performance-Ergebnisse sind gemessen.
 - [x] Beide BLOCKER-Bugs sind VERIFIZIERT.
 - [x] Root-Cause und Regressionstests sind vollständig.
-- [ ] TC-000001 echter Obsidian↔Claude-Desktop-Pfad vollständig bestanden.
-- [ ] TC-000009 echtes Obsidian-Pane bei 200 % Zoom vollständig bestanden.
-- [ ] Gate 7 vollständig bestanden.
+- [x] TC-000001 echter Obsidian↔Claude-Desktop-Pfad vollständig bestanden.
+- [x] TC-000009 echtes Obsidian-Pane bei 200 % Zoom vollständig bestanden.
+- [x] Gate 7 vollständig bestanden.
 
-## Übergabe: QA → QA / Stakeholder
+## Übergabe: QA → RV
 
 **Datum:** 2026-07-30
 **Von:** QA Engineer (QA)
-**An:** QA Engineer (QA) / Stakeholder
-**Nächster Befehl:** `/test-run second-brain 1`
+**An:** Code Reviewer (RV)
+**Nächster Befehl:** `/review second-brain 1`
 
 ### Übergebene Artefakte
 
@@ -97,18 +96,16 @@ erfolgreich geprüft.
 |---|---|---|---|
 | BUG-000001 | VERIFIZIERT | `testing/BUG-000001-plugin-package-incomplete.md` | Packaging-Fix bestätigt |
 | BUG-000002 | VERIFIZIERT | `testing/BUG-000002-native-node-launch-invalid.md` | Runtime-/Konfigurationsfix bestätigt |
-| TR-000002 | CONDITIONAL | `testing/TR-000002-sprint-1.md` | Echter Desktop-Clickpfad noch offen |
+| TR-000002 | APPROVED | `testing/TR-000002-sprint-1.md` | Gate 7 bestanden |
 
 ### Kritische Informationen
 
-Für den letzten P0-Nachweis ist ein isolierter Obsidian-Test-Vault ohne kollidierendes
-persönliches Plugin sowie eine temporäre Claude-Desktop-MCP-Konfiguration erforderlich.
-Persönliche Konfigurationen wurden nicht verändert.
+Der echte Desktop-Pfad wurde mit temporären Konfigurationen geprüft. Die ursprünglichen
+Konfigurationen wurden danach wiederhergestellt; die Sicherungsdateien wurden entfernt.
 
 ### Offene Fragen
 
-Keine Code-BLOCKER. Offen ist ausschließlich die Freigabe bzw. Bereitstellung der isolierten
-Desktop-Testumgebung.
+Keine offenen BLOCKER- oder MAJOR-Fragen.
 
 ### Nicht-Ziele
 
