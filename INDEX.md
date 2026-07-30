@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
+Letzte Aktualisierung: 2026-07-30 | Phase: REVIEW
 
 ## Aktive Artefakte
 
@@ -38,6 +38,7 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 | `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
 | `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
 | `reviews/RV-000001-sprint-1.md` | RV-000001 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme conditional; acht MAJOR-Funde vor Merge |
+| `reviews/RV-000002-sprint-1-rereview.md` | RV-000002 | 1.0 | REJECTED | RV | Setup akzeptiert; Indexbedienung im Nutzerlauf nicht verfügbar |
 
 ## Gate-History
 
@@ -56,12 +57,13 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 | 2026-07-30 | Gate 7 (Bugfix-Rücklauf) | CONDITIONAL / TESTING | 0 | 1 | 0 |
 | 2026-07-30 | Gate 7 (Desktop-P0-Nachlauf) | PASS | 0 | 0 | 0 |
 | 2026-07-30 | Gate 8 (Review) | REQUEST_CHANGES | 0 | 8 | 1 |
+| 2026-07-30 | Gate 8 (Re-Review) | REJECTED | 0 | 4 | 2 |
 
 ## In Bearbeitung
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| `testing/TR-000003-sprint-1-review-fixes.md` | TR-000003 | CONDITIONAL | Bestätigung der manuellen Desktop-Fälle |
+| `reviews/RV-000002-sprint-1-rereview.md` | RV-000002 | REJECTED | BA-Klärung und erneute Implementierung |
 
 ## Archiv
 
