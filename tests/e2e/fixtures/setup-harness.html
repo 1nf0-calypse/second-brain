@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Second Brain setup QA harness</title>
+    <style>
+      body { font-family: sans-serif; max-width: 48rem; margin: 0 auto; padding: 1rem; }
+      input, button { box-sizing: border-box; min-height: 44px; width: 100%; }
+      .actions { display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      pre { overflow-wrap: anywhere; white-space: pre-wrap; }
+      @media (max-width: 479px) { .actions { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Set up Second Brain</h1>
+      <p>Your vault and index stay on this device.</p>
+      <label for="vault">Obsidian vault folder</label>
+      <input id="vault" data-testid="vault-root" aria-describedby="help">
+      <p id="help">Choose an existing readable vault. No files will be moved or changed.</p>
+      <pre data-testid="configuration">Complete the vault step to generate the local configuration.</pre>
+      <div class="actions">
+        <button data-testid="copy" disabled>Copy configuration</button>
+        <button data-testid="test" disabled>Test Claude Desktop connection</button>
+      </div>
+      <p role="status" aria-live="polite" tabindex="-1">Setup not started.</p>
+      <p>Second Brain does not require an additional LLM API key for this connection.</p>
+      <p>ChatGPT and Mistral are not included in this Sprint 1 setup.</p>
+    </main>
+    <script>
+      const input = document.querySelector('[data-testid="vault-root"]');
+      const config = document.querySelector('[data-testid="configuration"]');
+      const copy = document.querySelector('[data-testid="copy"]');
+      const test = document.querySelector('[data-testid="test"]');
+      const status = document.querySelector('[role="status"]');
+      input.addEventListener('input', () => {
+        const ready = input.value.trim().length > 0;
+        copy.disabled = !ready;
+        test.disabled = !ready;
+        config.textContent = ready
+          ? JSON.stringify({ mcpServers: { 'second-brain': { command: 'node' } } }, null, 2)
+          : 'Complete the vault step to generate the local configuration.';
+      });
+      copy.addEventListener('click', () => {
+        status.textContent = 'Configuration copied. Claude Desktop is not connected yet.';
+      });
+      test.addEventListener('click', () => {
+        status.textContent = input.value === 'invalid'
+          ? 'This folder is not a readable Obsidian vault. Choose another folder. No files were changed.'
+          : 'Claude Desktop connected with read-only setup access.';
+        status.focus();
+      });
+    </script>
+  </body>
+</html>

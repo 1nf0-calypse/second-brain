@@ -8,4 +8,4 @@ Letzte Aktualisierung: 2026-07-30
 | `security/` | Vault-Root, Traversal und Fremdpfade |
 | `integration/` | Initialindex, Delta, Delete und Rebuild |
 | `compatibility/` | Vertragsversion, Client-Scope und Konfiguration |
-| `e2e/` | Setup-Erfolg, Timeout, Client-Abgrenzung und Indexstatus |
+| `e2e/` | Vitest-Logik plus Playwright-Clickpfade, Page Object und A11y |

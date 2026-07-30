@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "vitest run tests/e2e",
+    "test:e2e": "playwright test",
     "test:coverage": "vitest run --coverage",
     "migrate": "node dist/sidecar/bootstrap/main.js --migrate"
   },
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.0",
     "@types/node": "^24.1.0",
     "@vitest/coverage-v8": "^4.1.10",
     "esbuild": "^0.25.8",
