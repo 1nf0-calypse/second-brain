@@ -80,7 +80,7 @@ artifacts:
     TR: 4
     RV: 3
     BUG: 3
-    DEBT: 1
+    DEBT: 2
     SRP: 1
     DOC: 1
     RN: 1

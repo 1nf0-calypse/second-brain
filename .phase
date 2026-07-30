@@ -3,8 +3,8 @@
 # Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
 
 project: second-brain
-current-phase: REVIEW
-previous-phase: TESTING
+current-phase: DOCUMENTATION
+previous-phase: REVIEW
 phase-started: 2026-07-30
 sprint: 1
 last-agent: RV
@@ -48,6 +48,10 @@ history:
     completed: 2026-07-30
     artifacts: [TP-000001, TR-000001, TR-000002, BUG-000001, BUG-000002]
   - phase: REVIEW
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [RV-000002, DEBT-000001]
+  - phase: DOCUMENTATION
     started: 2026-07-30
     completed: 2026-07-30
     artifacts: [RV-000001]
