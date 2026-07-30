@@ -1,8 +1,14 @@
 {
   "name": "second-brain",
-  "version": "0.1.0",
+  "version": "2.2.0",
   "private": true,
   "type": "module",
+  "author": "Frederik Hirche",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1nf0-calypse/second-brain.git"
+  },
+  "homepage": "https://github.com/1nf0-calypse/second-brain",
   "workspaces": [
     "apps/*",
     "packages/*"

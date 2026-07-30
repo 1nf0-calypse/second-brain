@@ -27,7 +27,7 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
   // streng read-only ist; der High-Level-Wrapper würde keine zusätzliche Policy liefern.
   // eslint-disable-next-line @typescript-eslint/no-deprecated
   const server = new Server(
-    { name: 'second-brain', version: '0.1.0' },
+    { name: 'second-brain', version: '2.2.0' },
     { capabilities: { tools: {} } }
   );
 
