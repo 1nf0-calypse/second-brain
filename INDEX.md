@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-30 | Phase: IMPLEMENTATION
+Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 
 ## Aktive Artefakte
 
@@ -31,6 +31,7 @@ Letzte Aktualisierung: 2026-07-30 | Phase: IMPLEMENTATION
 | `ux/UX-000002-claude-desktop-setup-slice.md` | UX-000002 | 1.0 | APPROVED | UX | Expliziter Claude-Desktop-Setup-Flow für US-000011 |
 | `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | 1.0 | APPROVED | BA+FE+BE | Verbindlicher Sprint-1-Backlog mit US-000011 und US-000005 |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
+| `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | DRAFT | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
@@ -59,7 +60,7 @@ Letzte Aktualisierung: 2026-07-30 | Phase: IMPLEMENTATION
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| `reviews/RV-000001-sprint-1.md` | RV-000001 | REQUEST_CHANGES | FE/BE-Korrekturen und Re-Review |
+| `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | DRAFT | Stakeholder-Freigabe und Testausführung |
 
 ## Archiv
 

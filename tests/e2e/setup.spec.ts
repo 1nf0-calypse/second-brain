@@ -34,6 +34,19 @@ test('setup controls have accessible names and a live status', async ({ page }) 
   await expect(page.getByRole('status')).toHaveAttribute('aria-live', 'polite');
 });
 
+test('setup explains safe JSON merge and exposes index actions', async ({ page }) => {
+  const setup = new SetupPage(page);
+  await setup.goto();
+  await expect(page.getByText(/Do not paste it as a second JSON object/)).toBeVisible();
+  await page.getByTestId('vault-root').fill('C:\\synthetic-vault');
+
+  await page.getByTestId('update').click();
+  await expect(page.getByRole('status')).toContainText('0 changed');
+  await page.getByTestId('rebuild').click();
+  await expect(page.getByRole('status')).toContainText('Index rebuilt');
+  await expect(page.getByRole('status')).toContainText('Original files unchanged');
+});
+
 test('320 px pane keeps both recovery actions visible', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   const setup = new SetupPage(page);
@@ -41,4 +54,6 @@ test('320 px pane keeps both recovery actions visible', async ({ page }) => {
   await page.getByTestId('vault-root').fill('C:\\synthetic-vault');
   await expect(page.getByTestId('copy')).toBeVisible();
   await expect(page.getByTestId('test')).toBeVisible();
+  await expect(page.getByTestId('update')).toBeVisible();
+  await expect(page.getByTestId('rebuild')).toBeVisible();
 });
