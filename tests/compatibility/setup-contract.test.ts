@@ -53,7 +53,8 @@ describe('Claude Desktop setup contract', () => {
     expect(config).toMatchObject({
       mcpServers: {
         'second-brain': {
-          command: process.execPath
+          command: 'node',
+          args: ['C:\\second-brain\\main.js']
         }
       }
     });

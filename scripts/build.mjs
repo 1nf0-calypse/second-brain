@@ -2,12 +2,15 @@
 // Artefakte:    US-000011; ADR-000001
 // Agent:        BE — 2026-07-30
 import { build, context } from 'esbuild';
+import { packageObsidianPlugin } from './package-plugin.mjs';
 
 const watch = process.argv.includes('--watch');
+const pluginOutput = 'dist/obsidian-plugin';
+const sidecarBundle = 'dist/sidecar/main.js';
 const builds = [
   {
     entryPoints: ['apps/sidecar/src/bootstrap/main.ts'],
-    outfile: 'dist/sidecar/main.js',
+    outfile: sidecarBundle,
     bundle: true,
     platform: 'node',
     format: 'esm',
@@ -30,4 +33,9 @@ if (watch) {
   await Promise.all(contexts.map((buildContext) => buildContext.watch()));
 } else {
   await Promise.all(builds.map((options) => build(options)));
+  await packageObsidianPlugin({
+    sourceRoot: 'apps/obsidian-plugin',
+    pluginOutput,
+    sidecarBundle
+  });
 }

@@ -27,7 +27,7 @@ export default class SecondBrainPlugin extends Plugin {
     );
     this.registerView(
       SETUP_VIEW_TYPE,
-      (leaf) => new SetupView(leaf, new NodeSetupTransport(sidecarEntry))
+      (leaf) => new SetupView(leaf, new NodeSetupTransport(sidecarEntry), sidecarEntry)
     );
     this.addRibbonIcon('brain-circuit', 'Set up Second Brain', () => {
       void this.openSetup();

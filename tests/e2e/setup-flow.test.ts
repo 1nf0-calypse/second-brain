@@ -39,11 +39,15 @@ describe('setup flow', () => {
   });
 
   it('zeigt keine zusätzlichen Clients oder API-Keys in der Vorschau', () => {
-    const preview = JSON.stringify(createConfigurationPreview('C:\\vault'));
+    const preview = JSON.stringify(
+      createConfigurationPreview('C:\\vault', 'C:\\plugin\\sidecar\\main.js')
+    );
     expect(preview).toContain('second-brain');
     expect(preview).not.toContain('chatgpt');
     expect(preview).not.toContain('mistral');
     expect(preview.toLowerCase()).not.toContain('api_key');
+    expect(preview).toContain('C:\\\\plugin\\\\sidecar\\\\main.js');
+    expect(preview).not.toContain('<path-to-second-brain-sidecar>');
   });
 
   it('weist beim Indexstatus unveränderte Originaldateien aus', () => {

@@ -8,7 +8,10 @@ import type { SetupTransport } from './setup-client.js';
 const CONNECTION_TIMEOUT_MS = 5_000;
 
 export class NodeSetupTransport implements SetupTransport {
-  public constructor(private readonly sidecarEntry: string) {}
+  public constructor(
+    private readonly sidecarEntry: string,
+    private readonly nodeExecutable = 'node'
+  ) {}
 
   /**
    * Startet einen einmaligen lokalen Handshake mit hartem Timeout.
@@ -20,7 +23,7 @@ export class NodeSetupTransport implements SetupTransport {
   public testConnection(vaultRoot: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
       execFile(
-        process.execPath,
+        this.nodeExecutable,
         [this.sidecarEntry, '--setup-handshake'],
         {
           timeout: CONNECTION_TIMEOUT_MS,

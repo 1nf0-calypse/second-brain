@@ -43,7 +43,7 @@ export function createClaudeDesktopConfiguration(
   return {
     mcpServers: {
       'second-brain': {
-        command: process.execPath,
+        command: 'node',
         args: [sidecarEntry],
         env: {
           SECOND_BRAIN_VAULT_ROOT: vaultRoot,

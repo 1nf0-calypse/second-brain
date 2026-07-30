@@ -15,8 +15,9 @@ npm run test:coverage
 npm run build
 ```
 
-Build-Ausgaben entstehen unter `dist/`. Der Sidecar nutzt stdout ausschließlich für MCP;
-strukturierte Fehler gehen an stderr.
+Das vollständig installierbare Plugin entsteht unter `dist/obsidian-plugin/` und enthält
+`manifest.json`, `main.js`, `styles.css` sowie `sidecar/main.js`. Der Sidecar nutzt stdout
+ausschließlich für MCP; strukturierte Fehler gehen an stderr.
 
 ## Lokaler Claude-Desktop-Start
 
@@ -24,11 +25,11 @@ Nach `npm run build` wird der Sidecar mit einem explizit freigegebenen Vault ges
 
 ```powershell
 $env:SECOND_BRAIN_VAULT_ROOT='C:\Pfad\zum\Vault'
-node dist/sidecar/main.js
+node dist/obsidian-plugin/sidecar/main.js
 ```
 
 Die Claude-Desktop-Konfiguration verwendet `node` als `command`, den absoluten Pfad zu
-`dist/sidecar/main.js` als Argument und `SECOND_BRAIN_VAULT_ROOT` als lokale
+`dist/obsidian-plugin/sidecar/main.js` als Argument und `SECOND_BRAIN_VAULT_ROOT` als lokale
 Umgebungsvariable. Second Brain verlangt keinen zusätzlichen LLM-API-Key.
 
 ChatGPT und Mistral sind nicht Bestandteil dieses Sprint-1-Setups.

@@ -32,8 +32,8 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 | `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | 1.0 | APPROVED | BA+FE+BE | Verbindlicher Sprint-1-Backlog mit US-000011 und US-000005 |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
-| `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | OFFEN | QA | Plugin-Paket nicht installierbar |
-| `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | OFFEN | QA | Nativer Setup-Prozessstart ungültig |
+| `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | BEHOBEN | FE+BE | Vollständiges Plugin-Paket; QA-Verifikation ausstehend |
+| `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | BEHOBEN | FE+BE | Explizite Node-Runtime und realer Sidecar-Pfad; QA-Verifikation ausstehend |
 
 ## Gate-History
 
@@ -54,8 +54,8 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | OFFEN | FE/BE-Fix und QA-Re-Test |
-| `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | OFFEN | FE/BE-Fix und QA-Re-Test |
+| `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | BEHOBEN | QA-Verifikation |
+| `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | BEHOBEN | QA-Verifikation |
 
 ## Archiv
 
@@ -67,9 +67,9 @@ Letzte Aktualisierung: 2026-07-30 | Phase: TESTING
 
 ## Übergabe: FE/BE → QA
 
-**Datum:** 2026-07-30  
-**Von:** Frontend Developer und Backend Developer (FE/BE)  
-**An:** QA Engineer (QA)  
+**Datum:** 2026-07-30
+**Von:** Frontend Developer und Backend Developer (FE/BE)
+**An:** QA Engineer (QA)
 **Nächster Befehl:** `/test-plan second-brain 1`
 
 ### Übergebene Artefakte
@@ -102,3 +102,33 @@ QA soll insbesondere echte Obsidian-/Claude-Desktop-Clickpfade unter Windows, 20
 ---
 
 *Erstellt von: Orchestrator | Datum: 2026-07-30*
+
+---
+
+## Übergabe: FE/BE → QA — Gate-7-Bugfix
+
+**Datum:** 2026-07-30
+**Von:** Frontend Developer und Backend Developer (FE/BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 1`
+
+### Übergebene Artefakte
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| BUG-000001 | BEHOBEN | `testing/BUG-000001-plugin-package-incomplete.md` | Vollständiges installierbares Paket + Regressionstest |
+| BUG-000002 | BEHOBEN | `testing/BUG-000002-native-node-launch-invalid.md` | Explizite Node-Runtime + realer Sidecar-Pfad |
+
+### Kritische Informationen für Empfänger
+
+- `npm run build` erzeugt das installierbare Paket unter `dist/obsidian-plugin/`.
+- 20 Vitest- und 4 headed Playwright-Tests sind grün.
+- Nur QA setzt die BUG-Status nach unabhängiger Reproduktion auf `VERIFIZIERT`.
+
+### Offene Fragen
+
+Keine Implementierungs-BLOCKER; der echte Obsidian-/Claude-Desktop-P0-Pfad bleibt QA-Aufgabe.
+
+### Nicht-Ziele
+
+Keine Erweiterung auf ChatGPT, Mistral, Suche oder Mutationen.

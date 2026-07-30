@@ -13,7 +13,8 @@ export class SetupView extends ItemView {
 
   public constructor(
     leaf: WorkspaceLeaf,
-    private readonly transport: SetupTransport
+    private readonly transport: SetupTransport,
+    private readonly sidecarEntry: string
   ) {
     super(leaf);
   }
@@ -76,7 +77,7 @@ export class SetupView extends ItemView {
 
     input.addEventListener('change', () => {
       this.vaultRoot = input.value.trim();
-      const config = createConfigurationPreview(this.vaultRoot);
+      const config = createConfigurationPreview(this.vaultRoot, this.sidecarEntry);
       configuration.textContent = JSON.stringify(config, null, 2);
       copyButton.disabled = this.vaultRoot.length === 0;
       testButton.disabled = this.vaultRoot.length === 0;

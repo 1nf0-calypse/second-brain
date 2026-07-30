@@ -1,0 +1,39 @@
+// Beschreibung: Prüft den vollständigen installierbaren Inhalt des Obsidian-Plugin-Pakets.
+// Artefakte:    US-000011; BUG-000001
+// Agent:        BE — 2026-07-30
+import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { packageObsidianPlugin } from '../../scripts/package-plugin.mjs';
+
+describe('Obsidian plugin package', () => {
+  it('enthält Manifest, Styles, Plugin-Bundle und den erwarteten Sidecar-Pfad', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'second-brain-package-'));
+    const sourceRoot = join(root, 'source');
+    const pluginOutput = join(root, 'dist', 'obsidian-plugin');
+    const sidecarBundle = join(root, 'dist', 'sidecar', 'main.js');
+    await mkdir(sourceRoot, { recursive: true });
+    await mkdir(pluginOutput, { recursive: true });
+    await mkdir(join(root, 'dist', 'sidecar'), { recursive: true });
+    await Promise.all([
+      writeFile(join(sourceRoot, 'manifest.json'), '{"id":"second-brain"}'),
+      writeFile(join(sourceRoot, 'styles.css'), '.second-brain {}'),
+      writeFile(join(pluginOutput, 'main.js'), 'plugin'),
+      writeFile(sidecarBundle, 'sidecar')
+    ]);
+
+    await packageObsidianPlugin({ sourceRoot, pluginOutput, sidecarBundle });
+
+    await expect(readFile(join(pluginOutput, 'manifest.json'), 'utf8')).resolves.toContain(
+      'second-brain'
+    );
+    await expect(readFile(join(pluginOutput, 'styles.css'), 'utf8')).resolves.toContain(
+      '.second-brain'
+    );
+    await expect(readFile(join(pluginOutput, 'main.js'), 'utf8')).resolves.toBe('plugin');
+    await expect(readFile(join(pluginOutput, 'sidecar', 'main.js'), 'utf8')).resolves.toBe(
+      'sidecar'
+    );
+  });
+});

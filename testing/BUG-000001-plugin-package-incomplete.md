@@ -2,7 +2,7 @@
 id: BUG-000001
 title: Bug — Obsidian-Plugin-Paket ist nicht installierbar
 version: 1.0
-status: OFFEN
+status: BEHOBEN
 author-agent: QA (QA Engineer)
 date: 2026-07-30
 project: second-brain
@@ -59,17 +59,27 @@ Betroffene Komponenten:
 
 ## Root-Cause
 
-**Direkte Ursache:**  
+**Direkte Ursache:** `scripts/build.mjs` bündelt nur zwei JavaScript-Entrypoints. Es kopiert
+`manifest.json` und `styles.css` nicht und legt `dist/sidecar/main.js` außerhalb des vom
+Plugin fest verdrahteten Pfads `dist/obsidian-plugin/sidecar/main.js` ab.
 
-**Zugrundeliegende (systemische) Ursache:**  
+**Zugrundeliegende (systemische) Ursache:** Der Build wurde als Compiler-Ausgabe statt als
+lieferbares Obsidian-Paket modelliert. Es fehlte ein automatisierter Vertragstest, der den
+vollständigen Paketinhalt und die Pfadbeziehung zwischen Plugin und Sidecar prüft.
 
-**Andere Stellen mit demselben Muster:**  
+**Andere Stellen mit demselben Muster:** Der README-Startpfad verweist auf den separaten
+Sidecar-Build und bildet damit ebenfalls nicht das installierbare Plugin-Paket ab.
 
-**Ausgeschlossene Ursachen:**  
+**Ausgeschlossene Ursachen:**
+
+- Kein esbuild-Fehler; beide JavaScript-Bundles werden erfolgreich erzeugt.
+- Kein Obsidian-Vault- oder Berechtigungsfehler; der Defekt besteht vor der Installation.
 
 ## Fix-Ansatz
 
-Von FE/BE nach Root-Cause-Analyse auszufüllen.
+Eine explizite Packaging-Stufe erzeugt nach dem Bundle ein vollständiges
+`dist/obsidian-plugin/` mit Manifest, Styles und `sidecar/main.js`. Ein Regressionstest baut
+das Paket in ein temporäres Verzeichnis und prüft alle vier erforderlichen Dateien.
 
 ## Regressionsrisiko
 
@@ -78,17 +88,27 @@ Von FE/BE nach Root-Cause-Analyse auszufüllen.
 
 ## Verifikation
 
-Noch nicht verifiziert.
+**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** Ausstehend durch QA.
+
+**Regressionstest ergänzt:** Ja (`tests/integration/plugin-package.test.ts`)
+
+**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Durch FE/BE reproduziert;
+unabhängige QA-Verifikation ausstehend.
 
 ## Status-Verlauf
 
 | Datum | Status | Kommentar |
 |---|---|---|
 | 2026-07-30 | OFFEN | Durch QA im P0-Systemtest erfasst |
+| 2026-07-30 | IN_BEARBEITUNG | Root-Cause vor Codeänderung dokumentiert |
+| 2026-07-30 | BEHOBEN | Paketierungsstufe und Regressionstest ergänzt |
 
-## Übergabe: QA → FE/BE
+## Übergabe: FE/BE → QA
 
-**Nächster Befehl:** `/implement all second-brain`
+**Datum:** 2026-07-30
+**Von:** Frontend-/Backend-Agent (FE/BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 1`
 
-Root-Cause ist vor jeder Codeänderung auszufüllen; anschließend ist ein
-Installations-/Packaging-Regressionstest zu ergänzen.
+Der Regressionstest prüft den vollständigen Paketinhalt. QA soll zusätzlich das gebaute
+`dist/obsidian-plugin/` in einem synthetischen Vault installieren.

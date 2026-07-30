@@ -6,16 +6,23 @@ import type { IndexStatus } from '@second-brain/contracts';
 /**
  * Erstellt eine ungefährliche Vorschau ohne Secrets oder API-Keys.
  * @param vaultRoot Vom Nutzer eingegebener Vault-Root.
+ * @param sidecarEntry Absoluter Pfad zum installierten Sidecar.
  * @returns Claude-Desktop-Konfigurationsvorschau.
  * @throws Wirft nicht.
  */
-export function createConfigurationPreview(vaultRoot: string): Readonly<Record<string, unknown>> {
+export function createConfigurationPreview(
+  vaultRoot: string,
+  sidecarEntry: string
+): Readonly<Record<string, unknown>> {
   return {
     mcpServers: {
       'second-brain': {
         command: 'node',
-        args: ['<path-to-second-brain-sidecar>'],
-        env: { SECOND_BRAIN_VAULT_ROOT: vaultRoot }
+        args: [sidecarEntry],
+        env: {
+          SECOND_BRAIN_VAULT_ROOT: vaultRoot,
+          SECOND_BRAIN_CONTRACT_VERSION: '1.0.0'
+        }
       }
     }
   };
