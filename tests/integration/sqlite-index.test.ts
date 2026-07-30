@@ -65,4 +65,42 @@ describe('LocalIndex', () => {
     expect(await hashFile(source)).toBe(before);
     index.close();
   });
+
+  it('liest unveränderte Dateiinhalte bei einer Synchronisierung nicht erneut', async () => {
+    const root = await createVault();
+    let reads = 0;
+    const index = new LocalIndex(':memory:', async (path) => {
+      reads += 1;
+      return readFile(path);
+    });
+    await index.synchronize(root);
+    reads = 0;
+
+    const status = await index.synchronize(root);
+
+    expect(reads).toBe(0);
+    expect(status.changedFiles).toBe(0);
+    index.close();
+  });
+
+  it('behält nach fehlgeschlagenem Rebuild den letzten gültigen Index', async () => {
+    const root = await createVault();
+    let blocked = false;
+    const index = new LocalIndex(':memory:', async (path) => {
+      if (blocked) {
+        throw new Error('File is locked');
+      }
+      return readFile(path);
+    });
+    await index.synchronize(root);
+    blocked = true;
+    await expect(index.rebuild(root)).rejects.toThrow('locked');
+    blocked = false;
+
+    await expect(index.synchronize(root)).resolves.toMatchObject({
+      indexedFiles: 1,
+      changedFiles: 0
+    });
+    index.close();
+  });
 });

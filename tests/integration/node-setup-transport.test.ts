@@ -19,5 +19,13 @@ describe('NodeSetupTransport', () => {
       capability: 'setup:read',
       vaultReady: true
     });
-  });
+    await expect(transport.synchronizeIndex(vaultRoot)).resolves.toMatchObject({
+      state: 'ready',
+      indexedFiles: 0
+    });
+    await expect(transport.rebuildIndex(vaultRoot)).resolves.toMatchObject({
+      state: 'ready',
+      indexedFiles: 0
+    });
+  }, 15_000);
 });

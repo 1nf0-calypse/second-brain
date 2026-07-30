@@ -2,8 +2,13 @@
 // Artefakte:    US-000011; US-000005; UX-000001; UX-000002
 // Agent:        FE — 2026-07-30
 import { ItemView, WorkspaceLeaf } from 'obsidian';
-import { testClaudeConnection, type SetupTransport } from '../ipc/setup-client.js';
-import { createConfigurationPreview } from './presentation.js';
+import {
+  rebuildIndex,
+  synchronizeIndex,
+  testLocalService,
+  type SetupTransport
+} from '../ipc/setup-client.js';
+import { createConfigurationPreview, formatIndexStatus } from './presentation.js';
 
 export const SETUP_VIEW_TYPE = 'second-brain-setup';
 
@@ -56,13 +61,20 @@ export class SetupView extends ItemView {
     const configuration = root.createEl('pre', {
       text: 'Complete the vault step to generate the local configuration.'
     });
+    root.createEl('p', {
+      text: 'Claude Desktop: open Settings → Developer → Edit Config. Merge the shown mcpServers entry into the existing top-level JSON object. Do not paste it as a second JSON object.'
+    });
     const actions = root.createDiv({ cls: 'second-brain-actions' });
     const copyButton = actions.createEl('button', { text: 'Copy configuration' });
     const testButton = actions.createEl('button', {
-      text: 'Test Claude Desktop connection'
+      text: 'Test local service'
     });
+    const updateButton = actions.createEl('button', { text: 'Update local index' });
+    const rebuildButton = actions.createEl('button', { text: 'Rebuild local index' });
     copyButton.disabled = true;
     testButton.disabled = true;
+    updateButton.disabled = true;
+    rebuildButton.disabled = true;
 
     this.statusElement = root.createEl('p', {
       text: 'Setup not started.',
@@ -81,7 +93,9 @@ export class SetupView extends ItemView {
       configuration.textContent = JSON.stringify(config, null, 2);
       copyButton.disabled = this.vaultRoot.length === 0;
       testButton.disabled = this.vaultRoot.length === 0;
-      this.setStatus('Vault selected. Test the local connection to validate it.');
+      updateButton.disabled = this.vaultRoot.length === 0;
+      rebuildButton.disabled = this.vaultRoot.length === 0;
+      this.setStatus('Vault selected. Test the local service, then complete the Claude Desktop steps.');
     });
     copyButton.addEventListener('click', () => {
       void navigator.clipboard.writeText(configuration.textContent ?? '').then(() => {
@@ -90,6 +104,16 @@ export class SetupView extends ItemView {
     });
     testButton.addEventListener('click', () => {
       void this.runConnectionTest(testButton);
+    });
+    updateButton.addEventListener('click', () => {
+      void this.runIndexAction(updateButton, 'Updating local index…', () =>
+        synchronizeIndex(this.transport, this.vaultRoot)
+      );
+    });
+    rebuildButton.addEventListener('click', () => {
+      void this.runIndexAction(rebuildButton, 'Rebuilding local index…', () =>
+        rebuildIndex(this.transport, this.vaultRoot)
+      );
     });
     return Promise.resolve();
   }
@@ -103,15 +127,35 @@ export class SetupView extends ItemView {
    */
   private async runConnectionTest(testButton: HTMLButtonElement): Promise<void> {
     testButton.disabled = true;
-    this.setStatus('Testing Claude Desktop connection…');
+    this.setStatus('Testing local service…');
     try {
-      const result = await testClaudeConnection(this.transport, this.vaultRoot);
-      this.setStatus(result.message, true);
+      const result = await testLocalService(this.transport, this.vaultRoot);
+      this.setStatus(
+        `${result.message} Local service ready. Verify the connector separately in Claude Desktop.`,
+        true
+      );
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'The local service is not available.';
       this.setStatus(`${message} No files were changed.`, true);
     } finally {
       testButton.disabled = false;
+    }
+  }
+
+  private async runIndexAction(
+    button: HTMLButtonElement,
+    pendingMessage: string,
+    action: () => Promise<import('@second-brain/contracts').IndexStatus>
+  ): Promise<void> {
+    button.disabled = true;
+    this.setStatus(pendingMessage);
+    try {
+      this.setStatus(formatIndexStatus(await action()), true);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'The local index is not available.';
+      this.setStatus(`${message} The previous index and original files were preserved.`, true);
+    } finally {
+      button.disabled = false;
     }
   }
 

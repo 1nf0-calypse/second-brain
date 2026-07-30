@@ -71,6 +71,29 @@ superseded-by: —
 - Der Index funktioniert technisch, besitzt jedoch keinen verständlichen Nutzerablauf in
   Obsidian.
 
+## Root-Cause-Analyse vor Fix
+
+- **K-001:** Die Transportgrenze wurde fachlich falsch benannt: Der Setup-Dialog startet einen
+  eigenen Node-Prozess und kann damit nur die lokale Sidecar-Bereitschaft prüfen. Beschriftung und
+  Erfolgsmeldung beschrieben den gewünschten Endzustand in Claude Desktop statt der tatsächlich
+  beobachteten Fähigkeit.
+- **K-002 / Q-002:** Der UI-Slice wurde auf Setup und Handshake begrenzt. Für Indexstatus,
+  Aktualisierung und Neuaufbau fehlte ein interner Bedienvertrag; dadurch blieb
+  `formatIndexStatus()` unverdrahtet. Die Claude-Konfiguration wurde zudem als eigenständiges
+  JSON-Fragment angeboten, ohne den notwendigen Merge in ein bestehendes Top-Level-Objekt
+  ausdrücklich zu erklären.
+- **K-003 / T-001:** `rebuild()` kombinierte ein destruktives Löschen mit dem normalen
+  Synchronisationspfad. Es gab weder eine vorbereitete Momentaufnahme noch eine Transaktion, die
+  den letzten gültigen Index bei Lese- oder Schreibfehlern schützt. Die Tests deckten nur den
+  Erfolgsfall ab.
+- **P-001:** Der Fingerprint war die erste Vergleichsstufe. Deshalb musste jeder Dateiinhalt
+  gelesen werden, bevor unveränderte Dateien erkannt werden konnten; Größe und Änderungszeit
+  wurden nicht als günstiger Vorfilter verwendet.
+- **Q-001:** Die ESLint-Ignores berücksichtigten Build-Ausgaben in den Quellpaketen, aber nicht die
+  beim manuellen Test installierten, generierten Bundles im Test-Vault.
+- **T-002:** Der Dateizugriff war nicht injizierbar. Dadurch ließ sich ein gesperrter oder
+  unlesbarer Dateizugriff nicht plattformunabhängig und reproduzierbar testen.
+
 ## Teil 2: Technisches Code Review
 
 ### Dimension 1: Korrektheit

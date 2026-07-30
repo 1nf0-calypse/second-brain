@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { CONTRACT_VERSION } from '../../packages/contracts/src/index.js';
 import {
-  testClaudeConnection,
+  testLocalService,
   type SetupTransport
 } from '../../apps/obsidian-plugin/src/ipc/setup-client.js';
 import {
@@ -15,6 +15,8 @@ import {
 describe('setup flow', () => {
   it('meldet eine gültige read-only Verbindung', async () => {
     const transport: SetupTransport = {
+      synchronizeIndex: () => Promise.resolve({}),
+      rebuildIndex: () => Promise.resolve({}),
       testConnection: () =>
         Promise.resolve({
           contractVersion: CONTRACT_VERSION,
@@ -24,16 +26,18 @@ describe('setup flow', () => {
           message: 'Claude Desktop connected with read-only setup access.'
         })
     };
-    await expect(testClaudeConnection(transport, 'C:\\vault')).resolves.toMatchObject({
+    await expect(testLocalService(transport, 'C:\\vault')).resolves.toMatchObject({
       vaultReady: true
     });
   });
 
   it('propagiert Timeout und Offline-Fehler als sichere Fehlerzustände', async () => {
     const transport: SetupTransport = {
+      synchronizeIndex: () => Promise.resolve({}),
+      rebuildIndex: () => Promise.resolve({}),
       testConnection: () => Promise.reject(new Error('Claude Desktop did not respond in time.'))
     };
-    await expect(testClaudeConnection(transport, 'C:\\vault')).rejects.toThrow(
+    await expect(testLocalService(transport, 'C:\\vault')).rejects.toThrow(
       'did not respond in time'
     );
   });

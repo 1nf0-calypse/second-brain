@@ -27,6 +27,6 @@ export class SetupPage {
    */
   public async testConnection(vaultRoot: string): Promise<void> {
     await this.page.getByTestId('vault-root').fill(vaultRoot);
-    await this.page.getByRole('button', { name: 'Test Claude Desktop connection' }).click();
+    await this.page.getByRole('button', { name: 'Test local service' }).click();
   }
 }

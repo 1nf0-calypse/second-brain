@@ -10,6 +10,8 @@ export default tseslint.config(
       'dist/**',
       'coverage/**',
       'node_modules/**',
+      'testing/system-vault/.obsidian/plugins/**',
+      'testing/system-vault/.second-brain/**',
       'eslint.config.js',
       'scripts/**/*.mjs'
     ]

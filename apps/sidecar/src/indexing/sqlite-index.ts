@@ -6,9 +6,12 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import { extname, join, relative } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import type { IndexStatus } from '@second-brain/contracts';
-import { calculateDelta, type VaultFile } from '@second-brain/domain';
+import type { VaultFile } from '@second-brain/domain';
 
 const SUPPORTED_EXTENSIONS = new Set(['.md', '.txt']);
+type ReadContent = (path: string) => Promise<Buffer>;
+type VaultMetadata = Omit<VaultFile, 'fingerprint'>;
+type IndexedContent = VaultFile & { content: string };
 
 // Implementiert: US-000005 — Lokale inkrementelle Indexierung
 export class LocalIndex {
@@ -20,7 +23,10 @@ export class LocalIndex {
    * @throws Fehler des SQLite-Treibers.
    * @sideEffect Öffnet und migriert eine lokale SQLite-Datenbank.
    */
-  public constructor(databasePath: string) {
+  public constructor(
+    databasePath: string,
+    private readonly readContent: ReadContent = (path) => readFile(path)
+  ) {
     this.database = new DatabaseSync(databasePath);
     this.migrate();
   }
@@ -59,28 +65,40 @@ export class LocalIndex {
    * @sideEffect Liest Vault-Dateien und schreibt ausschließlich in den Index.
    */
   public async synchronize(vaultRoot: string): Promise<IndexStatus> {
-    const current = await scanVault(vaultRoot);
     const previous = this.readFiles();
-    const delta = calculateDelta(previous, current);
-    const upsert = this.database.prepare(`
-      INSERT INTO files(relative_path, fingerprint, modified_at, size, content)
-      VALUES (?, ?, ?, ?, ?)
-      ON CONFLICT(relative_path) DO UPDATE SET
-        fingerprint = excluded.fingerprint,
-        modified_at = excluded.modified_at,
-        size = excluded.size,
-        content = excluded.content
-    `);
-    const remove = this.database.prepare('DELETE FROM files WHERE relative_path = ?');
+    const metadata = await scanVaultMetadata(vaultRoot);
+    const previousByPath = new Map(previous.map((file) => [file.relativePath, file]));
+    const currentPaths = new Set(metadata.map((file) => file.relativePath));
+    const changed: IndexedContent[] = [];
+    const metadataOnly: VaultMetadata[] = [];
+
+    for (const file of metadata) {
+      const old = previousByPath.get(file.relativePath);
+      if (old && old.modifiedAt === file.modifiedAt && old.size === file.size) {
+        continue;
+      }
+      const content = await this.readContent(join(vaultRoot, file.relativePath));
+      const fingerprint = fingerprintOf(content);
+      if (!old || old.fingerprint !== fingerprint) {
+        changed.push({ ...file, fingerprint, content: content.toString('utf8') });
+      } else {
+        metadataOnly.push(file);
+      }
+    }
+    const deleted = previous
+      .filter((file) => !currentPaths.has(file.relativePath))
+      .map((file) => file.relativePath);
 
     this.database.exec('BEGIN IMMEDIATE');
     try {
-      for (const file of [...delta.created, ...delta.changed]) {
-        const content = await readFile(join(vaultRoot, file.relativePath), 'utf8');
-        upsert.run(file.relativePath, file.fingerprint, file.modifiedAt, file.size, content);
+      for (const file of changed) {
+        this.upsert(file);
       }
-      for (const deletedPath of delta.deleted) {
-        remove.run(deletedPath);
+      for (const file of metadataOnly) {
+        this.updateMetadata(file);
+      }
+      for (const deletedPath of deleted) {
+        this.database.prepare('DELETE FROM files WHERE relative_path = ?').run(deletedPath);
       }
       this.database.exec('COMMIT');
     } catch (error: unknown) {
@@ -90,9 +108,9 @@ export class LocalIndex {
 
     return {
       state: 'ready',
-      indexedFiles: current.length,
-      changedFiles: delta.created.length + delta.changed.length,
-      deletedFiles: delta.deleted.length,
+      indexedFiles: metadata.length,
+      changedFiles: changed.length,
+      deletedFiles: deleted.length,
       originalFilesUnchanged: true,
       message: 'Index ready. Original files unchanged.'
     };
@@ -106,8 +124,36 @@ export class LocalIndex {
    * @sideEffect Löscht und rekonstruiert ausschließlich Indexzeilen.
    */
   public async rebuild(vaultRoot: string): Promise<IndexStatus> {
-    this.database.exec('DELETE FROM files');
-    return this.synchronize(vaultRoot);
+    const metadata = await scanVaultMetadata(vaultRoot);
+    const snapshot: IndexedContent[] = [];
+    for (const file of metadata) {
+      const content = await this.readContent(join(vaultRoot, file.relativePath));
+      snapshot.push({
+        ...file,
+        fingerprint: fingerprintOf(content),
+        content: content.toString('utf8')
+      });
+    }
+
+    this.database.exec('BEGIN IMMEDIATE');
+    try {
+      this.database.exec('DELETE FROM files');
+      for (const file of snapshot) {
+        this.upsert(file);
+      }
+      this.database.exec('COMMIT');
+    } catch (error: unknown) {
+      this.database.exec('ROLLBACK');
+      throw error;
+    }
+    return {
+      state: 'ready',
+      indexedFiles: snapshot.length,
+      changedFiles: snapshot.length,
+      deletedFiles: 0,
+      originalFilesUnchanged: true,
+      message: 'Index rebuilt. Original files unchanged.'
+    };
   }
 
   /**
@@ -131,6 +177,24 @@ export class LocalIndex {
         size: Number(row['size'])
       }));
   }
+
+  private upsert(file: IndexedContent): void {
+    this.database.prepare(`
+      INSERT INTO files(relative_path, fingerprint, modified_at, size, content)
+      VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT(relative_path) DO UPDATE SET
+        fingerprint = excluded.fingerprint,
+        modified_at = excluded.modified_at,
+        size = excluded.size,
+        content = excluded.content
+    `).run(file.relativePath, file.fingerprint, file.modifiedAt, file.size, file.content);
+  }
+
+  private updateMetadata(file: VaultMetadata): void {
+    this.database
+      .prepare('UPDATE files SET modified_at = ?, size = ? WHERE relative_path = ?')
+      .run(file.modifiedAt, file.size, file.relativePath);
+  }
 }
 
 /**
@@ -140,12 +204,20 @@ export class LocalIndex {
  * @throws Dateisystemfehler bei nicht lesbaren Einträgen.
  */
 export async function scanVault(vaultRoot: string): Promise<VaultFile[]> {
-  const files: VaultFile[] = [];
+  const files = await scanVaultMetadata(vaultRoot);
+  return Promise.all(files.map(async (file) => {
+    const content = await readFile(join(vaultRoot, file.relativePath));
+    return { ...file, fingerprint: fingerprintOf(content) };
+  }));
+}
+
+async function scanVaultMetadata(vaultRoot: string): Promise<VaultMetadata[]> {
+  const files: VaultMetadata[] = [];
   await walk(vaultRoot, vaultRoot, files);
   return files.sort((left, right) => left.relativePath.localeCompare(right.relativePath));
 }
 
-async function walk(root: string, directory: string, output: VaultFile[]): Promise<void> {
+async function walk(root: string, directory: string, output: VaultMetadata[]): Promise<void> {
   const entries = await readdir(directory, { withFileTypes: true });
   for (const entry of entries) {
     if (entry.name === '.obsidian' || entry.name === '.second-brain') {
@@ -158,13 +230,16 @@ async function walk(root: string, directory: string, output: VaultFile[]): Promi
     if (entry.isDirectory()) {
       await walk(root, absolutePath, output);
     } else if (entry.isFile() && SUPPORTED_EXTENSIONS.has(extname(entry.name).toLowerCase())) {
-      const [content, metadata] = await Promise.all([readFile(absolutePath), stat(absolutePath)]);
+      const metadata = await stat(absolutePath);
       output.push({
         relativePath: relative(root, absolutePath),
-        fingerprint: createHash('sha256').update(content).digest('hex'),
         modifiedAt: Math.trunc(metadata.mtimeMs),
         size: metadata.size
       });
     }
   }
+}
+
+function fingerprintOf(content: Buffer): string {
+  return createHash('sha256').update(content).digest('hex');
 }

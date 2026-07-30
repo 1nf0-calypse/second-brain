@@ -21,10 +21,24 @@ export class NodeSetupTransport implements SetupTransport {
    * @sideEffect Startet einen lokalen Node-Prozess; verändert keine Vault-Dateien.
    */
   public testConnection(vaultRoot: string): Promise<unknown> {
+    return this.run('--setup-handshake', vaultRoot);
+  }
+
+  /** Aktualisiert den lokalen Index in einem einmaligen Sidecar-Prozess. */
+  public synchronizeIndex(vaultRoot: string): Promise<unknown> {
+    return this.run('--sync-index', vaultRoot);
+  }
+
+  /** Baut den lokalen Index in einem einmaligen Sidecar-Prozess atomar neu auf. */
+  public rebuildIndex(vaultRoot: string): Promise<unknown> {
+    return this.run('--rebuild-index', vaultRoot);
+  }
+
+  private run(operation: string, vaultRoot: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
       execFile(
         this.nodeExecutable,
-        [this.sidecarEntry, '--setup-handshake'],
+        [this.sidecarEntry, operation],
         {
           timeout: CONNECTION_TIMEOUT_MS,
           windowsHide: true,
@@ -38,7 +52,7 @@ export class NodeSetupTransport implements SetupTransport {
           if (error) {
             const message =
               error.killed || error.signal
-                ? 'Claude Desktop did not respond in time.'
+                ? 'The local service did not respond in time.'
                 : 'The local service is not available.';
             reject(new Error(message));
             return;
@@ -47,7 +61,7 @@ export class NodeSetupTransport implements SetupTransport {
             resolve(JSON.parse(stdout.trim()) as unknown);
           } catch {
             reject(
-              new Error('Claude Desktop and the local service use incompatible contract versions.')
+              new Error('The local service returned an incompatible response.')
             );
           }
         }

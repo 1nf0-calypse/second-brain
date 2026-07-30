@@ -4,12 +4,12 @@
 import { expect, test } from '@playwright/test';
 import { SetupPage } from './pages/setup.page.js';
 
-test('Claude Desktop setup happy path', async ({ page }) => {
+test('local service setup happy path', async ({ page }) => {
   const setup = new SetupPage(page);
   await setup.goto();
   await setup.testConnection('C:\\synthetic-vault');
   await expect(page.getByRole('status')).toHaveText(
-    'Claude Desktop connected with read-only setup access.'
+    'Local service ready. Verify the connector separately in Claude Desktop.'
   );
   await expect(page.getByRole('status')).toBeFocused();
 });
@@ -27,8 +27,10 @@ test('setup controls have accessible names and a live status', async ({ page }) 
   await expect(page.getByTestId('vault-root')).toHaveAccessibleName('Obsidian vault folder');
   await expect(page.getByTestId('copy')).toHaveAccessibleName('Copy configuration');
   await expect(page.getByTestId('test')).toHaveAccessibleName(
-    'Test Claude Desktop connection'
+    'Test local service'
   );
+  await expect(page.getByTestId('update')).toHaveAccessibleName('Update local index');
+  await expect(page.getByTestId('rebuild')).toHaveAccessibleName('Rebuild local index');
   await expect(page.getByRole('status')).toHaveAttribute('aria-live', 'polite');
 });
 

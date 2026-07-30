@@ -32,6 +32,13 @@ export default class SecondBrainPlugin extends Plugin {
     this.addRibbonIcon('brain-circuit', 'Set up Second Brain', () => {
       void this.openSetup();
     });
+    this.addCommand({
+      id: 'open-setup',
+      name: 'Open setup',
+      callback: () => {
+        void this.openSetup();
+      }
+    });
   }
 
   /**
