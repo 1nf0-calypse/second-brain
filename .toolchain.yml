@@ -78,7 +78,7 @@ artifacts:
     SP: 4
     TP: 4
     TR: 6
-    RV: 3
+    RV: 4
     BUG: 4
     DEBT: 2
     SRP: 1

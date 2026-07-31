@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: REVIEW
+Letzte Aktualisierung: 2026-07-31 | Phase: DOCUMENTATION
 
 ## Aktive Artefakte
 
@@ -45,6 +45,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: REVIEW
 | `testing/BUG-000003-scope-error-code-generic.md` | BUG-000003 | 1.2 | VERIFIZIERT | QA | Scope-Verletzung wird über CLI, MCP und Plugin stabil typisiert |
 | `reviews/RV-000001-sprint-1.md` | RV-000001 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme conditional; acht MAJOR-Funde vor Merge |
 | `reviews/RV-000002-sprint-1-rereview.md` | RV-000002 | 1.0 | APPROVED | RV | Beide Stories nach Plugin-Neustart akzeptiert; Merge freigegeben |
+| `reviews/RV-000003-sprint-2.md` | RV-000003 | 1.0 | APPROVED | RV | Volltextsuche, Quellen und Scope-Schutz nativ abgenommen; Merge freigegeben |
 | `docs/DOC-000001-claude-desktop-setup.md` | DOC-000001 | 1.0 | APPROVED | MW | Claude Desktop lokal verbinden und Fehler beheben |
 | `docs/DOC-000002-local-index.md` | DOC-000002 | 1.0 | APPROVED | MW | Lokalen Index aktualisieren und sicher neu aufbauen |
 | `docs/GS-000001.md` | GS-000001 | 1.0 | APPROVED | MW | Einstieg in Installation, Verbindung und Index |
@@ -78,6 +79,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: REVIEW
 | 2026-07-31 | Gate 6 (Sprint 2 Implementation → Testing) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 7 (Sprint 2 Testing → Review) | FAIL | 1 | 0 | 0 |
 | 2026-07-31 | Gate 7 (Sprint 2 Bugfix-Nachlauf) | CONDITIONAL / REVIEW | 0 | 2 | 0 |
+| 2026-07-31 | Gate 8 (Sprint 2 Review) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
