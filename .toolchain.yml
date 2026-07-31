@@ -82,10 +82,10 @@ artifacts:
     BUG: 4
     DEBT: 2
     SRP: 1
-    DOC: 3
-    RN: 2
+    DOC: 4
+    RN: 3
     GS: 2
-    FAQ: 1
+    FAQ: 2
     RETRO: 2
     IMPD: 1
     PC: 2
