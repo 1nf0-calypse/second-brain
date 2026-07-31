@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: DONE
+Letzte Aktualisierung: 2026-07-31 | Phase: RELEASED
 
 ## Aktive Artefakte
 
@@ -84,6 +84,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: DONE
 | 2026-07-31 | Gate 7 (Sprint 2 Bugfix-Nachlauf) | CONDITIONAL / REVIEW | 0 | 2 | 0 |
 | 2026-07-31 | Gate 8 (Sprint 2 Review) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 9 (Sprint 2 Documentation → Done) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 10 (Sprint 2 Release → Released) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
