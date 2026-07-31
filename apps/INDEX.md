@@ -1,8 +1,8 @@
 # Apps — Index
 
-Letzte Aktualisierung: 2026-07-30
+Letzte Aktualisierung: 2026-07-31
 
 | Pfad | Zweck | Artefakte |
 |---|---|---|
-| `sidecar/` | Lokaler MCP-Sidecar, Policy und Indexierung | US-000011, US-000005 |
-| `obsidian-plugin/` | Native Setup- und Indexstatus-Oberfläche | US-000011, US-000005 |
+| `sidecar/` | Lokaler MCP-Sidecar, Policy, Indexierung und Volltextsuche | US-000011, US-000005, US-000012 |
+| `obsidian-plugin/` | Native Setup-, Indexstatus- und Search-Oberfläche | US-000011, US-000005, US-000012 |

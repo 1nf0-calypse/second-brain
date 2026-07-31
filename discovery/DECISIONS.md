@@ -1,7 +1,7 @@
 ---
 id: DECISIONS
 title: Entscheidungsprotokoll — Second Brain
-version: 1.1
+version: 1.2
 status: ACTIVE
 author-agent: PM (Product Manager)
 date: 2026-07-30
@@ -17,6 +17,15 @@ Leichtgewichtiges, chronologisches Protokoll aller wesentlichen Entscheidungen i
 ---
 
 ## Aktive Entscheidungen
+
+### D-000007 — Nutzerbegriffe und Dokumentationsumfang für Sprint 2
+
+**Datum:** 2026-07-31 | **Kategorie:** Dokumentation | **Status:** ACTIVE
+Die Dokumentation verwendet **Volltextsuche**, **Quelle**, **Fundzeile**, **Textauszug** und
+**nicht als Text lesbarer Anhang** als Nutzerbegriffe. Sie benennt die fehlende semantische
+Suche und die noch notwendige lokale Plugin-Installation ausdrücklich. Ein veralteter
+Claude-Desktop-Pfad wird durch Ersetzen ausschließlich des vorhandenen `second-brain`-Eintrags
+behoben; andere Serverkonfigurationen bleiben unberührt.
 
 ### D-000006 — Nutzerbegriffe und Dokumentationsumfang für Sprint 1
 
@@ -62,6 +71,7 @@ vollständigen Frontend-Ausarbeitung priorisiert.
 
 | ID | Datum | Kategorie | Kurztitel | Agent | Status |
 |----|-------|---------|---------|-------|--------|
+| D-000007 | 2026-07-31 | Dokumentation | Nutzerbegriffe und Sprint-2-Umfang | MW | ACTIVE |
 | D-000006 | 2026-07-31 | Dokumentation | Nutzerbegriffe und Sprint-1-Umfang | MW | ACTIVE |
 | D-000005 | 2026-07-30 | Lizenz | MIT als Projektlizenz | PM | ACTIVE |
 | D-000004 | 2026-07-30 | Datenschutz | Transparenter externer KI-Datenfluss | PM | ACTIVE |
@@ -87,5 +97,6 @@ Entscheidungen, die revidiert oder überschrieben wurden, bleiben hier sichtbar.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.2 | 2026-07-31 | D-000007 zu Suche, Quellen und lokaler Installation ergänzt | MW |
 | 1.1 | 2026-07-31 | D-000006 zu Terminologie und Dokumentationsumfang ergänzt | MW |
 | 1.0 | 2026-07-30 | Initiale Version | PM |

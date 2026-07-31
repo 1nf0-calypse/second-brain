@@ -1,7 +1,7 @@
 ---
 id: DOC-000001
 title: Claude Desktop lokal verbinden
-version: 1.0
+version: 1.1
 status: APPROVED
 author-agent: MW (Manual Writer)
 date: 2026-07-31
@@ -86,6 +86,12 @@ vollständige Plugin-Paket erneut und starte Obsidian neu.
 Prüfe, ob `mcpServers` nur einmal im obersten JSON-Objekt vorkommt, die Datei gültiges JSON
 enthält und Claude Desktop nach dem Speichern vollständig neu gestartet wurde.
 
+**Problem: Der Server ist eingetragen, verweist aber auf einen alten Test-Vault.**
+Öffne in Obsidian **Second Brain MCP: Open setup**, trage den aktuellen Vault ein und wähle
+**Copy configuration**. Ersetze in der Claude-Desktop-Konfiguration nur den vorhandenen
+Eintrag `second-brain` durch diesen aktuellen Eintrag. Bewahre andere Server und Einstellungen.
+Beende Claude Desktop danach vollständig und starte es neu.
+
 **Problem: Ein Zugriff verlässt den freigegebenen Vault.**
 Second Brain blockiert absolute Fremdpfade, `..`-Pfade und Verknüpfungen nach außerhalb.
 Wähle einen Pfad, der tatsächlich innerhalb des freigegebenen Vaults liegt.
@@ -129,4 +135,5 @@ Die markierten Screenshots vor einer öffentlichen Veröffentlichung ergänzen.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.1 | 2026-07-31 | Recovery für einen veralteten Claude-Desktop-Serverpfad ergänzt | MW |
 | 1.0 | 2026-07-31 | Initiale, Gate-9-geprüfte Version | MW |

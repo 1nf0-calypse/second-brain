@@ -1,6 +1,6 @@
 // Beschreibung: Orchestriert den read-only Setup-Handshake für Claude Desktop.
 // Artefakte:    US-000011; ADR-000001; ADR-000004
-// Agent:        BE — 2026-07-30
+// Agent:        BE — 2026-07-31
 import {
   CONTRACT_VERSION,
   SetupRequestSchema,
@@ -25,7 +25,7 @@ export async function performSetupHandshake(input: unknown): Promise<SetupRespon
     client: 'claude-desktop',
     capability: 'setup:read',
     vaultReady: true,
-    message: 'Claude Desktop connected with read-only setup access.'
+    message: 'Local service ready with read-only access.'
   });
 }
 

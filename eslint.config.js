@@ -13,7 +13,8 @@ export default tseslint.config(
       'testing/system-vault/.obsidian/plugins/**',
       'testing/system-vault/.second-brain/**',
       'eslint.config.js',
-      'scripts/**/*.mjs'
+      'scripts/**/*.mjs',
+      'tests/performance/**/*.mjs'
     ]
   },
   eslint.configs.recommended,

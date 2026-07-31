@@ -8,17 +8,17 @@ test('local service setup happy path', async ({ page }) => {
   const setup = new SetupPage(page);
   await setup.goto();
   await setup.testConnection('C:\\synthetic-vault');
-  await expect(page.getByRole('status')).toHaveText(
+  await expect(page.getByTestId('setup-status')).toHaveText(
     'Local service ready. Verify the connector separately in Claude Desktop.'
   );
-  await expect(page.getByRole('status')).toBeFocused();
+  await expect(page.getByTestId('setup-status')).toBeFocused();
 });
 
 test('invalid vault has a concrete recovery message', async ({ page }) => {
   const setup = new SetupPage(page);
   await setup.goto();
   await setup.testConnection('invalid');
-  await expect(page.getByRole('status')).toContainText('No files were changed.');
+  await expect(page.getByTestId('setup-status')).toContainText('No files were changed.');
 });
 
 test('setup controls have accessible names and a live status', async ({ page }) => {
@@ -31,7 +31,7 @@ test('setup controls have accessible names and a live status', async ({ page }) 
   );
   await expect(page.getByTestId('update')).toHaveAccessibleName('Update local index');
   await expect(page.getByTestId('rebuild')).toHaveAccessibleName('Rebuild local index');
-  await expect(page.getByRole('status')).toHaveAttribute('aria-live', 'polite');
+  await expect(page.getByTestId('setup-status')).toHaveAttribute('aria-live', 'polite');
 });
 
 test('setup explains safe JSON merge and exposes index actions', async ({ page }) => {
@@ -41,10 +41,10 @@ test('setup explains safe JSON merge and exposes index actions', async ({ page }
   await page.getByTestId('vault-root').fill('C:\\synthetic-vault');
 
   await page.getByTestId('update').click();
-  await expect(page.getByRole('status')).toContainText('0 changed');
+  await expect(page.getByTestId('setup-status')).toContainText('0 changed');
   await page.getByTestId('rebuild').click();
-  await expect(page.getByRole('status')).toContainText('Index rebuilt');
-  await expect(page.getByRole('status')).toContainText('Original files unchanged');
+  await expect(page.getByTestId('setup-status')).toContainText('Index rebuilt');
+  await expect(page.getByTestId('setup-status')).toContainText('Original files unchanged');
 });
 
 test('320 px pane keeps both recovery actions visible', async ({ page }) => {
@@ -56,4 +56,30 @@ test('320 px pane keeps both recovery actions visible', async ({ page }) => {
   await expect(page.getByTestId('test')).toBeVisible();
   await expect(page.getByTestId('update')).toBeVisible();
   await expect(page.getByTestId('rebuild')).toBeVisible();
+});
+
+test('local search exposes citation, line and degraded semantic status', async ({ page }) => {
+  const setup = new SetupPage(page);
+  await setup.goto();
+  await page.getByTestId('search-query').fill('citation');
+  await page.getByTestId('search').click();
+
+  await expect(page.getByTestId('search-status')).toContainText(
+    'Semantic search is unavailable'
+  );
+  await expect(page.getByRole('button', { name: 'Alpha.md:3' })).toBeVisible();
+  await expect(page.getByText('Match: full-text; extraction: extracted')).toBeVisible();
+  await expect(page.getByTestId('search-status')).toBeFocused();
+});
+
+test('local search presents accessible empty and no-results recovery states', async ({ page }) => {
+  const setup = new SetupPage(page);
+  await setup.goto();
+  await expect(page.getByTestId('search-query')).toHaveAccessibleName('Search your vault');
+  await page.getByTestId('search').click();
+  await expect(page.getByTestId('search-status')).toContainText('Enter a search phrase');
+
+  await page.getByTestId('search-query').fill('missing');
+  await page.getByTestId('search').click();
+  await expect(page.getByTestId('search-status')).toContainText('No results found');
 });

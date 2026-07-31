@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
+Letzte Aktualisierung: 2026-07-31 | Phase: DONE
 
 ## Aktive Artefakte
 
@@ -34,18 +34,25 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 | `sprints/SP-000003-sprint-2-search.md` | SP-000003 | 1.0 | APPROVED | BA+FE+BE | Sprint-2-Backlog für Volltextsuche, Quellen und Sprint-1-Schuld |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
+| `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `testing/TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |
+| `testing/TR-000004-sprint-2.md` | TR-000004 | 1.0 | REJECTED | QA | Sprint-2-Testlauf; Gate 7 wegen BUG-000003 und offener Desktop-P0-Pfade fehlgeschlagen |
+| `testing/TR-000005-sprint-2-retest.md` | TR-000005 | 1.0 | CONDITIONAL | QA | BUG-000003 verifiziert; automatisiert grün, native Desktop-Abnahme offen |
 | `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
 | `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
+| `testing/BUG-000003-scope-error-code-generic.md` | BUG-000003 | 1.2 | VERIFIZIERT | QA | Scope-Verletzung wird über CLI, MCP und Plugin stabil typisiert |
 | `reviews/RV-000001-sprint-1.md` | RV-000001 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme conditional; acht MAJOR-Funde vor Merge |
 | `reviews/RV-000002-sprint-1-rereview.md` | RV-000002 | 1.0 | APPROVED | RV | Beide Stories nach Plugin-Neustart akzeptiert; Merge freigegeben |
-| `retros/DEBT-000001-sprint-1-review-followups.md` | DEBT-000001 | 1.0 | ACTIVE | RV | Akzeptierte Transport-, Timeout- und Codehygiene-Folgearbeiten |
-| `docs/DOC-000001-claude-desktop-setup.md` | DOC-000001 | 1.0 | APPROVED | MW | Claude Desktop lokal verbinden und Fehler beheben |
+| `reviews/RV-000003-sprint-2.md` | RV-000003 | 1.0 | APPROVED | RV | Volltextsuche, Quellen und Scope-Schutz nativ abgenommen; Merge freigegeben |
+| `docs/DOC-000001-claude-desktop-setup.md` | DOC-000001 | 1.1 | APPROVED | MW | Claude Desktop lokal verbinden und veralteten Serverpfad ersetzen |
 | `docs/DOC-000002-local-index.md` | DOC-000002 | 1.0 | APPROVED | MW | Lokalen Index aktualisieren und sicher neu aufbauen |
+| `docs/DOC-000003-volltextsuche-und-quellen.md` | DOC-000003 | 1.0 | APPROVED | MW | Volltextsuche, Quellenprüfung und Recovery |
 | `docs/GS-000001.md` | GS-000001 | 1.0 | APPROVED | MW | Einstieg in Installation, Verbindung und Index |
 | `docs/RN-000001-sprint-1.md` | RN-000001 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 1 |
+| `docs/RN-000002-sprint-2.md` | RN-000002 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 2 |
+| `docs/FAQ-000001-suche-und-verbindung.md` | FAQ-000001 | 1.0 | APPROVED | MW | Häufige Fragen zu Installation, Verbindung und Suche |
 | `retros/RETRO-000001-sprint-1.md` | RETRO-000001 | 1.0 | REVIEW | AC | Sprint-1-Retrospektive |
 | `retros/PC-000001-implicit-approval-integrated-analysis.md` | PC-000001 | 1.1 | ACTIVE | AC | Implizite Freigabe und integrierte Analyse, umgesetzt in Tool Chain v2.11 |
 
@@ -72,18 +79,24 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 | 2026-07-31 | Gate 10 (Release → Released) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5 (Sprint 2 Refinement → Implementation) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5.5 (`/implement`-Preflight, SP-000003) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 6 (Sprint 2 Implementation → Testing) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 7 (Sprint 2 Testing → Review) | FAIL | 1 | 0 | 0 |
+| 2026-07-31 | Gate 7 (Sprint 2 Bugfix-Nachlauf) | CONDITIONAL / REVIEW | 0 | 2 | 0 |
+| 2026-07-31 | Gate 8 (Sprint 2 Review) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 9 (Sprint 2 Documentation → Done) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
-| Screenshot-Aufnahmen | — | MINOR | 6 markierte Produktaufnahmen vor öffentlicher Veröffentlichung |
+| Screenshot-Aufnahmen | — | MINOR | 8 markierte Produktaufnahmen vor öffentlicher Veröffentlichung |
 
 ## Archiv
 
 | Datei | ID | Status | Archiviert |
 |-------|-----|--------|-----------|
 | `sprints/SP-000001-sprint-1-foundation.md` | SP-000001 | SUPERSEDED | 2026-07-30 |
+| `retros/DEBT-000001-sprint-1-review-followups.md` | DEBT-000001 | ARCHIVED | 2026-07-31 |
 
 ---
 
@@ -154,3 +167,41 @@ Keine Implementierungs-BLOCKER; der echte Obsidian-/Claude-Desktop-P0-Pfad bleib
 ### Nicht-Ziele
 
 Keine Erweiterung auf ChatGPT, Mistral, Suche oder Mutationen.
+
+---
+
+## Übergabe: FE/BE → QA — Sprint 2
+
+**Datum:** 2026-07-31
+**Von:** Frontend Developer und Backend Developer (FE/BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-plan second-brain 2`
+
+### Übergebene Artefakte
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| US-000012 | implementiert | `apps/sidecar/src/search/`, `apps/obsidian-plugin/src/ui/search-view.ts` | Volltext, Quellen, Scope und sichtbare Degradation |
+| API-Vertrag | fertig | `packages/contracts/src/index.ts` | Search-, Result-, Citation- und Read-Laufzeitschemas |
+| DEBT-000001 | ARCHIVED | `retros/DEBT-000001-sprint-1-review-followups.md` | Alle vier Sprint-1-Folgearbeiten gelöst |
+| Tests | bestanden | `tests/` | 32 Vitest- und 7 headed Playwright-Tests |
+
+### Kritische Informationen für Empfänger
+
+- FTS5 wurde unter Node.js 24.15.0 auf Windows ausführbar verifiziert.
+- Semantische Suche ist absichtlich nicht enthalten und erscheint als degradierter Zustand.
+- Binäranhänge liefern nur sichere Metadaten mit `not_extracted`, niemals erfundenen Inhalt.
+- Suche und Lesen sind read-only und erzwingen die kanonische Vault-Root-Policy.
+
+### Offene Fragen (vererbt)
+
+Keine offenen Implementierungs-BLOCKER oder MAJOR-Fragen.
+
+### Nicht-Ziele
+
+Semantische Suche, OCR, Graph, Mutationen, zusätzliche MCP-Clients und Android.
+
+### Empfehlungen
+
+QA soll echte Obsidian- und Claude-Desktop-Pfade, Quellenöffnung, 320 px/200 % Zoom,
+Abbruch/Timeout sowie Vault-Hashes vor und nach Suche prüfen.
