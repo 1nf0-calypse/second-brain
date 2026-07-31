@@ -18,12 +18,14 @@ const TOKEN_TTL_MS = 10 * 60 * 1_000;
 const MAX_PENDING_PREVIEWS = 20;
 type Clock = () => number;
 type MutationFileOperations = {
+  read(path: string): Promise<string | null>;
   write(path: string, content: string): Promise<void>;
   remove(path: string): Promise<void>;
   restore(path: string, content: string | null): Promise<void>;
 };
 
 const defaultFileOperations: MutationFileOperations = {
+  read: readExistingFile,
   write: atomicWrite,
   remove: (path) => rm(path),
   restore: restoreFile
@@ -117,20 +119,21 @@ export class MutationService {
       );
     }
     const target = await this.resolveMarkdownTarget(preview.relativePath);
-    const current = await this.readExisting(target.absolutePath);
-    if (hashNullable(current) !== preview.beforeHash) {
-      throw new MutationError(
-        'MUTATION_CONFLICT',
-        'The note changed after the preview. Create a new preview.'
-      );
-    }
     try {
+      const current = await this.readExisting(target.absolutePath);
+      if (hashNullable(current) !== preview.beforeHash) {
+        throw new MutationError(
+          'MUTATION_CONFLICT',
+          'The note changed after the preview. Create a new preview.'
+        );
+      }
       if (preview.afterContent === null) {
         await this.fileOperations.remove(target.absolutePath);
       } else {
         await this.fileOperations.write(target.absolutePath, preview.afterContent);
       }
     } catch (error: unknown) {
+      if (error instanceof MutationError) throw error;
       throw new MutationError(
         'MUTATION_WRITE_FAILED',
         'The note could not be replaced. Your vault remains consistent. Create a new preview and try again.',
@@ -377,12 +380,16 @@ export class MutationService {
   }
 
   private async readExisting(path: string): Promise<string | null> {
-    try {
-      return await readFile(path, 'utf8');
-    } catch (error: unknown) {
-      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
-      throw error;
-    }
+    return this.fileOperations.read(path);
+  }
+}
+
+async function readExistingFile(path: string): Promise<string | null> {
+  try {
+    return await readFile(path, 'utf8');
+  } catch (error: unknown) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
+    throw error;
   }
 }
 

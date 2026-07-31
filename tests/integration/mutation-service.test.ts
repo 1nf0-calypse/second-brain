@@ -176,6 +176,7 @@ describe('MutationService', () => {
       join(root, '.second-brain', 'index.sqlite'),
       Date.now,
       {
+        read: (path) => readFile(path, 'utf8'),
         write: () => Promise.reject(Object.assign(new Error('locked'), { code: 'EBUSY' })),
         remove: () => Promise.resolve(),
         restore: () => Promise.resolve()
@@ -187,6 +188,51 @@ describe('MutationService', () => {
       code: 'MUTATION_WRITE_FAILED'
     });
     expect(await readFile(join(root, 'Locked.md'), 'utf8')).toBe('before');
+    service.close();
+  });
+
+  it('types an exclusive lock during the pre-write consistency read', async () => {
+    const { root, service: fixtureService } = await fixture();
+    fixtureService.close();
+    await writeFile(join(root, 'Locked.md'), 'before');
+    let reads = 0;
+    const service = new MutationService(
+      root,
+      join(root, '.second-brain', 'index.sqlite'),
+      Date.now,
+      {
+        read: (path) => {
+          reads += 1;
+          return reads === 1
+            ? readFile(path, 'utf8')
+            : Promise.reject(Object.assign(new Error('locked'), { code: 'EBUSY' }));
+        },
+        write: (path, content) => writeFile(path, content),
+        remove: (path) => rm(path),
+        restore: (path, content) => content === null
+          ? rm(path, { force: true })
+          : writeFile(path, content)
+      }
+    );
+    const preview = await service.prepare('Locked.md', 'after');
+
+    await expect(service.confirm(preview.token)).rejects.toMatchObject({
+      code: 'MUTATION_WRITE_FAILED'
+    });
+    expect(await readFile(join(root, 'Locked.md'), 'utf8')).toBe('before');
+    service.close();
+  });
+
+  it('restores the original update when the audit insert fails', async () => {
+    const { root, service } = await fixture();
+    await writeFile(join(root, 'Note.md'), 'before');
+    const preview = await service.prepare('Note.md', 'after');
+    const database = new DatabaseSync(join(root, '.second-brain', 'index.sqlite'));
+    database.exec('DROP TABLE mutation_audit');
+    database.close();
+
+    await expect(service.confirm(preview.token)).rejects.toThrow();
+    expect(await readFile(join(root, 'Note.md'), 'utf8')).toBe('before');
     service.close();
   });
 

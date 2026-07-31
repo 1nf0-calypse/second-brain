@@ -1,8 +1,8 @@
 ---
 id: BUG-000005
 title: Bug — Windows-Dateisperre wird als Sidecar offline gemeldet
-version: 1.3
-status: OFFEN
+version: 1.5
+status: BEHOBEN
 author-agent: QA (QA Engineer)
 date: 2026-07-31
 project: second-brain
@@ -70,26 +70,30 @@ Recovery-Zustand des sicherheitskritischen P0-Schreibpfads ist sachlich falsch.
 
 > Von BE vor jeder Codeänderung auszufüllen.
 
-**Direkte Ursache:** `atomicWrite()` reicht einen Windows-`EBUSY`/`EPERM`-Fehler nach
-Temp-Bereinigung unverändert weiter. `toPublicErrorResponse()` kennt diesen untypisierten
-Dateisystemfehler nicht und bildet jeden unbekannten Fehler pauschal auf `SIDECAR_OFFLINE` ab.
+**Direkte Ursache:** Der erste Fix typisiert Fehler aus `atomicWrite()`/`rm()`. Ein exklusives
+Windows-Handle blockiert aber bereits `readExisting()` in `confirm()` bei der TOCTOU-
+Hashprüfung. Dieser Leseaufruf liegt vor dem geschützten Dateioperationsblock; sein
+`EBUSY`/`EPERM` erreicht `toPublicErrorResponse()` untypisiert und wird zu `SIDECAR_OFFLINE`.
 
-**Zugrundeliegende (systemische) Ursache:** Die Mutationsdomäne besitzt keinen eigenen
-öffentlichen Fehlercode für einen fehlgeschlagenen, aber konsistent abgebrochenen Write.
-Der generische Connectivity-Fallback verdeckt deshalb fachliche lokale I/O-Fehler.
+**Zugrundeliegende (systemische) Ursache:** Die Fehlergrenze wurde nach Dateisystemoperation
+(Write/Delete) statt nach fachlicher Confirm-Transaktion gezogen. Die zwingende Pre-Write-
+Validierung gehört zum selben konsistent abgebrochenen Mutationsversuch, war aber nicht in
+der domänenspezifischen Übersetzung enthalten.
 
-**Andere Stellen mit demselben Muster:** Create, Update und Rollback verwenden denselben
-`atomicWrite`-/`rm`-Pfad und benötigen dieselbe typisierte Fehlergrenze.
+**Andere Stellen mit demselben Muster:** Update, Create und Rollback laufen alle durch
+`confirm()` und dessen erneutes Lesen. Prepare-Lesefehler bleiben bewusst außerhalb: Dort
+existiert noch kein beanspruchtes Confirmation-Token und kein Commitversuch.
 
 **Ausgeschlossene Ursachen:** Der Sidecar ist erreichbar; Originaldatei und atomare
 Temp-Bereinigung funktionieren.
 
 ## Fix-Ansatz
 
-Der versionierte Vertrag erhält `MUTATION_WRITE_FAILED`. `MutationService.confirm()` fängt
-Dateisystemfehler ausschließlich um den atomaren Write/Delete ab und wandelt sie in einen
-`MutationError` mit konsistenter Recovery-Sprache um. Ein Windows-Lock-Integrationstest
-belegt Originalerhalt, Temp-Bereinigung und den stabilen Code.
+`MutationService.confirm()` zieht die sichere Fehlergrenze um die vollständige Pre-Write-
+Prüfung und anschließende Write/Delete-Operation. Nicht-fachliche I/O-Fehler werden einheitlich
+zu `MUTATION_WRITE_FAILED`; Hashabweichungen bleiben `MUTATION_CONFLICT`. Eine injizierbare
+Leseoperation reproduziert deterministisch den zweiten, gesperrten Read nach erfolgreicher
+Preview. Der echte Windows-Prozessgrenztest bleibt QA-Evidenz.
 
 ## Regressionsrisiko
 
@@ -99,15 +103,16 @@ belegt Originalerhalt, Temp-Bereinigung und den stabilen Code.
 ## Verifikation
 
 **Ursprüngliche Reproduktionsschritte erneut ausgeführt:** 2026-07-31 — Ergebnis: Fehler
-besteht an der realen Sidecar-Prozessgrenze weiterhin. Ein exklusives `FileShare.None`-Handle
-führt erneut zu `SIDECAR_OFFLINE`; Originalinhalt und Temp-Bereinigung bleiben korrekt.
+wurde durch BE nach dem zweiten Fix an der realen Sidecar-Prozessgrenze nicht mehr
+beobachtet. Ein exklusives `FileShare.None`-Handle liefert `MUTATION_WRITE_FAILED`;
+Originalinhalt `before` und 0 Temp-Dateien bleiben korrekt. Unabhängiger QA-Nachtest offen.
 
-**Regressionstest ergänzt:** Ja — `tests/integration/mutation-service.test.ts` und
-`tests/unit/public-error.test.ts`.
+**Regressionstest ergänzt:** Ja — `tests/integration/mutation-service.test.ts` deckt
+Write-Fehler, gesperrten Pre-Write-Read und Audit-Recovery ab;
+`tests/unit/public-error.test.ts` prüft den öffentlichen Vertrag.
 
-**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Nicht verifiziert. Der
-injizierte Write-Fehler besteht, deckt aber die reale Sperre beim erneuten Lesen der
-Zieldatei vor dem Write nicht ab.
+**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Durch BE verifiziert. Ohne
+zweiten Fix entkommt der injizierte Read-`EBUSY`; mit Fix bleibt der stabile Code erhalten.
 
 ## Status-Verlauf
 
@@ -117,6 +122,8 @@ Zieldatei vor dem Write nicht ab.
 | 2026-07-31 | IN_BEARBEITUNG | Root-Cause und domänenweiter Fix-Ansatz durch BE dokumentiert |
 | 2026-07-31 | BEHOBEN | Typisierter Write-Fehler und Regressionstests implementiert; an QA übergeben |
 | 2026-07-31 | OFFEN | QA-Nachtest: reale Windows-Sperre liefert weiterhin SIDECAR_OFFLINE |
+| 2026-07-31 | IN_BEARBEITUNG | BE reproduziert und Pre-Write-Lesegrenze als Restursache dokumentiert |
+| 2026-07-31 | BEHOBEN | Vollständige Confirm-I/O-Grenze, realer Lock-Nachweis und 91,04 % Branches |
 
 ---
 
@@ -148,7 +155,7 @@ Kein Wechsel des atomaren Write-Modells ohne neue Architekturentscheidung.
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.3*
+*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.5*
 
 ---
 
@@ -175,3 +182,33 @@ ausführen und Originalerhalt sowie Temp-Bereinigung bestätigen.
 Die reale Sperre tritt bereits beim Lesen des aktuellen Dateiinhalts vor `atomicWrite()` auf
 und umgeht deshalb die neue Write/Delete-Fehlergrenze. Der nächste Regressionstest muss
 diesen Prozessgrenzfall abdecken und das Mutations-Branchziel auf mindestens 90 % anheben.
+
+---
+
+## Übergabe: BE → QA — zweiter Fix
+
+**Datum:** 2026-07-31
+**Von:** Backend Developer (BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 4`
+
+### Übergebene Artefakte
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| BUG-000005 | BEHOBEN | `testing/BUG-000005-lock-error-reported-offline.md` | Pre-Write-Read und Write/Delete einheitlich typisiert |
+| Regressionstests | bestanden | `tests/integration/mutation-service.test.ts` | realer Lock-Pfad und Audit-Restore |
+
+### Kritische Informationen für Empfänger
+
+Der reale BE-Systemtest ergab `MUTATION_WRITE_FAILED`, Original `before`, 0 Temp-Dateien.
+Mutations-Branch-Coverage beträgt 91,04 %. QA muss denselben Windows-Lock unabhängig
+wiederholen; BUG-000006 bleibt unverändert `VERIFIZIERT`.
+
+### Offene Fragen
+
+Keine.
+
+### Nicht-Ziele
+
+Keine Änderung an Preview-Speicher, UI, Auditformat oder Mutationsumfang.
