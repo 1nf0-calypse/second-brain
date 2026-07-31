@@ -9,3 +9,4 @@ Letzte Aktualisierung: 2026-07-31
 | `integration/` | Initialindex, Delta, Delete, Rebuild, Volltext, Quellen und Anhänge |
 | `compatibility/` | Vertragsversion, Client-Scope und Konfiguration |
 | `e2e/` | Vitest-Logik plus Playwright-Clickpfade, Page Object und A11y |
+| `performance/` | Reproduzierbare Search-, Read-, Delta- und Security-Baselines |

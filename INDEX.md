@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
+Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 
 ## Aktive Artefakte
 
@@ -38,8 +38,10 @@ Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `testing/TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |
+| `testing/TR-000004-sprint-2.md` | TR-000004 | 1.0 | REJECTED | QA | Sprint-2-Testlauf; Gate 7 wegen BUG-000003 und offener Desktop-P0-Pfade fehlgeschlagen |
 | `testing/BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
 | `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
+| `testing/BUG-000003-scope-error-code-generic.md` | BUG-000003 | 1.0 | OFFEN | QA | Scope-Verletzung sicher blockiert, Fehlercode nicht vertragskonform |
 | `reviews/RV-000001-sprint-1.md` | RV-000001 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme conditional; acht MAJOR-Funde vor Merge |
 | `reviews/RV-000002-sprint-1-rereview.md` | RV-000002 | 1.0 | APPROVED | RV | Beide Stories nach Plugin-Neustart akzeptiert; Merge freigegeben |
 | `docs/DOC-000001-claude-desktop-setup.md` | DOC-000001 | 1.0 | APPROVED | MW | Claude Desktop lokal verbinden und Fehler beheben |
@@ -73,6 +75,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 | 2026-07-31 | Gate 5 (Sprint 2 Refinement → Implementation) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5.5 (`/implement`-Preflight, SP-000003) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 6 (Sprint 2 Implementation → Testing) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 7 (Sprint 2 Testing → Review) | FAIL | 1 | 0 | 0 |
 
 ## In Bearbeitung
 
