@@ -1,8 +1,8 @@
 ---
 id: BUG-000005
 title: Bug — Windows-Dateisperre wird als Sidecar offline gemeldet
-version: 1.5
-status: BEHOBEN
+version: 1.6
+status: VERIFIZIERT
 author-agent: QA (QA Engineer)
 date: 2026-07-31
 project: second-brain
@@ -114,6 +114,10 @@ Write-Fehler, gesperrten Pre-Write-Read und Audit-Recovery ab;
 **Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Durch BE verifiziert. Ohne
 zweiten Fix entkommt der injizierte Read-`EBUSY`; mit Fix bleibt der stabile Code erhalten.
 
+**Unabhängiger QA-Nachtest:** PASS — der reale Windows-`FileShare.None`-Prozessgrenztest
+liefert Exitcode 1 und `MUTATION_WRITE_FAILED`; der Inhalt bleibt `before`, es existieren
+0 Temp-Dateien. Die Mutations-Branch-Coverage beträgt 91,04 %.
+
 ## Status-Verlauf
 
 | Datum | Status | Kommentar |
@@ -124,6 +128,7 @@ zweiten Fix entkommt der injizierte Read-`EBUSY`; mit Fix bleibt der stabile Cod
 | 2026-07-31 | OFFEN | QA-Nachtest: reale Windows-Sperre liefert weiterhin SIDECAR_OFFLINE |
 | 2026-07-31 | IN_BEARBEITUNG | BE reproduziert und Pre-Write-Lesegrenze als Restursache dokumentiert |
 | 2026-07-31 | BEHOBEN | Vollständige Confirm-I/O-Grenze, realer Lock-Nachweis und 91,04 % Branches |
+| 2026-07-31 | VERIFIZIERT | Unabhängiger QA-Systemtest bestätigt Fehlercode, Originalerhalt und Temp-Bereinigung |
 
 ---
 

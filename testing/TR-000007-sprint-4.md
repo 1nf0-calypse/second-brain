@@ -1,8 +1,8 @@
 ---
 id: TR-000007
 title: Testergebnis Second Brain Sprint 4
-version: 1.1
-status: REJECTED
+version: 1.2
+status: CONDITIONAL
 author-agent: QA (QA Engineer)
 date: 2026-07-31
 project: second-brain
@@ -16,11 +16,11 @@ superseded-by: —
 
 ## 1. Ergebnis
 
-**Empfehlung:** `REJECTED`
+**Empfehlung:** `CONDITIONAL`
 
-**Gate 7:** `FAIL` — Build, Lint, automatisierte Tests, sichtbare Browserpfade, Atomizität
-und der Speicherfix sind grün. BUG-000005 besteht an der realen Windows-Prozessgrenze
-weiterhin; zusätzlich unterschreitet das Mutationsmodul mit 89,23 % sein 90-%-Branchziel.
+**Gate 7:** `PASS (CONDITIONAL)` — Build, Lint, automatisierte Tests, sichtbare
+Browserpfade, Atomizität, Windows-Lock-Recovery und beide Bugfixes sind grün. Die native
+Claude-Desktop-Oberflächenabnahme bleibt als Review-Auflage offen.
 
 ## 2. Automatisierte Evidenz
 
@@ -29,11 +29,11 @@ weiterhin; zusätzlich unterschreitet das Mutationsmodul mit 89,23 % sein 90-%-B
 | Runtime | PASS — Node.js v24.15.0 |
 | `npm run build` | PASS |
 | `npm run lint` | PASS |
-| `npm test` | PASS — 66/66 |
-| `npm run test:coverage` | PASS — 66/66; Mutationsziel verfehlt |
-| `npx playwright test --reporter=html` | PASS — 11/11 sichtbares Chromium, 16,6 s |
+| `npm test` | PASS — 68/68 |
+| `npm run test:coverage` | PASS — 68/68; alle Ziele erreicht |
+| `npx playwright test --reporter=html` | PASS — 11/11 sichtbares Chromium, 12,2 s |
 | Mutations-Performance-Harness | PASS — Speichergrenze stabil, BUG-000006 verifiziert |
-| Windows-Lock-Systemtest | Atomizität PASS, Fehlersemantik erneut FAIL |
+| Windows-Lock-Systemtest | PASS — `MUTATION_WRITE_FAILED`, Original intakt, 0 Temp-Dateien |
 
 Der erste kombinierte Qualitätslauf überschritt wegen paralleler, projektfremder
 Playwright-/Next-Prozesse das 120-s-Kommandolimit. Die Stufen wurden danach einzeln
@@ -43,11 +43,11 @@ vollständig und erfolgreich ausgeführt; es wurde kein Testergebnis übersprung
 
 | Metrik | Ergebnis | Ziel |
 |---|---:|---:|
-| Statements | 93,35 % | ≥80 % |
-| Branches gesamt | 84,65 % | ≥80 % |
-| Funktionen | 95,34 % | ≥80 % |
-| Zeilen | 94,08 % | ≥80 % |
-| Mutationsmodul Branches | 89,23 % | ≥90 % — FAIL |
+| Statements | 94,67 % | ≥80 % |
+| Branches gesamt | 85,25 % | ≥80 % |
+| Funktionen | 96,55 % | ≥80 % |
+| Zeilen | 95,45 % | ≥80 % |
+| Mutationsmodul Branches | 91,04 % | ≥90 % — PASS |
 
 ## 3. Akzeptanz- und Testfallstatus
 
@@ -61,8 +61,8 @@ vollständig und erfolgreich ausgeführt; es wurde kein Testergebnis übersprung
 | TC-000406 Update-Rollback | ✅ BESTANDEN automatisiert | 30/30 Performance-Rollbacks plus Integration |
 | TC-000407 neuerer Rollback-Zustand | ✅ BESTANDEN automatisiert | Rollback-Prepare blockiert externe Änderung |
 | TC-000408 untrusted Inhalt | ✅ BESTANDEN soweit automatisiert | keine generische Shell-/Prozessfähigkeit; Text bleibt Payload |
-| TC-000409 Windows-Lock/Abbruch | ❌ FEHLGESCHLAGEN | Fix-Nachtest: Original intakt, 0 Temp-Dateien; weiterhin `SIDECAR_OFFLINE`, BUG-000005 |
-| TC-000410 Tastatur/Fokus/320 px | ⚠️ TEILWEISE | sichtbarer Harness grün; native Bedienung unterbrochen |
+| TC-000409 Windows-Lock/Abbruch | ✅ BESTANDEN | unabhängiger Nachtest: `MUTATION_WRITE_FAILED`, Original intakt, 0 Temp-Dateien |
+| TC-000410 Tastatur/Fokus/320 px | ⚠️ TEILWEISE | sichtbarer Harness grün; native Obsidian-Ansicht geprüft |
 | TC-000411 MCP-End-to-End | ✅ BESTANDEN automatisiert | reales SDK-MCP/stdio Prepare/Confirm/Rollback; Claude-UI noch offen |
 | TC-000412 Sprint-1–3-Regression | ✅ BESTANDEN automatisiert | gesamte Suite grün |
 
@@ -113,10 +113,10 @@ nach Bugfix und ruhigem Desktop erneut.
 
 | ID | Schwere | Status | Befund |
 |---|---|---|---|
-| BUG-000005 | MAJOR | OFFEN | Reale Windows-Dateisperre wird weiterhin als Sidecar offline gemeldet |
+| BUG-000005 | MAJOR | VERIFIZIERT | Reale Windows-Dateisperre liefert stabil `MUTATION_WRITE_FAILED` |
 | BUG-000006 | MAJOR | VERIFIZIERT | Preview-Payloads bleiben nach Erreichen der Grenze stabil |
 
-Keine neuen BLOCKER; der wieder offene MAJOR BUG-000005 verhindert die Sprintfreigabe.
+Keine offenen BLOCKER oder MAJOR-Bugs.
 
 ## 8. Gate-7-Prüfung
 
@@ -126,10 +126,10 @@ Keine neuen BLOCKER; der wieder offene MAJOR BUG-000005 verhindert die Sprintfre
 | Offene BLOCKER-Bugs | PASS — keine |
 | Build/Lint/automatisierte Tests | PASS |
 | Browser-Clickpfade sichtbar | PASS |
-| Coverage-Ziele | FAIL — Mutationsmodul 89,23 % statt ≥90 % |
+| Coverage-Ziele | PASS — Mutationsmodul 91,04 % |
 | Performance-Istwerte | PASS — BUG-000006 verifiziert |
-| Windows-Lock-Recovery | FAIL — BUG-000005 |
-| Native Desktop-P0-Pfade | OFFEN — nach Fix erneut auszuführen |
+| Windows-Lock-Recovery | PASS — BUG-000005 unabhängig verifiziert |
+| Native Desktop-P0-Pfade | CONDITIONAL — Obsidian geprüft; Claude-Desktop-UI offen |
 
 ## 9. Definition-of-Done-Selbstprüfung
 
@@ -140,44 +140,44 @@ Keine neuen BLOCKER; der wieder offene MAJOR BUG-000005 verhindert die Sprintfre
 - [x] Testergebnis und Freigabeempfehlung sind dokumentiert.
 - [x] Indizes und Phase werden aktualisiert.
 - [x] BUG-000006 ist unabhängig verifiziert.
-- [ ] BUG-000005 besteht am realen Windows-Dateilock fort.
-- [ ] Mutationsmodul erreicht das verbindliche 90-%-Branchziel.
-- [ ] Native Obsidian-/Claude-Desktop-P0-Abnahme ist noch nicht vollständig.
+- [x] BUG-000005 ist am realen Windows-Dateilock unabhängig verifiziert.
+- [x] Mutationsmodul erreicht mit 91,04 % das verbindliche Branchziel.
+- [ ] Native Claude-Desktop-P0-Abnahme ist noch nicht vollständig.
 
 ## 10. Freigabe-Empfehlung
 
-`REJECTED`: Rücksprung zu BE. Der reale Lock scheitert bereits beim erneuten Lesen vor dem
-atomaren Write und umgeht dadurch die neue Write-Fehlerübersetzung. Dieser Pfad benötigt
-eine Regression; anschließend ist `/test-run` erneut auszuführen.
+`CONDITIONAL`: Übergang zu Review. Alle funktionalen und technischen Gate-7-Kriterien sind
+bestanden. Der Reviewer soll den MCP-Mutationspfad zusätzlich in Claude Desktop bestätigen;
+der reale SDK-/stdio-Pfad ist bereits vollständig grün.
 
 ---
 
-## Übergabe: QA → BE
+## Übergabe: QA → RV
 
 **Datum:** 2026-07-31
 **Von:** QA Engineer (QA)
-**An:** Backend Developer (BE)
-**Nächster Befehl:** `/implement be second-brain`
+**An:** Reviewer (RV)
+**Nächster Befehl:** `/review second-brain 4`
 
 ### Übergebene Artefakte
 
 | Artefakt-ID | Status | Pfad | Hinweise |
 |---|---|---|---|
 | TP-000005 | APPROVED | `testing/TP-000005-sprint-4.md` | Verbindliche Testbasis |
-| TR-000007 | REJECTED | `testing/TR-000007-sprint-4.md` | v1.1: Lock-Nachtest fehlgeschlagen, Coverageziel verfehlt |
-| BUG-000005 | OFFEN | `testing/BUG-000005-lock-error-reported-offline.md` | reale Pre-Write-Sperre bleibt untypisiert |
+| TR-000007 | CONDITIONAL | `testing/TR-000007-sprint-4.md` | v1.2: Gate 7 funktional bestanden; Claude-UI-Auflage |
+| BUG-000005 | VERIFIZIERT | `testing/BUG-000005-lock-error-reported-offline.md` | reale Pre-Write-Sperre korrekt typisiert |
 | BUG-000006 | VERIFIZIERT | `testing/BUG-000006-preview-storage-unbounded.md` | begrenzter Preview-Cleanup bestätigt |
 | Performance-Harness | bestanden mit Befund | `tests/performance/mutations-baseline.ts` | reproduziert Latenz und Speicherwachstum |
 
 ### Kritische Informationen für Empfänger
 
-- BUG-000005 muss auch den gesperrten `readExisting()`-Pfad typisieren, nicht nur Write/Delete.
-- Original-/Temp-Sicherheit und Tokenverhalten müssen regressionssicher erhalten bleiben.
-- Der ergänzte Regressionstest soll zugleich das Mutations-Branchziel wieder auf ≥90 % heben.
+- BUG-000005 und BUG-000006 sind unabhängig verifiziert.
+- Original-/Temp-Sicherheit, Tokenverhalten und das Coverage-Ziel sind bestanden.
+- Claude Desktop bleibt eine manuelle Review-Auflage; SDK-/stdio-E2E ist grün.
 
 ### Offene Fragen (vererbt)
 
-Keine Reproduktionsfrage; native Desktop-Endabnahme folgt nach Fix.
+Keine Reproduktionsfrage; nur die native Claude-Desktop-Oberflächenabnahme ist offen.
 
 ### Nicht-Ziele
 
@@ -185,9 +185,8 @@ Delete/Move/Rename, Mehrdatei-Mutationen, höhere Autonomie und externe Anbieter
 
 ### Empfehlungen
 
-Zuerst Speicherlebenszyklus und öffentliche Write-Fehler typisieren, dann beide
-Regressionstests ergänzen und `/test-run second-brain 4` wiederholen.
+Gate 8 durchführen und dabei den Claude-Desktop-Mutationspfad manuell bestätigen.
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.1*
+*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.2*
