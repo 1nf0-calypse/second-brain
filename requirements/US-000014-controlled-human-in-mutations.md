@@ -2,7 +2,7 @@
 id: US-000014
 title: Textnotizen kontrolliert vorschlagen, bestätigen und rücksetzen
 version: 1.0
-status: REVIEW
+status: APPROVED
 author-agent: BA (Business Analyst)
 date: 2026-07-31
 project: second-brain
@@ -110,7 +110,7 @@ DANN wird die unzulässige Aktion blockiert beziehungsweise der Inhalt als Daten
 
 | Artefakt-ID | Status | Pfad | Hinweise |
 |---|---|---|---|
-| US-000014 | REVIEW | `requirements/US-000014-controlled-human-in-mutations.md` | Sicherer Ein-Datei-Schreibslice |
+| US-000014 | APPROVED | `requirements/US-000014-controlled-human-in-mutations.md` | Sicherer Ein-Datei-Schreibslice |
 
 ### Kritische Informationen für Empfänger
 

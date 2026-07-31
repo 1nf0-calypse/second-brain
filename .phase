@@ -3,15 +3,17 @@
 # Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
 
 project: second-brain
-current-phase: REFINEMENT
-previous-phase: RELEASED
+current-phase: IMPLEMENTATION
+previous-phase: REFINEMENT
 phase-started: 2026-07-31
 sprint: 4
-last-agent: BA+FE+BE
+last-agent: ORCH
 last-artifact: SP-000005
 approval-source: transition-command
-approval-command: /refine second-brain 4
-approved-artifacts: [RN-000003@1.0]
+approval-command: /implement all second-brain
+approved-artifacts: [US-000014@1.0, SP-000005@1.0]
+worktree-path: projects/second-brain/.worktrees/sprint-4
+worktree-branch: feature/sprint-4
 # Phasen-History (wird vom Orchestrator gepflegt)
 history:
   - phase: INIT
@@ -191,5 +193,9 @@ history:
     completed: 2026-07-31
     artifacts: [RN-000003]
   - phase: REFINEMENT
+    started: 2026-07-31
+    completed: 2026-07-31
+    artifacts: [US-000014, SP-000005]
+  - phase: IMPLEMENTATION
     started: 2026-07-31
     artifacts: [US-000014, SP-000005]

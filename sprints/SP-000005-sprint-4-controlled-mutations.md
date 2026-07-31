@@ -2,7 +2,7 @@
 id: SP-000005
 title: Sprint 4 Backlog — Kontrollierte Ein-Datei-Mutationen
 version: 1.0
-status: REVIEW
+status: APPROVED
 author-agent: BA (Business Analyst) + FE + BE
 date: 2026-07-31
 project: second-brain
@@ -170,8 +170,8 @@ Keine offene Sprint-3-Schuld. Push und Worktree-Cleanup sind Release-Hygiene, ke
 
 | Artefakt-ID | Version | Status | Pfad | Hinweise |
 |---|---:|---|---|---|
-| US-000014 | 1.0 | REVIEW | `requirements/US-000014-controlled-human-in-mutations.md` | Ein-Datei-Human-in-Slice |
-| SP-000005 | 1.0 | REVIEW | `sprints/SP-000005-sprint-4-controlled-mutations.md` | Sprint-4-Backlog, 31 SP Planbedarf |
+| US-000014 | 1.0 | APPROVED | `requirements/US-000014-controlled-human-in-mutations.md` | Ein-Datei-Human-in-Slice |
+| SP-000005 | 1.0 | APPROVED | `sprints/SP-000005-sprint-4-controlled-mutations.md` | Sprint-4-Backlog, 31 SP Planbedarf |
 
 ### Kritische Informationen für Empfänger
 
