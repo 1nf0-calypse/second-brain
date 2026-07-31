@@ -23,3 +23,4 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 | `BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
 | `BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
 | `BUG-000003-scope-error-code-generic.md` | BUG-000003 | 1.2 | VERIFIZIERT | QA | Scope-Verletzung wird über CLI, MCP und Plugin stabil typisiert |
+| `BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.0 | BEHOBEN | RV+FE+BE | Relationship-Refresh synchronisiert vor der Abfrage |

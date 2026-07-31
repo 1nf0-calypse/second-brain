@@ -1,5 +1,5 @@
 // Beschreibung: Zugängliche Listenansicht für direkte Beziehungen einer Obsidian-Notiz.
-// Artefakte:    US-000013; UX-000001; ADR-000003
+// Artefakte:    US-000013; BUG-000004; UX-000001; ADR-000003
 // Agent:        FE — 2026-07-31
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import {
@@ -60,7 +60,7 @@ export class RelationshipView extends ItemView {
         return;
       }
       refresh.disabled = true;
-      status.textContent = `Loading relationships for ${active.path}…`;
+      status.textContent = `Updating the local index and relationships for ${active.path}…`;
       try {
         const response = await getRelationships(
           this.transport,
@@ -99,7 +99,7 @@ export class RelationshipView extends ItemView {
       } catch (error: unknown) {
         status.textContent = `${
           error instanceof Error ? error.message : 'Relationships are unavailable.'
-        } Refresh the index and try again.`;
+        } Try refreshing the active note again.`;
         status.focus();
       } finally {
         refresh.disabled = false;

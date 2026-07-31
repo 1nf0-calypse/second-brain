@@ -1,5 +1,5 @@
 // Beschreibung: Typisierte Plugin-Schnittstelle für direkte lokale Beziehungen.
-// Artefakte:    US-000013; ADR-000001; ADR-000004
+// Artefakte:    US-000013; BUG-000004; ADR-000001; ADR-000004
 // Agent:        FE — 2026-07-31
 import {
   RelationshipQueryResponseSchema,
@@ -7,6 +7,7 @@ import {
 } from '@second-brain/contracts';
 
 export interface RelationshipTransport {
+  synchronizeIndex(vaultRoot: string): Promise<unknown>;
   relationships(
     vaultRoot: string,
     relativePath: string,
@@ -16,7 +17,7 @@ export interface RelationshipTransport {
 
 // Implementiert: US-000013 — Laufzeitvalidierte Relationship-Abfrage
 /**
- * Fragt direkte Beziehungen ab und validiert die Sidecar-Grenze.
+ * Aktualisiert den abgeleiteten Index und fragt danach direkte Beziehungen ab.
  * @param transport Injizierbarer lokaler Transport.
  * @param vaultRoot Freigegebener Vault-Root.
  * @param relativePath Relativer Pfad der Notiz.
@@ -30,6 +31,7 @@ export async function getRelationships(
   relativePath: string,
   signal?: AbortSignal
 ): Promise<RelationshipQueryResponse> {
+  await transport.synchronizeIndex(vaultRoot);
   return RelationshipQueryResponseSchema.parse(
     await transport.relationships(vaultRoot, relativePath, signal)
   );
