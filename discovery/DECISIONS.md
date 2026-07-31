@@ -1,7 +1,7 @@
 ---
 id: DECISIONS
 title: Entscheidungsprotokoll — Second Brain
-version: 1.2
+version: 1.3
 status: ACTIVE
 author-agent: PM (Product Manager)
 date: 2026-07-30
@@ -17,6 +17,15 @@ Leichtgewichtiges, chronologisches Protokoll aller wesentlichen Entscheidungen i
 ---
 
 ## Aktive Entscheidungen
+
+### D-000008 — Nutzerbegriffe und Recovery für direkte Beziehungen
+
+**Datum:** 2026-07-31 | **Kategorie:** Dokumentation | **Status:** ACTIVE
+Die Dokumentation verwendet **direkte Beziehungen**, **Link**, **Rückverweis**, **Tag**,
+**Eigenschaft**, **Quelle** und **relativer Notizpfad** als Nutzerbegriffe. Sie trennt die
+belegbare Beziehungsliste ausdrücklich von einer noch nicht verfügbaren visuellen
+Graphdarstellung oder automatisch abgeleiteten Verbindungen. Nach Plugin-Updates wird ein
+vollständiger Obsidian-Neustart verlangt; Claude und Obsidian müssen denselben Vault nutzen.
 
 ### D-000007 — Nutzerbegriffe und Dokumentationsumfang für Sprint 2
 
@@ -71,6 +80,7 @@ vollständigen Frontend-Ausarbeitung priorisiert.
 
 | ID | Datum | Kategorie | Kurztitel | Agent | Status |
 |----|-------|---------|---------|-------|--------|
+| D-000008 | 2026-07-31 | Dokumentation | Begriffe und Recovery für direkte Beziehungen | MW | ACTIVE |
 | D-000007 | 2026-07-31 | Dokumentation | Nutzerbegriffe und Sprint-2-Umfang | MW | ACTIVE |
 | D-000006 | 2026-07-31 | Dokumentation | Nutzerbegriffe und Sprint-1-Umfang | MW | ACTIVE |
 | D-000005 | 2026-07-30 | Lizenz | MIT als Projektlizenz | PM | ACTIVE |
@@ -97,6 +107,7 @@ Entscheidungen, die revidiert oder überschrieben wurden, bleiben hier sichtbar.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.3 | 2026-07-31 | D-000008 zu Beziehungen, relativen Pfaden und Neustart ergänzt | MW |
 | 1.2 | 2026-07-31 | D-000007 zu Suche, Quellen und lokaler Installation ergänzt | MW |
 | 1.1 | 2026-07-31 | D-000006 zu Terminologie und Dokumentationsumfang ergänzt | MW |
 | 1.0 | 2026-07-30 | Initiale Version | PM |
