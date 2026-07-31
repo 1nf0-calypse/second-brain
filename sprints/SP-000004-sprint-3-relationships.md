@@ -2,7 +2,7 @@
 id: SP-000004
 title: Sprint 3 Backlog — Lokale Beziehungen erkunden
 version: 1.0
-status: REVIEW
+status: APPROVED
 author-agent: BA (Business Analyst) + FE + BE
 date: 2026-07-31
 project: second-brain
