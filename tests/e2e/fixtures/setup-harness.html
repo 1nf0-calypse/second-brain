@@ -27,9 +27,23 @@
         <button data-testid="update" disabled>Update local index</button>
         <button data-testid="rebuild" disabled>Rebuild local index</button>
       </div>
-      <p role="status" aria-live="polite" tabindex="-1">Setup not started.</p>
+      <p data-testid="setup-status" role="status" aria-live="polite" tabindex="-1">Setup not started.</p>
       <p>Second Brain does not require an additional LLM API key for this connection.</p>
       <p>ChatGPT and Mistral are not included in this Sprint 1 setup.</p>
+      <hr>
+      <section aria-labelledby="search-title">
+        <h2 id="search-title">Search Second Brain</h2>
+        <form data-testid="search-form">
+          <label for="query">Search your vault</label>
+          <input id="query" type="search" data-testid="search-query" placeholder="Search notes, tags, properties, and links">
+          <div class="actions">
+            <button type="submit" data-testid="search">Search</button>
+            <button type="button" data-testid="cancel-search" disabled>Cancel search</button>
+          </div>
+        </form>
+        <p data-testid="search-status" role="status" aria-live="polite" tabindex="-1">Enter a phrase to search the local index.</p>
+        <ol data-testid="search-results" aria-label="Search results"></ol>
+      </section>
     </main>
     <script>
       const input = document.querySelector('[data-testid="vault-root"]');
@@ -38,7 +52,11 @@
       const test = document.querySelector('[data-testid="test"]');
       const update = document.querySelector('[data-testid="update"]');
       const rebuild = document.querySelector('[data-testid="rebuild"]');
-      const status = document.querySelector('[role="status"]');
+      const status = document.querySelector('[data-testid="setup-status"]');
+      const searchForm = document.querySelector('[data-testid="search-form"]');
+      const searchQuery = document.querySelector('[data-testid="search-query"]');
+      const searchStatus = document.querySelector('[data-testid="search-status"]');
+      const searchResults = document.querySelector('[data-testid="search-results"]');
       input.addEventListener('input', () => {
         const ready = input.value.trim().length > 0;
         copy.disabled = !ready;
@@ -65,6 +83,27 @@
       rebuild.addEventListener('click', () => {
         status.textContent = 'Index rebuilt. 1 files indexed; 1 changed; 0 removed. Original files unchanged.';
         status.focus();
+      });
+      searchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        searchResults.replaceChildren();
+        if (!searchQuery.value.trim()) {
+          searchStatus.textContent = 'Enter a search phrase before searching.';
+        } else if (searchQuery.value === 'missing') {
+          searchStatus.textContent = 'No results found. Try another phrase, clear filters, or check the index status.';
+        } else {
+          searchStatus.textContent = '1 results. Semantic search is unavailable. Showing full-text results only.';
+          const item = document.createElement('li');
+          const source = document.createElement('button');
+          source.textContent = 'Alpha.md:3';
+          const snippet = document.createElement('p');
+          snippet.textContent = 'The citation target is searchable here.';
+          const detail = document.createElement('small');
+          detail.textContent = 'Match: full-text; extraction: extracted';
+          item.append(source, snippet, detail);
+          searchResults.append(item);
+        }
+        searchStatus.focus();
       });
     </script>
   </body>

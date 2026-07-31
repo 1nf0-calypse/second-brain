@@ -41,7 +41,6 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 | `testing/BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
 | `reviews/RV-000001-sprint-1.md` | RV-000001 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme conditional; acht MAJOR-Funde vor Merge |
 | `reviews/RV-000002-sprint-1-rereview.md` | RV-000002 | 1.0 | APPROVED | RV | Beide Stories nach Plugin-Neustart akzeptiert; Merge freigegeben |
-| `retros/DEBT-000001-sprint-1-review-followups.md` | DEBT-000001 | 1.0 | ACTIVE | RV | Akzeptierte Transport-, Timeout- und Codehygiene-Folgearbeiten |
 | `docs/DOC-000001-claude-desktop-setup.md` | DOC-000001 | 1.0 | APPROVED | MW | Claude Desktop lokal verbinden und Fehler beheben |
 | `docs/DOC-000002-local-index.md` | DOC-000002 | 1.0 | APPROVED | MW | Lokalen Index aktualisieren und sicher neu aufbauen |
 | `docs/GS-000001.md` | GS-000001 | 1.0 | APPROVED | MW | Einstieg in Installation, Verbindung und Index |
@@ -84,6 +83,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 | Datei | ID | Status | Archiviert |
 |-------|-----|--------|-----------|
 | `sprints/SP-000001-sprint-1-foundation.md` | SP-000001 | SUPERSEDED | 2026-07-30 |
+| `retros/DEBT-000001-sprint-1-review-followups.md` | DEBT-000001 | ARCHIVED | 2026-07-31 |
 
 ---
 
@@ -154,3 +154,41 @@ Keine Implementierungs-BLOCKER; der echte Obsidian-/Claude-Desktop-P0-Pfad bleib
 ### Nicht-Ziele
 
 Keine Erweiterung auf ChatGPT, Mistral, Suche oder Mutationen.
+
+---
+
+## Übergabe: FE/BE → QA — Sprint 2
+
+**Datum:** 2026-07-31
+**Von:** Frontend Developer und Backend Developer (FE/BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-plan second-brain 2`
+
+### Übergebene Artefakte
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| US-000012 | implementiert | `apps/sidecar/src/search/`, `apps/obsidian-plugin/src/ui/search-view.ts` | Volltext, Quellen, Scope und sichtbare Degradation |
+| API-Vertrag | fertig | `packages/contracts/src/index.ts` | Search-, Result-, Citation- und Read-Laufzeitschemas |
+| DEBT-000001 | ARCHIVED | `retros/DEBT-000001-sprint-1-review-followups.md` | Alle vier Sprint-1-Folgearbeiten gelöst |
+| Tests | bestanden | `tests/` | 32 Vitest- und 7 headed Playwright-Tests |
+
+### Kritische Informationen für Empfänger
+
+- FTS5 wurde unter Node.js 24.15.0 auf Windows ausführbar verifiziert.
+- Semantische Suche ist absichtlich nicht enthalten und erscheint als degradierter Zustand.
+- Binäranhänge liefern nur sichere Metadaten mit `not_extracted`, niemals erfundenen Inhalt.
+- Suche und Lesen sind read-only und erzwingen die kanonische Vault-Root-Policy.
+
+### Offene Fragen (vererbt)
+
+Keine offenen Implementierungs-BLOCKER oder MAJOR-Fragen.
+
+### Nicht-Ziele
+
+Semantische Suche, OCR, Graph, Mutationen, zusätzliche MCP-Clients und Android.
+
+### Empfehlungen
+
+QA soll echte Obsidian- und Claude-Desktop-Pfade, Quellenöffnung, 320 px/200 % Zoom,
+Abbruch/Timeout sowie Vault-Hashes vor und nach Suche prüfen.

@@ -29,7 +29,13 @@ export async function testLocalService(
   return SetupResponseSchema.parse(response);
 }
 
-/** Validiert die Antwort einer inkrementellen lokalen Indexaktualisierung. */
+/**
+ * Validiert eine inkrementelle lokale Indexaktualisierung.
+ * @param transport Lokaler Prozess-Transport.
+ * @param vaultRoot Freigegebener Vault-Root.
+ * @returns Validierter Indexstatus.
+ * @throws Bei Transport- oder Vertragsfehlern.
+ */
 export async function synchronizeIndex(
   transport: SetupTransport,
   vaultRoot: string
@@ -37,7 +43,13 @@ export async function synchronizeIndex(
   return IndexStatusSchema.parse(await transport.synchronizeIndex(vaultRoot));
 }
 
-/** Validiert die Antwort eines atomaren lokalen Index-Neuaufbaus. */
+/**
+ * Validiert einen atomaren lokalen Index-Neuaufbau.
+ * @param transport Lokaler Prozess-Transport.
+ * @param vaultRoot Freigegebener Vault-Root.
+ * @returns Validierter Indexstatus.
+ * @throws Bei Transport- oder Vertragsfehlern.
+ */
 export async function rebuildIndex(
   transport: SetupTransport,
   vaultRoot: string

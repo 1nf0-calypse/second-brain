@@ -1,8 +1,8 @@
 ---
 id: DEBT-000001
 title: Technische Schulden Registry — Second Brain Sprint 1
-version: 1.0
-status: ACTIVE
+version: 1.1
+status: ARCHIVED
 author-agent: RV (Code Reviewer)
 date: 2026-07-30
 project: second-brain
@@ -17,7 +17,7 @@ superseded-by: —
 
 | ID | Titel | Priorität | Kategorie | Sprint | Agent | Status |
 |---|---|---|---|---:|---|---|
-| DEBT-000001 | Review-Folgearbeiten für Transport und Codehygiene | Mittel | Wartbarkeit / Performance | 1 | FE+BE | OFFEN |
+| _(keine)_ | | | | | | |
 
 ## Schulden-Detail
 
@@ -55,25 +55,34 @@ vollständige JSDoc-Kommentare und Entfernung oder vertragliche Festlegung von `
 
 **Abhängigkeiten:** Vor einer Freigabe für deutlich größere Vaults neu bewerten.
 
-**Status:** OFFEN
+**Status:** GELÖST — Sprint 2
+
+**Lösung:**
+
+- Setup-Handshake meldet neutral den lokalen Service statt eine ungeprüfte
+  Claude-Desktop-Verbindung.
+- Setup nutzt 5 Sekunden, Suche/Lesen 10 Sekunden und Index/Rebuild 60 Sekunden;
+  Suchoperationen sind per `AbortSignal` abbrechbar.
+- Öffentliche Transport- und Clientfunktionen besitzen vollständige JSDoc-Verträge.
+- Die ungenutzte exportierte Funktion `scanVault()` wurde entfernt.
 
 ## Schulden nach Kategorie
 
 | Kategorie | Anzahl offen | Anzahl gelöst |
 |---|---:|---:|
-| Performance | 1 | 0 |
-| Wartbarkeit | 1 | 0 |
-| Dokumentation | 1 | 0 |
+| Performance | 0 | 1 |
+| Wartbarkeit | 0 | 1 |
+| Dokumentation | 0 | 1 |
 
 ## Erledigte Schulden
 
 | ID | Titel | Resolved in | Lösung |
 |---|---|---|---|
-| _(leer)_ | | | |
+| DEBT-000001 | Review-Folgearbeiten für Transport und Codehygiene | Sprint 2 / US-000012 | Neutrale Microcopy, getrennte Timeouts, Search-Abbruch, vollständige JSDoc und interne Scan-Funktion |
 
 ## Schulden-Priorisierung
 
-1. **DEBT-000001** — vor Skalierung auf große Vaults und vor nächster Transporterweiterung.
+Keine offene technische Schuld aus Sprint 1.
 
 ---
 
@@ -88,3 +97,10 @@ vollständige JSDoc-Kommentare und Entfernung oder vertragliche Festlegung von `
 
 Der Plugin-Neustart nach einer Paketaktualisierung muss in der Nutzeranleitung stehen.
 Die technische Schuld blockiert die freigegebene Sprint-1-Dokumentation nicht.
+
+## Änderungshistorie
+
+| Version | Datum | Änderung | Agent |
+|---|---|---|---|
+| 1.1 | 2026-07-31 | In Sprint 2 vollständig gelöst und archiviert | FE+BE |
+| 1.0 | 2026-07-30 | In Sprint-1-Review erfasst | RV |

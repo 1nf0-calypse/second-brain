@@ -1,6 +1,6 @@
-// Beschreibung: Minimaler read-only MCP-Gateway für Setup- und Indexstatus.
-// Artefakte:    US-000011; US-000005; ADR-000001; ADR-000004
-// Agent:        BE — 2026-07-30
+// Beschreibung: Read-only MCP-Gateway für Setup, Index, Suche und Quellenlesen.
+// Artefakte:    US-000011; US-000005; US-000012; ADR-000001; ADR-000004
+// Agent:        BE — 2026-07-31
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
@@ -11,6 +11,7 @@ import { CONTRACT_VERSION } from '@second-brain/contracts';
 import { LocalIndex } from '../indexing/sqlite-index.js';
 import { performSetupHandshake } from '../bootstrap/setup-service.js';
 import { validateVaultRoot } from '../policy/vault-root.js';
+import { SearchService } from '../search/search-service.js';
 
 /**
  * Startet den MCP-Server über stdio.
@@ -23,6 +24,7 @@ import { validateVaultRoot } from '../policy/vault-root.js';
 export async function startMcpServer(vaultRoot: string, indexPath: string): Promise<void> {
   const canonicalVault = await validateVaultRoot(vaultRoot);
   const index = new LocalIndex(indexPath);
+  const search = new SearchService(canonicalVault, index);
   // Der Low-Level-Server ist hier bewusst gewählt, weil die Capability-Liste statisch und
   // streng read-only ist; der High-Level-Wrapper würde keine zusätzliche Policy liefern.
   // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -50,6 +52,34 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
           properties: {},
           additionalProperties: false
         }
+      },
+      {
+        name: 'second_brain_search',
+        description:
+          'Searches extracted local vault text and returns citations. Read-only; semantic search may be unavailable.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: { type: 'string', minLength: 1, maxLength: 500 },
+            limit: { type: 'integer', minimum: 1, maximum: 50 }
+          },
+          required: ['query'],
+          additionalProperties: false
+        }
+      },
+      {
+        name: 'second_brain_read_note',
+        description:
+          'Reads one cited Markdown or text note inside the approved vault root. Read-only.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            relativePath: { type: 'string', minLength: 1 },
+            line: { type: 'integer', minimum: 1 }
+          },
+          required: ['relativePath'],
+          additionalProperties: false
+        }
       }
     ]
   }));
@@ -66,6 +96,14 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
     if (request.params.name === 'second_brain_rebuild_index') {
       const status = await index.rebuild(canonicalVault);
       return { content: [{ type: 'text', text: JSON.stringify(status) }] };
+    }
+    if (request.params.name === 'second_brain_search') {
+      const result = search.search(request.params.arguments ?? {});
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+    }
+    if (request.params.name === 'second_brain_read_note') {
+      const result = await search.readNote(request.params.arguments ?? {});
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] };
     }
     throw new Error(`Unknown read-only tool: ${request.params.name}`);
   });
