@@ -12,3 +12,4 @@ Letzte Aktualisierung: 2026-07-31
 | `e2e/` | Playwright-Clickpfade für Setup, Suche, Beziehungen, Mutationsvorschau und Rollback |
 | `performance/` | Reproduzierbare Search-, Read-, Delta- und Security-Baselines |
 | `performance/relationships-baseline.mjs` | Graphabfrage, Delta, Rebuild und RSS auf 500 synthetischen Notizen |
+| `performance/mutations-baseline.ts` | Preview-, Confirm-, Rollback-, SQLite- und RSS-Baseline |
