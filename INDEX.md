@@ -74,7 +74,6 @@ Letzte Aktualisierung: 2026-07-31 | Phase: RELEASED
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
 | Screenshot-Aufnahmen | — | MINOR | 6 markierte Produktaufnahmen vor öffentlicher Veröffentlichung |
-| Remote-Synchronisierung | `v0.1.0` | OFFEN | Push und Worktree-Cleanup warten auf Nutzerbestätigung |
 
 ## Archiv
 
