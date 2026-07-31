@@ -1,5 +1,5 @@
-// Beschreibung: Versionierte Laufzeitverträge für Setup, Indexierung und lokale Suche.
-// Artefakte:    US-000011; US-000005; US-000012; ADR-000001; ADR-000004
+// Beschreibung: Versionierte Laufzeitverträge für Setup, Suche und Beziehungen.
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; ADR-000001; ADR-000004
 // Agent:        BE — 2026-07-31
 import { z } from 'zod';
 
@@ -82,6 +82,50 @@ export const ReadNoteResponseSchema = z.object({
   extractionStatus: z.literal('extracted')
 }).strict();
 
+export const RelationshipTypeSchema = z.enum(['wiki-link', 'tag', 'property']);
+export const RelationshipDirectionSchema = z.enum(['outgoing', 'incoming']);
+export const RelationshipTargetKindSchema = z.enum(['note', 'tag', 'property']);
+
+export const RelationshipSchema = z.object({
+  type: RelationshipTypeSchema,
+  direction: RelationshipDirectionSchema,
+  target: z.object({
+    kind: RelationshipTargetKindSchema,
+    id: z.string().min(1),
+    label: z.string().min(1),
+    relativePath: z.string().min(1).nullable()
+  }).strict(),
+  source: z.object({
+    relativePath: z.string().min(1),
+    line: z.number().int().positive().nullable(),
+    property: z.string().min(1).nullable()
+  }).strict()
+}).strict();
+
+export const RelationshipQueryRequestSchema = z.object({
+  relativePath: z.string().trim().min(1),
+  limit: z.number().int().min(1).max(200).default(100)
+}).strict();
+
+export const RelationshipQueryResponseSchema = z.object({
+  relativePath: z.string().min(1),
+  readOnly: z.literal(true),
+  relationships: z.array(RelationshipSchema)
+}).strict();
+
+export const NodeDetailRequestSchema = z.object({
+  relativePath: z.string().trim().min(1)
+}).strict();
+
+export const NodeDetailResponseSchema = z.object({
+  relativePath: z.string().min(1),
+  title: z.string().min(1),
+  extractionStatus: ExtractionStatusSchema,
+  outgoingCount: z.number().int().nonnegative(),
+  incomingCount: z.number().int().nonnegative(),
+  readOnly: z.literal(true)
+}).strict();
+
 export type SetupRequest = z.infer<typeof SetupRequestSchema>;
 export type SetupResponse = z.infer<typeof SetupResponseSchema>;
 export type IndexStatus = z.infer<typeof IndexStatusSchema>;
@@ -90,5 +134,10 @@ export type SearchResult = z.infer<typeof SearchResultSchema>;
 export type SearchResponse = z.infer<typeof SearchResponseSchema>;
 export type ReadNoteRequest = z.infer<typeof ReadNoteRequestSchema>;
 export type ReadNoteResponse = z.infer<typeof ReadNoteResponseSchema>;
+export type Relationship = z.infer<typeof RelationshipSchema>;
+export type RelationshipQueryRequest = z.infer<typeof RelationshipQueryRequestSchema>;
+export type RelationshipQueryResponse = z.infer<typeof RelationshipQueryResponseSchema>;
+export type NodeDetailRequest = z.infer<typeof NodeDetailRequestSchema>;
+export type NodeDetailResponse = z.infer<typeof NodeDetailResponseSchema>;
 export type ErrorCode = z.infer<typeof ErrorCodeSchema>;
 export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;

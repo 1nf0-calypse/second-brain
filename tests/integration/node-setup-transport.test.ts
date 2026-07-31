@@ -5,6 +5,7 @@ import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { RelationshipQueryResponseSchema } from '@second-brain/contracts';
 import { NodeSetupTransport } from '../../apps/obsidian-plugin/src/ipc/node-setup-transport.js';
 
 describe('NodeSetupTransport', () => {
@@ -45,6 +46,24 @@ describe('NodeSetupTransport', () => {
       relativePath: 'Source.md',
       requestedLine: 2
     });
+  }, 15_000);
+
+  it('liefert Beziehungen über den realen Kindprozess read-only aus', async () => {
+    const vaultRoot = await mkdtemp(join(tmpdir(), 'second-brain-transport-relationships-'));
+    await mkdir(join(vaultRoot, '.obsidian'));
+    await writeFile(join(vaultRoot, 'Source.md'), 'See [[Target]].');
+    await writeFile(join(vaultRoot, 'Target.md'), '# Target');
+    const transport = new NodeSetupTransport(resolve('dist/sidecar/main.js'), process.execPath);
+    await transport.synchronizeIndex(vaultRoot);
+
+    const response = RelationshipQueryResponseSchema.parse(
+      await transport.relationships(vaultRoot, 'Source.md')
+    );
+    expect(response).toMatchObject({ relativePath: 'Source.md', readOnly: true });
+    expect(response.relationships.some((relationship) =>
+      relationship.type === 'wiki-link' &&
+      relationship.target.relativePath === 'Target.md'
+    )).toBe(true);
   }, 15_000);
 
   it('transportiert Scope-Ablehnungen mit stabilem öffentlichem Fehlercode', async () => {

@@ -1,5 +1,5 @@
 // Beschreibung: Read-only MCP-Gateway für Setup, Index, Suche und Quellenlesen.
-// Artefakte:    US-000011; US-000005; US-000012; ADR-000001; ADR-000004
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; ADR-000001; ADR-000004
 // Agent:        BE — 2026-07-31
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
@@ -7,7 +7,11 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema
 } from '@modelcontextprotocol/sdk/types.js';
-import { CONTRACT_VERSION } from '@second-brain/contracts';
+import {
+  CONTRACT_VERSION,
+  NodeDetailRequestSchema,
+  RelationshipQueryRequestSchema
+} from '@second-brain/contracts';
 import { LocalIndex } from '../indexing/sqlite-index.js';
 import { performSetupHandshake } from '../bootstrap/setup-service.js';
 import { validateVaultRoot } from '../policy/vault-root.js';
@@ -81,6 +85,31 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
           required: ['relativePath'],
           additionalProperties: false
         }
+      },
+      {
+        name: 'second_brain_relationships',
+        description:
+          'Lists explicit direct wiki links, backlinks, tags, and properties for an indexed note. Read-only.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            relativePath: { type: 'string', minLength: 1 },
+            limit: { type: 'integer', minimum: 1, maximum: 200 }
+          },
+          required: ['relativePath'],
+          additionalProperties: false
+        }
+      },
+      {
+        name: 'second_brain_node_detail',
+        description:
+          'Returns read-only metadata and direct relationship counts for an indexed note.',
+        inputSchema: {
+          type: 'object',
+          properties: { relativePath: { type: 'string', minLength: 1 } },
+          required: ['relativePath'],
+          additionalProperties: false
+        }
       }
     ]
   }));
@@ -105,6 +134,16 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
       }
       if (request.params.name === 'second_brain_read_note') {
         const result = await search.readNote(request.params.arguments ?? {});
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_relationships') {
+        const input = RelationshipQueryRequestSchema.parse(request.params.arguments ?? {});
+        const result = index.relationships(input.relativePath, input.limit);
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_node_detail') {
+        const input = NodeDetailRequestSchema.parse(request.params.arguments ?? {});
+        const result = index.nodeDetail(input.relativePath);
         return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
       }
     } catch (error: unknown) {

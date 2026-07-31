@@ -1,5 +1,5 @@
 // Beschreibung: Lokaler Kindprozess-Transport mit operationsspezifischen Zeitlimits.
-// Artefakte:    US-000011; US-000005; US-000012; BUG-000003; ADR-000001
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; BUG-000003; ADR-000001
 // Agent:        BE — 2026-07-31
 import { execFile } from 'node:child_process';
 import {
@@ -8,12 +8,13 @@ import {
 } from '@second-brain/contracts';
 import type { SetupTransport } from './setup-client.js';
 import type { SearchTransport } from './search-client.js';
+import type { RelationshipTransport } from './relationship-client.js';
 
 const CONNECTION_TIMEOUT_MS = 5_000;
 const SEARCH_TIMEOUT_MS = 10_000;
 const INDEX_TIMEOUT_MS = 60_000;
 
-export class NodeSetupTransport implements SetupTransport, SearchTransport {
+export class NodeSetupTransport implements SetupTransport, SearchTransport, RelationshipTransport {
   public constructor(
     private readonly sidecarEntry: string,
     private readonly nodeExecutable = 'node'
@@ -98,6 +99,29 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport {
         SECOND_BRAIN_READ_PATH: relativePath,
         ...(line ? { SECOND_BRAIN_READ_LINE: String(line) } : {})
       },
+      SEARCH_TIMEOUT_MS,
+      signal
+    );
+  }
+
+  /**
+   * Liest die direkten Beziehungen einer indexierten Notiz.
+   * @param vaultRoot Freigegebener Vault-Root.
+   * @param relativePath Relativer Notizpfad.
+   * @param signal Optionales Abbruchsignal.
+   * @returns Ungeprüfte Sidecar-Antwort.
+   * @throws Bei Abbruch, Timeout, Prozess- oder Vertragsfehlern.
+   * @sideEffect Startet einen lokalen read-only Prozess.
+   */
+  public relationships(
+    vaultRoot: string,
+    relativePath: string,
+    signal?: AbortSignal
+  ): Promise<unknown> {
+    return this.run(
+      '--relationships',
+      vaultRoot,
+      { SECOND_BRAIN_RELATIONSHIP_PATH: relativePath },
       SEARCH_TIMEOUT_MS,
       signal
     );

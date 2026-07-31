@@ -44,6 +44,14 @@
         <p data-testid="search-status" role="status" aria-live="polite" tabindex="-1">Enter a phrase to search the local index.</p>
         <ol data-testid="search-results" aria-label="Search results"></ol>
       </section>
+      <hr>
+      <section aria-labelledby="relationship-title">
+        <h2 id="relationship-title">Relationships</h2>
+        <p>Explicit links, backlinks, tags, and properties. Your vault stays unchanged.</p>
+        <button data-testid="refresh-relationships">Refresh active note</button>
+        <p data-testid="relationship-status" role="status" aria-live="polite" tabindex="-1">Open a note, then refresh this view.</p>
+        <ul data-testid="relationship-list" aria-label="Direct relationships"></ul>
+      </section>
     </main>
     <script>
       const input = document.querySelector('[data-testid="vault-root"]');
@@ -57,6 +65,8 @@
       const searchQuery = document.querySelector('[data-testid="search-query"]');
       const searchStatus = document.querySelector('[data-testid="search-status"]');
       const searchResults = document.querySelector('[data-testid="search-results"]');
+      const relationshipStatus = document.querySelector('[data-testid="relationship-status"]');
+      const relationshipList = document.querySelector('[data-testid="relationship-list"]');
       input.addEventListener('input', () => {
         const ready = input.value.trim().length > 0;
         copy.disabled = !ready;
@@ -104,6 +114,29 @@
           searchResults.append(item);
         }
         searchStatus.focus();
+      });
+      document.querySelector('[data-testid="refresh-relationships"]').addEventListener('click', () => {
+        relationshipList.replaceChildren();
+        const fixtures = [
+          ['outgoing wiki-link', 'Beta', 'Source: Alpha.md:6', true],
+          ['incoming wiki-link', 'Gamma.md', 'Source: Gamma.md:2', true],
+          ['outgoing tag', '#fixture', 'Source: Alpha.md:6', false],
+          ['outgoing property', 'status: active', 'Source: Alpha.md:2', false]
+        ];
+        for (const [type, label, source, navigable] of fixtures) {
+          const item = document.createElement('li');
+          item.append(Object.assign(document.createElement('strong'), { textContent: type }));
+          item.append(Object.assign(document.createElement('span'), { textContent: label }));
+          item.append(Object.assign(document.createElement('small'), { textContent: source }));
+          if (navigable) {
+            const open = Object.assign(document.createElement('button'), { textContent: 'Open note' });
+            open.addEventListener('click', () => { relationshipStatus.textContent = `Opened ${label}.`; relationshipStatus.focus(); });
+            item.append(open);
+          }
+          relationshipList.append(item);
+        }
+        relationshipStatus.textContent = '4 direct relationships for Alpha.md.';
+        relationshipStatus.focus();
       });
     </script>
   </body>

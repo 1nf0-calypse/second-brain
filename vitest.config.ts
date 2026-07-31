@@ -5,12 +5,12 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    exclude: ['tests/e2e/**/*.spec.ts', 'node_modules/**'],
+    exclude: ['tests/e2e/**/*.spec.ts', 'node_modules/**', '.worktrees/**'],
     coverage: {
       provider: 'v8',
       include: [
         'packages/{contracts,domain}/src/**/*.ts',
-        'apps/sidecar/src/{bootstrap/setup-service,errors,indexing,policy,search}/**/*.ts',
+        'apps/sidecar/src/{bootstrap/setup-service,errors,indexing,policy,relationships,search}/**/*.ts',
         'apps/obsidian-plugin/src/ipc/{setup-client,search-client}.ts',
         'apps/obsidian-plugin/src/ui/presentation.ts'
       ],

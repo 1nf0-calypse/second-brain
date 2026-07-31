@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
+Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 
 ## Aktive Artefakte
 
@@ -89,8 +89,21 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 | 2026-07-31 | Gate 10 (Sprint 2 Release → Released) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5 (Sprint 3 Refinement → Implementation-ready) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5.5 (`/implement`-Preflight, SP-000004) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 6 (Sprint 3 Implementation → Testing) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
+
+Sprint 3 ist vollständig implementiert und an QA übergeben.
+
+## Übergabe: FE/BE → QA — Sprint 3
+
+**Datum:** 2026-07-31
+**Nächster Befehl:** `/test-plan second-brain 3`
+
+- US-000013: Verträge, SQLite-Kanten, Extraktion, MCP und Obsidian-Relationship-Liste implementiert.
+- Qualität: Build und Lint sauber; 48 Vitest- sowie 8 headed Playwright-Tests bestanden.
+- Coverage: Statements 94,20 %, Branches 81,69 %, Functions 94,91 %, Lines 95,10 %.
+- Scope: ausschließlich explizite, lokale, read-only Beziehungen; keine Inferenz oder Mutation.
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|

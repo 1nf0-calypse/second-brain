@@ -79,31 +79,31 @@ Keine. Freie Kapazität dient Scope-, Unicode- und inkrementellen Graphregressio
 
 | # | Subtask | Verantwortlich | Schätzung | Status |
 |---|---|---:|---|
-| 13.1 | Versionierte Relationship-, Neighbor- und Source-Verträge mit Laufzeitschemas definieren | BE | 2 SP | ⬜ |
-| 13.2 | Reversible SQLite-Migration für gerichtete Graphkanten und Quellenmetadaten erstellen | BE | 3 SP | ⬜ |
-| 13.3 | Wiki-Links, Tags und Properties deterministisch aus unterstützten Textnotizen extrahieren | BE | 3 SP | ⬜ |
-| 13.4 | Graphkanten bei Index-Update atomar und dateibezogen ersetzen oder entfernen | BE | 3 SP | ⬜ |
-| 13.5 | Read-only MCP-Werkzeuge für direkte Beziehungen und Knotendetails anbieten | BE | 2 SP | ⬜ |
-| 13.6 | Native Obsidian-Relationship-View mit Richtung, Typ, Quelle und Empty/Error-Zuständen bauen | FE | 3 SP | ⬜ |
-| 13.7 | Tastaturnavigation, Notizöffnung, Fokusführung und 320-px-/200-%-Zoom-Verhalten umsetzen | FE | 2 SP | ⬜ |
-| 13.8 | Unit-, Integrations-, Security- und headed E2E-Tests für alle fünf Szenarien ergänzen | FE+BE | 3 SP | ⬜ |
+| 13.1 | Versionierte Relationship-, Neighbor- und Source-Verträge mit Laufzeitschemas definieren | BE | 2 SP | ✅ |
+| 13.2 | Reversible SQLite-Migration für gerichtete Graphkanten und Quellenmetadaten erstellen | BE | 3 SP | ✅ |
+| 13.3 | Wiki-Links, Tags und Properties deterministisch aus unterstützten Textnotizen extrahieren | BE | 3 SP | ✅ |
+| 13.4 | Graphkanten bei Index-Update atomar und dateibezogen ersetzen oder entfernen | BE | 3 SP | ✅ |
+| 13.5 | Read-only MCP-Werkzeuge für direkte Beziehungen und Knotendetails anbieten | BE | 2 SP | ✅ |
+| 13.6 | Native Obsidian-Relationship-View mit Richtung, Typ, Quelle und Empty/Error-Zuständen bauen | FE | 3 SP | ✅ |
+| 13.7 | Tastaturnavigation, Notizöffnung, Fokusführung und 320-px-/200-%-Zoom-Verhalten umsetzen | FE | 2 SP | ✅ |
+| 13.8 | Unit-, Integrations-, Security- und headed E2E-Tests für alle fünf Szenarien ergänzen | FE+BE | 3 SP | ✅ |
 
 ### Querschnittliche Qualität — 3 SP
 
 | # | Subtask | Verantwortlich | Schätzung | Status |
 |---|---|---:|---|
-| Q3.1 | Vitest-Excludes um `.worktrees/**` ergänzen und Haupt-Checkout-Regression nachweisen | QA+BE | 1 SP | ⬜ |
-| Q3.2 | Synthetischen Vault mit Alias-Link, Backlink, Tag, Property, gelöschtem und unaufgelöstem Ziel erstellen | QA+BE | 2 SP | ⬜ |
+| Q3.1 | Vitest-Excludes um `.worktrees/**` ergänzen und Haupt-Checkout-Regression nachweisen | QA+BE | 1 SP | ✅ |
+| Q3.2 | Synthetischen Vault mit Alias-Link, Backlink, Tag, Property, gelöschtem und unaufgelöstem Ziel erstellen | QA+BE | 2 SP | ✅ |
 
 ## Technische Voraussetzungen
 
 | # | Voraussetzung | Verantwortlich | Status |
 |---|---|---|---|
-| 1 | US-000013 und SP-000004 durch `/implement` bestätigt | ORCH | ⬜ Übergangsaktion |
+| 1 | US-000013 und SP-000004 durch `/implement` bestätigt | ORCH | ✅ |
 | 2 | ADR-000001–ADR-000005, STRUCTURE und CON-000001 APPROVED | AR/PM | ✅ |
 | 3 | UX-000001 APPROVED; Beziehungsliste und Accessibility spezifiziert | UX | ✅ |
 | 4 | Lokaler Index und Volltext-/Quellenzugriff aus Sprint 1–2 auf `main` | FE+BE | ✅ |
-| 5 | Neuer `feature/sprint-3`-Worktree | ORCH | Erst nach Gate-5.5-PASS anlegen |
+| 5 | Neuer `feature/sprint-3`-Worktree | ORCH | ✅ |
 | 6 | Push/Cleanup von Sprint 2 | ORCH/Nutzer | Nicht blockierend; getrennte Release-Hygiene |
 
 ## Definition of Ready
@@ -215,3 +215,11 @@ Frontend baut anschließend die zugängliche Beziehungsliste auf demselben Vertr
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
 | 1.0 | 2026-07-31 | Sprint-3-Backlog für lokale Relationship-Exploration | BA+FE+BE |
+
+## Implementierungsnachweis
+
+- Laufzeitverträge: `packages/contracts/src/index.ts`
+- Graphmigration und atomare Projektion: `apps/sidecar/src/indexing/sqlite-index.ts`
+- MCP-Werkzeuge: `second_brain_relationships`, `second_brain_node_detail`
+- Obsidian-View: `apps/obsidian-plugin/src/ui/relationship-view.ts`
+- Verifikation: 48 Vitest-Tests, 8 headed Playwright-Tests, alle Coverage-Gates bestanden
