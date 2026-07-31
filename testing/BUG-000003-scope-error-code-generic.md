@@ -1,8 +1,8 @@
 ---
 id: BUG-000003
 title: Bug — Scope-Verletzung liefert generischen Sidecar-Startfehler
-version: 1.1
-status: BEHOBEN
+version: 1.2
+status: VERIFIZIERT
 author-agent: QA (QA Engineer)
 date: 2026-07-31
 project: second-brain
@@ -107,12 +107,14 @@ Recovery-Semantik für Setup, Suche und Lesen verändern.
 
 *(Wird nach Fix durch QA befüllt.)*
 
-**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** ausstehend.  
+**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** 2026-07-31 — Fehler tritt nicht
+mehr auf; Exitcode 1, stdout leer, stderr enthält `PATH_OUTSIDE_VAULT`.
 **Regressionstest ergänzt:** Ja —
 `tests/integration/node-setup-transport.test.ts` und
 `tests/unit/public-error.test.ts`.
-**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Durch BE nachgewiesen;
-unabhängige QA-Verifikation ausstehend.
+**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Verifiziert; der
+Kindprozess-Test schlug im BE-Nachweis vor der vollständigen Plugin-Abbildung fehl und
+besteht nach dem Fix. QA hat 40/40 Tests unabhängig erneut ausgeführt.
 
 ## Status-Verlauf
 
@@ -121,6 +123,7 @@ unabhängige QA-Verifikation ausstehend.
 | 2026-07-31 | OFFEN | Durch QA reproduziert; Root-Cause bewusst für BE offen |
 | 2026-07-31 | IN_BEARBEITUNG | BE reproduziert Fehler und dokumentiert Root-Cause vor Codeänderung |
 | 2026-07-31 | BEHOBEN | Gemeinsames Fehlerantwortschema und CLI-/MCP-/Plugin-Abbildung implementiert; Regressionstests grün |
+| 2026-07-31 | VERIFIZIERT | QA-Reproduktion und vollständige Regression erfolgreich |
 
 ---
 
@@ -159,6 +162,7 @@ Keine Änderung an Scope-Policy, semantischer Suche oder Client-Kompatibilitäts
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.2 | 2026-07-31 | Ursprüngliche Reproduktion und Regression durch QA verifiziert | QA |
 | 1.1 | 2026-07-31 | Root-Cause dokumentiert, zentralen Fehlervertrag implementiert und zur QA-Verifikation übergeben | BE |
 | 1.0 | 2026-07-31 | Fehler durch QA erfasst | QA |
 
