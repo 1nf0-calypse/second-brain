@@ -1,5 +1,5 @@
 // Beschreibung: Prüft den realen Node-Kindprozess des Obsidian-Setup-Transports.
-// Artefakte:    US-000011; US-000012; BUG-000002
+// Artefakte:    US-000011; US-000012; BUG-000002; BUG-000003
 // Agent:        FE — 2026-07-31
 import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -45,5 +45,16 @@ describe('NodeSetupTransport', () => {
       relativePath: 'Source.md',
       requestedLine: 2
     });
+  }, 15_000);
+
+  it('transportiert Scope-Ablehnungen mit stabilem öffentlichem Fehlercode', async () => {
+    const vaultRoot = await mkdtemp(join(tmpdir(), 'second-brain-transport-scope-'));
+    await mkdir(join(vaultRoot, '.obsidian'));
+    const sidecarEntry = resolve('dist/sidecar/main.js');
+    const transport = new NodeSetupTransport(sidecarEntry, process.execPath);
+
+    await expect(
+      transport.readNote(vaultRoot, '..\\outside.md')
+    ).rejects.toThrow('PATH_OUTSIDE_VAULT');
   }, 15_000);
 });

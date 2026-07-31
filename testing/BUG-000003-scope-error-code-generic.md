@@ -1,8 +1,8 @@
 ---
 id: BUG-000003
 title: Bug — Scope-Verletzung liefert generischen Sidecar-Startfehler
-version: 1.0
-status: OFFEN
+version: 1.1
+status: BEHOBEN
 author-agent: QA (QA Engineer)
 date: 2026-07-31
 project: second-brain
@@ -68,13 +68,20 @@ Prozess-Exitcode: `1`; stdout war leer.
 > **Von BE vor jeder Codeänderung auszufüllen.**
 
 **Direkte Ursache:**  
-[AUSSTEHEND — BE]
+`apps/sidecar/src/bootstrap/main.ts` fängt alle Fehler am Prozessrand pauschal ab und ersetzt
+ihren Typ durch den nicht im `ErrorCodeSchema` enthaltenen Code `SIDECAR_START_FAILED`.
+`VaultScopeError` trägt außerdem selbst keinen maschinenlesbaren Fehlercode.
 
 **Zugrundeliegende (systemische) Ursache:**  
-[AUSSTEHEND — BE]
+Der Sprint-2-Vertrag definierte zwar erlaubte Fehlercodes, aber kein laufzeitvalidiertes
+öffentliches Fehlerantwortschema und keine gemeinsame Abbildung von Domain-/Policy-Fehlern
+auf CLI und MCP. Die Tests prüften bisher nur, dass Scope-Escapes werfen, nicht den
+transportierten Code.
 
 **Andere Stellen mit demselben Muster:**  
-[AUSSTEHEND — BE; mindestens CLI und MCP getrennt prüfen]
+Ja. Der MCP-Tool-Handler lässt `VaultScopeError` ungeordnet bis zum SDK propagieren; dadurch
+ist auch dort `PATH_OUTSIDE_VAULT` nicht als stabiler öffentlicher Payload garantiert.
+Zod-Validierungsfehler besitzen ebenfalls noch keine zentrale Zuordnung zu `INVALID_QUERY`.
 
 **Ausgeschlossene Ursachen:**
 
@@ -83,27 +90,37 @@ Prozess-Exitcode: `1`; stdout war leer.
 
 ## Fix-Ansatz
 
-[AUSSTEHEND — BE; typisierte Policy-/Validierungsfehler müssen an jeder öffentlichen
-Transportgrenze auf dokumentierte ErrorCodeSchema-Werte abgebildet werden.]
+Ein `ErrorResponseSchema` wird zum versionierten Vertrag ergänzt. `VaultScopeError` trägt
+`INVALID_VAULT` oder `PATH_OUTSIDE_VAULT`. Eine zentrale Mapper-Funktion validiert
+öffentliche Fehlerantworten und wird sowohl vom CLI-Catch als auch vom MCP-Handler genutzt.
+Regressionstests prüfen die unveränderte Reproduktion am echten Sidecar-Prozess und die
+MCP-Fehlerantwort.
 
 ## Regressionsrisiko
 
-**Einschätzung:** [AUSSTEHEND — BE]  
-**Begründung:** [AUSSTEHEND — BE]
+**Einschätzung:** Mittel
+**Begründung:** Die zentrale Abbildung betrifft alle öffentlichen Sidecar-Fehlerpfade.
+Erfolgsantworten und die Vault-Policy bleiben unverändert; Regressionen könnten jedoch die
+Recovery-Semantik für Setup, Suche und Lesen verändern.
 
 ## Verifikation
 
 *(Wird nach Fix durch QA befüllt.)*
 
 **Ursprüngliche Reproduktionsschritte erneut ausgeführt:** ausstehend.  
-**Regressionstest ergänzt:** ausstehend.  
-**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** nicht verifiziert.
+**Regressionstest ergänzt:** Ja —
+`tests/integration/node-setup-transport.test.ts` und
+`tests/unit/public-error.test.ts`.
+**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Durch BE nachgewiesen;
+unabhängige QA-Verifikation ausstehend.
 
 ## Status-Verlauf
 
 | Datum | Status | Kommentar |
 |---|---|---|
 | 2026-07-31 | OFFEN | Durch QA reproduziert; Root-Cause bewusst für BE offen |
+| 2026-07-31 | IN_BEARBEITUNG | BE reproduziert Fehler und dokumentiert Root-Cause vor Codeänderung |
+| 2026-07-31 | BEHOBEN | Gemeinsames Fehlerantwortschema und CLI-/MCP-/Plugin-Abbildung implementiert; Regressionstests grün |
 
 ---
 
@@ -137,3 +154,46 @@ Keine Änderung an Scope-Policy, semantischer Suche oder Client-Kompatibilitäts
 ---
 
 *Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.0*
+
+## Änderungshistorie
+
+| Version | Datum | Änderung | Agent |
+|---|---|---|---|
+| 1.1 | 2026-07-31 | Root-Cause dokumentiert, zentralen Fehlervertrag implementiert und zur QA-Verifikation übergeben | BE |
+| 1.0 | 2026-07-31 | Fehler durch QA erfasst | QA |
+
+---
+
+## Übergabe: BE → QA
+
+**Datum:** 2026-07-31
+**Von:** Backend Developer (BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 2`
+
+### Übergebene Artefakte
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| BUG-000003 | BEHOBEN | `testing/BUG-000003-scope-error-code-generic.md` | Root-Cause und Fix vollständig |
+| Fehlervertrag | implementiert | `packages/contracts/src/index.ts` | `ErrorResponseSchema` mit erlaubten Codes |
+| Mapper | implementiert | `apps/sidecar/src/errors/public-error.ts` | Gemeinsame CLI-/MCP-Abbildung |
+| Regressionstests | bestanden | `tests/unit/public-error.test.ts`, `tests/integration/node-setup-transport.test.ts` | 40/40 Vitest grün |
+
+### Kritische Informationen für Empfänger
+
+- Vor dem Fix reproduzierte der neue Kindprozess-Test die generische UI-Meldung und schlug
+  fehl; nach dem Fix transportiert er `PATH_OUTSIDE_VAULT`.
+- Der reale CLI-Nachlauf ergab Exitcode 1, leeres stdout und den erwarteten Code auf stderr.
+- QA muss die ursprünglichen Reproduktionsschritte unabhängig erneut ausführen und erst
+  danach den Status auf `VERIFIZIERT` setzen.
+
+### Offene Fragen (vererbt)
+
+Keine.
+
+### Nicht-Ziele
+
+Keine Änderung an der blockierenden Vault-Policy oder an Suchranking und Semantik.
+
+---

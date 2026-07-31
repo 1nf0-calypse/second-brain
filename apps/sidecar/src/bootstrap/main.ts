@@ -8,6 +8,7 @@ import { performSetupHandshake } from './setup-service.js';
 import { startMcpServer } from '../mcp-gateway/server.js';
 import { LocalIndex } from '../indexing/sqlite-index.js';
 import { SearchService } from '../search/search-service.js';
+import { toPublicErrorResponse } from '../errors/public-error.js';
 
 const vaultRoot = process.env['SECOND_BRAIN_VAULT_ROOT'];
 
@@ -65,10 +66,7 @@ if (!vaultRoot) {
       await startMcpServer(vaultRoot, indexPath);
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown sidecar error';
-    process.stderr.write(
-      `${JSON.stringify({ level: 'error', code: 'SIDECAR_START_FAILED', message })}\n`
-    );
+    process.stderr.write(`${JSON.stringify(toPublicErrorResponse(error))}\n`);
     process.exitCode = 1;
   }
 }

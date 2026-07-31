@@ -16,6 +16,12 @@ export const ErrorCodeSchema = z.enum([
   'FILE_NOT_FOUND'
 ]);
 
+export const ErrorResponseSchema = z.object({
+  level: z.literal('error'),
+  code: ErrorCodeSchema,
+  message: z.string().min(1)
+}).strict();
+
 export const SetupRequestSchema = z.object({
   contractVersion: z.literal(CONTRACT_VERSION),
   client: z.literal('claude-desktop'),
@@ -84,3 +90,5 @@ export type SearchResult = z.infer<typeof SearchResultSchema>;
 export type SearchResponse = z.infer<typeof SearchResponseSchema>;
 export type ReadNoteRequest = z.infer<typeof ReadNoteRequestSchema>;
 export type ReadNoteResponse = z.infer<typeof ReadNoteResponseSchema>;
+export type ErrorCode = z.infer<typeof ErrorCodeSchema>;
+export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;

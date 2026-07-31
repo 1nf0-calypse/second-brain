@@ -3,9 +3,13 @@
 // Agent:        BE — 2026-07-30
 import { lstat, realpath } from 'node:fs/promises';
 import { isAbsolute, relative, resolve } from 'node:path';
+import type { ErrorCode } from '@second-brain/contracts';
 
 export class VaultScopeError extends Error {
-  public constructor(message: string) {
+  public constructor(
+    public readonly code: Extract<ErrorCode, 'INVALID_VAULT' | 'PATH_OUTSIDE_VAULT'>,
+    message: string
+  ) {
     super(message);
     this.name = 'VaultScopeError';
   }
@@ -23,14 +27,20 @@ export async function validateVaultRoot(candidate: string): Promise<string> {
     const vaultStat = await lstat(canonical);
     const obsidianStat = await lstat(resolve(canonical, '.obsidian'));
     if (!vaultStat.isDirectory() || !obsidianStat.isDirectory()) {
-      throw new VaultScopeError('This folder is not a readable Obsidian vault.');
+      throw new VaultScopeError(
+        'INVALID_VAULT',
+        'This folder is not a readable Obsidian vault.'
+      );
     }
     return canonical;
   } catch (error: unknown) {
     if (error instanceof VaultScopeError) {
       throw error;
     }
-    throw new VaultScopeError('This folder is not a readable Obsidian vault.');
+    throw new VaultScopeError(
+      'INVALID_VAULT',
+      'This folder is not a readable Obsidian vault.'
+    );
   }
 }
 
@@ -46,7 +56,10 @@ export async function resolveInsideVault(
   requestedPath: string
 ): Promise<string> {
   if (isAbsolute(requestedPath)) {
-    throw new VaultScopeError('This path leaves the vault you approved. Access was blocked.');
+    throw new VaultScopeError(
+      'PATH_OUTSIDE_VAULT',
+      'This path leaves the vault you approved. Access was blocked.'
+    );
   }
   try {
     const candidate = resolve(vaultRoot, requestedPath);
@@ -56,13 +69,19 @@ export async function resolveInsideVault(
       relation === '..' ||
       relation.startsWith(`..${process.platform === 'win32' ? '\\' : '/'}`)
     ) {
-      throw new VaultScopeError('This path leaves the vault you approved. Access was blocked.');
+      throw new VaultScopeError(
+        'PATH_OUTSIDE_VAULT',
+        'This path leaves the vault you approved. Access was blocked.'
+      );
     }
     return canonical;
   } catch (error: unknown) {
     if (error instanceof VaultScopeError) {
       throw error;
     }
-    throw new VaultScopeError('This path leaves the vault you approved. Access was blocked.');
+    throw new VaultScopeError(
+      'PATH_OUTSIDE_VAULT',
+      'This path leaves the vault you approved. Access was blocked.'
+    );
   }
 }

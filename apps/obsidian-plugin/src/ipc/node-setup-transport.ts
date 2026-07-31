@@ -1,8 +1,11 @@
 // Beschreibung: Lokaler Kindprozess-Transport mit operationsspezifischen Zeitlimits.
-// Artefakte:    US-000011; US-000005; US-000012; ADR-000001
-// Agent:        FE — 2026-07-31
+// Artefakte:    US-000011; US-000005; US-000012; BUG-000003; ADR-000001
+// Agent:        BE — 2026-07-31
 import { execFile } from 'node:child_process';
-import { CONTRACT_VERSION } from '@second-brain/contracts';
+import {
+  CONTRACT_VERSION,
+  ErrorResponseSchema
+} from '@second-brain/contracts';
 import type { SetupTransport } from './setup-client.js';
 import type { SearchTransport } from './search-client.js';
 
@@ -100,6 +103,17 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport {
     );
   }
 
+  /**
+   * Führt eine Sidecar-Operation aus und bewahrt validierte öffentliche Fehlercodes.
+   * @param operation CLI-Operation.
+   * @param vaultRoot Freigegebener Vault-Root.
+   * @param operationEnvironment Operationsspezifische Umgebungswerte.
+   * @param timeout Maximale Laufzeit in Millisekunden.
+   * @param signal Optionales Abbruchsignal.
+   * @returns Geparste Erfolgsantwort.
+   * @throws Bei Abbruch, Timeout, validiertem Sidecar-Fehler oder ungültiger Antwort.
+   * @sideEffect Startet genau einen lokalen Node-Prozess.
+   */
   private run(
     operation: string,
     vaultRoot: string,
@@ -122,8 +136,15 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport {
             ...operationEnvironment
           }
         },
-        (error, stdout) => {
+        (error, stdout, stderr) => {
           if (error) {
+            try {
+              const response = ErrorResponseSchema.parse(JSON.parse(stderr.trim()));
+              reject(new Error(`${response.code}: ${response.message}`));
+              return;
+            } catch {
+              // Nur vollständig validierte Sidecar-Fehler dürfen die UI-Grenze passieren.
+            }
             const message =
               error.name === 'AbortError'
                 ? 'The operation was cancelled.'

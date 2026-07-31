@@ -12,6 +12,7 @@ import { LocalIndex } from '../indexing/sqlite-index.js';
 import { performSetupHandshake } from '../bootstrap/setup-service.js';
 import { validateVaultRoot } from '../policy/vault-root.js';
 import { SearchService } from '../search/search-service.js';
+import { toMcpToolError } from '../errors/public-error.js';
 
 /**
  * Startet den MCP-Server über stdio.
@@ -85,25 +86,29 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
   }));
 
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    if (request.params.name === 'second_brain_setup_status') {
-      const result = await performSetupHandshake({
-        contractVersion: CONTRACT_VERSION,
-        client: 'claude-desktop',
-        vaultRoot: canonicalVault
-      });
-      return { content: [{ type: 'text', text: JSON.stringify(result) }] };
-    }
-    if (request.params.name === 'second_brain_rebuild_index') {
-      const status = await index.rebuild(canonicalVault);
-      return { content: [{ type: 'text', text: JSON.stringify(status) }] };
-    }
-    if (request.params.name === 'second_brain_search') {
-      const result = search.search(request.params.arguments ?? {});
-      return { content: [{ type: 'text', text: JSON.stringify(result) }] };
-    }
-    if (request.params.name === 'second_brain_read_note') {
-      const result = await search.readNote(request.params.arguments ?? {});
-      return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+    try {
+      if (request.params.name === 'second_brain_setup_status') {
+        const result = await performSetupHandshake({
+          contractVersion: CONTRACT_VERSION,
+          client: 'claude-desktop',
+          vaultRoot: canonicalVault
+        });
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_rebuild_index') {
+        const status = await index.rebuild(canonicalVault);
+        return { content: [{ type: 'text' as const, text: JSON.stringify(status) }] };
+      }
+      if (request.params.name === 'second_brain_search') {
+        const result = search.search(request.params.arguments ?? {});
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_read_note') {
+        const result = await search.readNote(request.params.arguments ?? {});
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+    } catch (error: unknown) {
+      return toMcpToolError(error);
     }
     throw new Error(`Unknown read-only tool: ${request.params.name}`);
   });

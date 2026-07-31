@@ -26,7 +26,9 @@ describe('vault root policy', () => {
 
   it('lehnt einen Ordner ohne .obsidian ab', async () => {
     const root = await mkdtemp(join(tmpdir(), 'second-brain-invalid-'));
-    await expect(validateVaultRoot(root)).rejects.toBeInstanceOf(VaultScopeError);
+    await expect(validateVaultRoot(root)).rejects.toMatchObject({
+      code: 'INVALID_VAULT'
+    });
   });
 
   it('lehnt Dateien und eine .obsidian-Datei als Vault ab', async () => {
@@ -57,7 +59,9 @@ describe('vault root policy', () => {
     const parentOutsideFile = join(dirname(root), `${basename(root)}-outside.md`);
     await writeFile(parentOutsideFile, 'not exposed');
 
-    await expect(resolveInsideVault(root, outsideFile)).rejects.toBeInstanceOf(VaultScopeError);
+    await expect(resolveInsideVault(root, outsideFile)).rejects.toMatchObject({
+      code: 'PATH_OUTSIDE_VAULT'
+    });
     await expect(
       resolveInsideVault(root, join('..', basename(parentOutsideFile)))
     ).rejects.toBeInstanceOf(VaultScopeError);

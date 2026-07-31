@@ -19,4 +19,4 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 | `TR-000004-sprint-2.md` | TR-000004 | 1.0 | REJECTED | QA | Sprint-2-Testlauf; Gate 7 wegen Scope-Fehlercode und offener Desktop-P0-Pfade fehlgeschlagen |
 | `BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
 | `BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
-| `BUG-000003-scope-error-code-generic.md` | BUG-000003 | 1.0 | OFFEN | QA | Scope-Verletzung sicher blockiert, aber generisch gemeldet |
+| `BUG-000003-scope-error-code-generic.md` | BUG-000003 | 1.1 | BEHOBEN | BE | Scope-Verletzung wird über CLI, MCP und Plugin stabil typisiert |

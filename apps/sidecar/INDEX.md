@@ -9,3 +9,4 @@ Letzte Aktualisierung: 2026-07-31
 | `src/policy/` | Vault-Root-, Traversal- und Symlink-Schutz |
 | `src/indexing/` | SQLite-Migration, FTS5, Quellenmetadaten, Delta und Rebuild |
 | `src/search/` | Gemeinsamer Search-/Read-Service mit Vault-Scope |
+| `src/errors/` | Versionierte öffentliche Fehlerabbildung für CLI und MCP |

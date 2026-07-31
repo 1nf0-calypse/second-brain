@@ -10,7 +10,7 @@ export default defineConfig({
       provider: 'v8',
       include: [
         'packages/{contracts,domain}/src/**/*.ts',
-        'apps/sidecar/src/{bootstrap/setup-service,indexing,policy,search}/**/*.ts',
+        'apps/sidecar/src/{bootstrap/setup-service,errors,indexing,policy,search}/**/*.ts',
         'apps/obsidian-plugin/src/ipc/{setup-client,search-client}.ts',
         'apps/obsidian-plugin/src/ui/presentation.ts'
       ],
