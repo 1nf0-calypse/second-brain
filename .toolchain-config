@@ -7,14 +7,14 @@
 #   npm run lint
 #   ruff check .
 #   golangci-lint run
-lint=
+lint=npm run lint
 
 # Test-Befehl (für /test-run)
 # Beispiele:
 #   npm test
 #   pytest
 #   go test ./...
-test=
+test=npm test
 
 # Coverage-Befehl
-coverage=
+coverage=npm run test:coverage

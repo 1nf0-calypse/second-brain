@@ -1,0 +1,10 @@
+{
+  "id": "second-brain-mcp",
+  "name": "Second Brain MCP",
+  "version": "2.2.0",
+  "minAppVersion": "1.8.0",
+  "description": "A local MCP-first Second Brain for Obsidian, continued by Frederik Hirche.",
+  "author": "Frederik Hirche",
+  "authorUrl": "https://github.com/1nf0-calypse",
+  "isDesktopOnly": true
+}

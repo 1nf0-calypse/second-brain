@@ -1,0 +1,112 @@
+---
+id: TR-000002
+title: Testergebnis Second Brain Sprint 1 — Bugfix-Rücklauf
+version: 1.0
+status: APPROVED
+author-agent: QA (QA Engineer)
+date: 2026-07-30
+project: second-brain
+sprint: 1
+based-on: TP-000001, TR-000001, BUG-000001, BUG-000002
+supersedes: —
+superseded-by: —
+---
+
+# Testergebnis: Second Brain — Sprint 1, Bugfix-Rücklauf
+
+## Ergebnis
+
+**Empfehlung:** `APPROVED`
+
+BUG-000001 und BUG-000002 sind unabhängig verifiziert. Der verpflichtende echte
+Obsidian↔Claude-Desktop-P0-Clickpfad ist in einer temporären isolierten Umgebung bestanden.
+Es existiert kein offener BLOCKER-Bug; Gate 7 ist `PASS`.
+
+## Automatisierte Evidenz
+
+| Prüfung | Ergebnis |
+|---|---|
+| `npm ci` | PASS |
+| `npm run build` | PASS |
+| Paketvertrag | PASS — 4/4 erforderliche Dateien vorhanden |
+| `npm run lint` | PASS |
+| `npm test` | PASS — 20/20 in 7 Testdateien |
+| `npm run test:coverage` | PASS |
+| `npx playwright test --headed` | PASS — 4/4 in 10,2 s |
+| `npm audit --audit-level=low` | PASS — 0 Schwachstellen |
+
+Coverage: 95,60 % Statements, 87,50 % Branches, 100 % Funktionen und 95,45 % Zeilen.
+Der Playwright-HTML-Report liegt unter `testing/playwright-report/`.
+
+## Bug-Verifikation
+
+| Bug | Ergebnis | Evidenz |
+|---|---|---|
+| BUG-000001 | VERIFIZIERT | Vollständiges Paket: `manifest.json`, `main.js`, `styles.css`, `sidecar/main.js`; Packaging-Regression grün |
+| BUG-000002 | VERIFIZIERT | Echter Node-Kindprozess-Handshake; `setup:read`; realer Sidecar-Pfad; kein Platzhalter |
+
+## Performance
+
+| ID | Ergebnis |
+|---|---|
+| PERF-000001 | 30/30 Handshakes; P95 479,09 ms; Max 505,13 ms; 0 Timeouts |
+| PERF-000002 | Initialindex 500 × 4 KiB: 2.403,62 ms; Peak RSS 105.017.344 Byte |
+| PERF-000003 | Ein Delta: 1.911,29 ms; `changedFiles=1`; schneller als Initiallauf |
+| PERF-000004 | No-op: 1.127,38 ms; `changedFiles=0` |
+| PERF-000005 | Rebuild: 1.812,34 ms; Vault-Hashes unverändert |
+| PERF-000006 | Headed UI-Suite: 4 Tests in 10,2 s; keine Doppelübermittlung |
+
+Es ist kein allgemeines Performance-Budget definiert; diese Werte sind Ausgangsmessungen.
+Die harte Handshake-Grenze von fünf Sekunden wurde deutlich eingehalten.
+
+## Echter Windows-Systempfad
+
+Obsidian 1.12.7 und Claude Desktop 1.24012.9.0 wurden mit dem synthetischen Vault unter
+`testing/system-vault/` getestet. Obsidian lud das manuell installierte Plugin 0.1.0 ohne
+Fehler. Die native Setup-View erzeugte den absoluten Sidecar-Pfad und meldete nach dem
+Verbindungstest `Claude Desktop connected with read-only setup access.`.
+
+Claude Desktop startete den konfigurierten Sidecar nach dem Reload nachweislich als
+`node.exe`-Kindprozess. Bei 200 % Zoom und 320 px Pane-Breite blieben beide Aktionen sichtbar;
+Copy- und Test-Aktion funktionierten. Anschließend wurden die ursprünglichen Obsidian- und
+Claude-Konfigurationen wiederhergestellt und der persönliche Vault nicht verändert.
+
+## Gate-7-Selbstprüfung
+
+- [x] TP-000001 ist APPROVED.
+- [x] Automatisierte Tests, Build, Lint, Coverage und Audit sind grün.
+- [x] Browser-Clickpfade wurden headed ausgeführt.
+- [x] Performance-Ergebnisse sind gemessen.
+- [x] Beide BLOCKER-Bugs sind VERIFIZIERT.
+- [x] Root-Cause und Regressionstests sind vollständig.
+- [x] TC-000001 echter Obsidian↔Claude-Desktop-Pfad vollständig bestanden.
+- [x] TC-000009 echtes Obsidian-Pane bei 200 % Zoom vollständig bestanden.
+- [x] Gate 7 vollständig bestanden.
+
+## Übergabe: QA → RV
+
+**Datum:** 2026-07-30
+**Von:** QA Engineer (QA)
+**An:** Code Reviewer (RV)
+**Nächster Befehl:** `/review second-brain 1`
+
+### Übergebene Artefakte
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| BUG-000001 | VERIFIZIERT | `testing/BUG-000001-plugin-package-incomplete.md` | Packaging-Fix bestätigt |
+| BUG-000002 | VERIFIZIERT | `testing/BUG-000002-native-node-launch-invalid.md` | Runtime-/Konfigurationsfix bestätigt |
+| TR-000002 | APPROVED | `testing/TR-000002-sprint-1.md` | Gate 7 bestanden |
+
+### Kritische Informationen
+
+Der echte Desktop-Pfad wurde mit temporären Konfigurationen geprüft. Die ursprünglichen
+Konfigurationen wurden danach wiederhergestellt; die Sicherungsdateien wurden entfernt.
+
+### Offene Fragen
+
+Keine offenen BLOCKER- oder MAJOR-Fragen.
+
+### Nicht-Ziele
+
+Keine Prüfung von ChatGPT, Mistral, Suche, Mutationen, Graph oder Android.

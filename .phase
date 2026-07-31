@@ -3,12 +3,12 @@
 # Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
 
 project: second-brain
-current-phase: IMPLEMENTATION
-previous-phase: ANALYSIS
-phase-started: 2026-07-30
+current-phase: DONE
+previous-phase: DOCUMENTATION
+phase-started: 2026-07-31
 sprint: 1
-last-agent: ORCH
-last-artifact: SP-000002
+last-agent: MW
+last-artifact: RN-000001
 worktree-path: projects/second-brain/.worktrees/sprint-1
 worktree-branch: feature/sprint-1
 
@@ -42,3 +42,33 @@ history:
     completed: 2026-07-30
   - phase: IMPLEMENTATION
     started: 2026-07-30
+    completed: 2026-07-30
+  - phase: TESTING
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [TP-000001, TR-000001, TR-000002, BUG-000001, BUG-000002]
+  - phase: REVIEW
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [RV-000002, DEBT-000001]
+  - phase: DOCUMENTATION
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [RV-000001]
+  - phase: IMPLEMENTATION
+    started: 2026-07-30
+    completed: 2026-07-30
+  - phase: TESTING
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [TP-000002, TR-000003]
+  - phase: REVIEW
+    started: 2026-07-30
+    completed: 2026-07-30
+    artifacts: [RV-000002, DEBT-000001]
+  - phase: DOCUMENTATION
+    started: 2026-07-31
+    completed: 2026-07-31
+    artifacts: [DOC-000001, DOC-000002, GS-000001, RN-000001]
+  - phase: DONE
+    started: 2026-07-31

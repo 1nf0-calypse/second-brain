@@ -1,24 +1,90 @@
-# [Projektname]
+# Second Brain MCP
 
-[Kurzbeschreibung — 1 Satz, aus SB-000001 übernommen]
+Second Brain MCP is a local, MCP-first Obsidian plugin that connects an existing vault to
+supported AI clients and maintains a local incremental index without migrating or modifying
+the original notes.
 
-Dieses Repository wird von der [AI Development Tool Chain](../../CLAUDE.md) verwaltet.
-Alle Projekt-Artefakte liegen in den typspezifischen Unterordnern dieses Verzeichnisses
-(siehe `INDEX.md`).
+## Project history
 
-## Setup
+Second Brain was originally created by Ruowen Wang and released through version 2.1.21.
+Second Brain MCP is an independent Community Plugin continuation developed and maintained
+by Frederik Hirche. It uses the distinct Obsidian plugin ID `second-brain-mcp`, so the
+original `second-brain` Community Plugin remains available and unchanged.
 
-```bash
-# Git Hooks installieren (einmalig)
-bash ../../toolchain/hooks/setup-hooks.sh
+- Original project: <https://github.com/graceruowenwang/obsidian-second-brain>
+- Continued development: <https://github.com/1nf0-calypse/second-brain>
 
-# .toolchain-config befüllen (Lint-/Test-Befehle)
+The original copyright and MIT license notice are preserved in `LICENSE`.
+
+## Current scope
+
+Version 2.2.0 provides the first release of this continuation:
+
+- local Claude Desktop connection through MCP;
+- no additional LLM API key in the plugin;
+- local incremental SQLite indexing;
+- safe index rebuilds that preserve the last valid index on failure;
+- no forced vault migration;
+- no persistent external storage of vault contents.
+
+ChatGPT, Mistral, search, knowledge-graph exploration, and controlled mutations are planned
+separately and are not part of this release.
+
+## Requirements
+
+- Windows desktop
+- Obsidian 1.8.0 or later
+- Node.js 24 LTS
+- Claude Desktop for the currently supported MCP setup
+
+## Development
+
+```powershell
+npm ci
+npm run lint
+npm test
+npm run test:coverage
+npm run build
 ```
 
-## Projektstatus
+The installable plugin is created in `dist/obsidian-plugin/` and contains:
 
-Siehe [`.phase`](.phase) für die aktuelle Phase und [`INDEX.md`](INDEX.md) für alle Artefakte.
+- `manifest.json`
+- `main.js`
+- `styles.css`
 
-## Entwicklung
+The Community Plugin bundle embeds the local sidecar in `main.js`. On first load, the
+plugin materializes `sidecar/main.js` inside its own plugin directory.
 
-[Wird vom Architect-Agent nach ADR-000001 befüllt: Install-, Dev-, Test-, Build-Befehle.]
+## Local Claude Desktop setup
+
+1. Build the project.
+2. Install the contents of `dist/obsidian-plugin/` in
+   `.obsidian/plugins/second-brain-mcp/`.
+3. Restart or disable and re-enable the plugin so Obsidian loads the new bundle.
+4. Open the command palette and run **Second Brain MCP: Open setup**.
+5. Select the local vault.
+6. Merge the displayed `mcpServers` entry into the existing top-level Claude Desktop
+   configuration. Do not append it as a second JSON object.
+7. Restart Claude Desktop and verify the Second Brain connection.
+
+The sidecar can also be started directly for development:
+
+```powershell
+$env:SECOND_BRAIN_VAULT_ROOT='C:\path\to\vault'
+node dist/obsidian-plugin/sidecar/main.js
+```
+
+## Security
+
+- MCP exposes only explicitly defined capabilities.
+- Paths outside the approved vault root, traversal attempts, and symbolic-link escapes are
+  blocked.
+- The derived index is stored locally.
+- Original vault files are read-only during setup and indexing.
+- Vault contents and secrets are not written to logs.
+- Test fixtures contain synthetic data only.
+
+## License
+
+Second Brain MCP is distributed under the MIT License. See [LICENSE](LICENSE).

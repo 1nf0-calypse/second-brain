@@ -76,19 +76,19 @@ artifacts:
     GAP: 1
     UX: 3
     SP: 3
-    TP: 1
-    TR: 1
-    RV: 1
-    BUG: 1
-    DEBT: 1
+    TP: 3
+    TR: 4
+    RV: 3
+    BUG: 3
+    DEBT: 2
     SRP: 1
-    DOC: 1
-    RN: 1
-    GS: 1
+    DOC: 3
+    RN: 2
+    GS: 2
     FAQ: 1
-    RETRO: 1
+    RETRO: 2
     IMPD: 1
-    PC: 1
+    PC: 2
 
 # ─────────────────────────────────────
 # Hook-Konfiguration
