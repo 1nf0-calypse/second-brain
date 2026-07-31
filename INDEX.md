@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: REFINEMENT
+Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 
 ## Aktive Artefakte
 
@@ -103,12 +103,47 @@ Letzte Aktualisierung: 2026-07-31 | Phase: REFINEMENT
 | 2026-07-31 | Gate 9 (Sprint 3 Documentation → Done) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5 (Sprint 4 Refinement → Implementation-ready) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5.5 (`/implement`-Preflight, SP-000005) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 6 (Sprint 4 Implementation → Testing) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
-Sprint 4 ist mit US-000014 und SP-000005 `APPROVED`: kontrolliertes Erstellen oder
-Aktualisieren genau einer Markdown-Notiz mit Preview, Confirm, Audit, Konfliktschutz und
-Rollback. Löschen und höhere Autonomie sind ausgeschlossen.
+Sprint 4 ist implementiert und an QA übergeben: kontrolliertes Erstellen oder Aktualisieren
+genau einer Markdown-Notiz mit read-only Preview, einmaligem Confirm-Token, Audit,
+Hash-Konfliktschutz, atomarem Write und bestätigtem Rollback.
+
+## Übergabe: FE+BE → QA — Sprint 4
+
+**Datum:** 2026-07-31
+**Von:** Frontend + Backend Developer (FE+BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-plan second-brain 4`
+
+### Übergebene Artefakte
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| US-000014 | implementiert | `packages/contracts/`, `apps/sidecar/`, `apps/obsidian-plugin/` | Preview/Confirm/Audit/Rollback für genau eine Markdown-Datei |
+| Integrationstests | bestanden | `tests/integration/mutation-service.test.ts`, `tests/integration/mcp-mutations.test.ts` | Service, Prozessgrenze, MCP/stdio, Konflikt und Replay |
+| UI-E2E | bestanden | `tests/e2e/mutations.spec.ts` | Separate Vorschau und Bestätigung einschließlich Rollback |
+
+### Kritische Informationen für Empfänger
+
+- Bestätigungstokens gelten zehn Minuten, sind persistent und genau einmal verwendbar.
+- Änderungen nach der Vorschau werden über SHA-256 erkannt und blockiert.
+- Mutationsmodul erreicht 90 % Branch-Coverage; 62 Vitest- und 10 Playwright-Tests bestehen.
+
+### Offene Fragen (vererbt)
+
+Keine.
+
+### Nicht-Ziele (explizit ausgeschlossen)
+
+Direktes Löschen, Verschieben/Umbenennen, Mehrdatei-Mutationen und autonome Schreibmodi.
+
+### Empfehlungen
+
+QA sollte den nativen Obsidian-Pfad für Update, Create, Konflikt, Token-Replay und Rollback
+mit einem synthetischen Vault abnehmen.
 
 ## Übergabe: FE/BE → QA — Sprint 3
 

@@ -6,7 +6,7 @@
     <title>Second Brain setup QA harness</title>
     <style>
       body { font-family: sans-serif; max-width: 48rem; margin: 0 auto; padding: 1rem; }
-      input, button { box-sizing: border-box; min-height: 44px; width: 100%; }
+      input, textarea, button { box-sizing: border-box; min-height: 44px; width: 100%; }
       .actions { display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
       pre { overflow-wrap: anywhere; white-space: pre-wrap; }
       @media (max-width: 479px) { .actions { grid-template-columns: 1fr; } }
@@ -52,6 +52,20 @@
         <p data-testid="relationship-status" role="status" aria-live="polite" tabindex="-1">Open a note, then refresh this view.</p>
         <ul data-testid="relationship-list" aria-label="Direct relationships"></ul>
       </section>
+      <hr>
+      <section aria-labelledby="mutation-title">
+        <h2 id="mutation-title">Review note change</h2>
+        <p>Nothing is written until you inspect the preview and confirm it.</p>
+        <label for="mutation-path">Vault-relative Markdown path</label>
+        <input id="mutation-path" data-testid="mutation-path" value="Alpha.md">
+        <label for="mutation-content">Complete proposed note content</label>
+        <textarea id="mutation-content" data-testid="mutation-content"># Alpha changed</textarea>
+        <button data-testid="prepare-mutation">Prepare read-only preview</button>
+        <pre data-testid="mutation-diff" hidden aria-label="Change preview"></pre>
+        <button data-testid="confirm-mutation" hidden disabled>Confirm this exact change</button>
+        <button data-testid="prepare-rollback" hidden>Prepare rollback</button>
+        <p data-testid="mutation-status" role="status" aria-live="polite" tabindex="-1">Enter a proposed change.</p>
+      </section>
     </main>
     <script>
       const input = document.querySelector('[data-testid="vault-root"]');
@@ -67,6 +81,10 @@
       const searchResults = document.querySelector('[data-testid="search-results"]');
       const relationshipStatus = document.querySelector('[data-testid="relationship-status"]');
       const relationshipList = document.querySelector('[data-testid="relationship-list"]');
+      const mutationDiff = document.querySelector('[data-testid="mutation-diff"]');
+      const mutationConfirm = document.querySelector('[data-testid="confirm-mutation"]');
+      const mutationRollback = document.querySelector('[data-testid="prepare-rollback"]');
+      const mutationStatus = document.querySelector('[data-testid="mutation-status"]');
       input.addEventListener('input', () => {
         const ready = input.value.trim().length > 0;
         copy.disabled = !ready;
@@ -137,6 +155,32 @@
         }
         relationshipStatus.textContent = '4 direct relationships for Alpha.md.';
         relationshipStatus.focus();
+      });
+      document.querySelector('[data-testid="prepare-mutation"]').addEventListener('click', () => {
+        mutationDiff.hidden = false;
+        mutationDiff.textContent = '- # Alpha\n+ # Alpha changed';
+        mutationConfirm.hidden = false;
+        mutationConfirm.disabled = false;
+        mutationStatus.textContent = 'Read-only update preview ready for Alpha.md.';
+        mutationStatus.focus();
+      });
+      mutationConfirm.addEventListener('click', () => {
+        mutationDiff.hidden = true;
+        mutationConfirm.hidden = true;
+        mutationConfirm.disabled = true;
+        mutationRollback.hidden = false;
+        mutationStatus.textContent = 'update confirmed for Alpha.md. Audit ID: synthetic-audit';
+        mutationStatus.focus();
+      });
+      mutationRollback.addEventListener('click', () => {
+        mutationRollback.hidden = true;
+        mutationDiff.hidden = false;
+        mutationDiff.textContent = '- # Alpha changed\n+ # Alpha';
+        mutationConfirm.textContent = 'Confirm this exact rollback';
+        mutationConfirm.hidden = false;
+        mutationConfirm.disabled = false;
+        mutationStatus.textContent = 'Read-only rollback preview ready for Alpha.md.';
+        mutationStatus.focus();
       });
     </script>
   </body>

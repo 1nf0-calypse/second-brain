@@ -3,12 +3,12 @@
 # Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
 
 project: second-brain
-current-phase: IMPLEMENTATION
-previous-phase: REFINEMENT
+current-phase: TESTING
+previous-phase: IMPLEMENTATION
 phase-started: 2026-07-31
 sprint: 4
-last-agent: ORCH
-last-artifact: SP-000005
+last-agent: FE+BE
+last-artifact: US-000014
 approval-source: transition-command
 approval-command: /implement all second-brain
 approved-artifacts: [US-000014@1.0, SP-000005@1.0]
@@ -197,5 +197,9 @@ history:
     completed: 2026-07-31
     artifacts: [US-000014, SP-000005]
   - phase: IMPLEMENTATION
+    started: 2026-07-31
+    completed: 2026-07-31
+    artifacts: [US-000014, SP-000005]
+  - phase: TESTING
     started: 2026-07-31
     artifacts: [US-000014, SP-000005]

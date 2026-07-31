@@ -1,0 +1,168 @@
+// Beschreibung: Prüft Human-in-Mutationen, Konflikte, Replay und Rollback auf echten Dateien.
+// Artefakte:    US-000014; ADR-000004
+// Agent:        BE — 2026-07-31
+import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+import { MutationService } from '../../apps/sidecar/src/mutations/mutation-service.js';
+
+const roots: string[] = [];
+
+afterEach(async () => {
+  await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
+});
+
+async function fixture(now = Date.now()): Promise<{
+  root: string;
+  service: MutationService;
+  advance(milliseconds: number): void;
+}> {
+  const root = await mkdtemp(join(tmpdir(), 'second-brain-mutation-'));
+  roots.push(root);
+  await mkdir(join(root, '.obsidian'));
+  await mkdir(join(root, '.second-brain'));
+  let current = now;
+  return {
+    root,
+    service: new MutationService(root, join(root, '.second-brain', 'index.sqlite'), () => current),
+    advance(milliseconds: number): void {
+      current += milliseconds;
+    }
+  };
+}
+
+describe('MutationService', () => {
+  it('previews without changing and atomically confirms one update', async () => {
+    const { root, service } = await fixture();
+    await writeFile(join(root, 'Note.md'), 'before\n');
+
+    const preview = await service.prepare('Note.md', 'after\n');
+    expect(preview).toMatchObject({ action: 'update', relativePath: 'Note.md', readOnly: true });
+    expect(preview.diff).toContain('- before');
+    expect(await readFile(join(root, 'Note.md'), 'utf8')).toBe('before\n');
+
+    const result = await service.confirm(preview.token);
+    expect(result).toMatchObject({ action: 'update', relativePath: 'Note.md', changed: true });
+    expect(await readFile(join(root, 'Note.md'), 'utf8')).toBe('after\n');
+    await expect(service.confirm(preview.token)).rejects.toMatchObject({
+      code: 'CONFIRMATION_INVALID'
+    });
+    service.close();
+  });
+
+  it('creates a Markdown note and rolls that mutation back after a second preview', async () => {
+    const { root, service } = await fixture();
+    const preview = await service.prepare('Created.md', '# Created\n');
+    const result = await service.confirm(preview.token);
+    expect(await readFile(join(root, 'Created.md'), 'utf8')).toBe('# Created\n');
+
+    const rollback = await service.prepareRollback(result.auditId);
+    expect(rollback.action).toBe('rollback');
+    await service.confirm(rollback.token);
+    await expect(readFile(join(root, 'Created.md'), 'utf8')).rejects.toMatchObject({ code: 'ENOENT' });
+    service.close();
+  });
+
+  it('restores an updated note only while its confirmed hash is current', async () => {
+    const { root, service } = await fixture();
+    await writeFile(join(root, 'Note.md'), 'v1');
+    const result = await service.confirm((await service.prepare('Note.md', 'v2')).token);
+    const rollback = await service.prepareRollback(result.auditId);
+    await service.confirm(rollback.token);
+    expect(await readFile(join(root, 'Note.md'), 'utf8')).toBe('v1');
+
+    const next = await service.confirm((await service.prepare('Note.md', 'v3')).token);
+    await writeFile(join(root, 'Note.md'), 'external');
+    await expect(service.prepareRollback(next.auditId)).rejects.toMatchObject({
+      code: 'MUTATION_CONFLICT'
+    });
+    service.close();
+  });
+
+  it('blocks a confirm after the file changed since preview', async () => {
+    const { root, service } = await fixture();
+    await writeFile(join(root, 'Note.md'), 'before');
+    const preview = await service.prepare('Note.md', 'proposed');
+    await writeFile(join(root, 'Note.md'), 'external');
+    await expect(service.confirm(preview.token)).rejects.toMatchObject({
+      code: 'MUTATION_CONFLICT'
+    });
+    expect(await readFile(join(root, 'Note.md'), 'utf8')).toBe('external');
+    service.close();
+  });
+
+  it('rejects expired confirmations and non-Markdown or traversal targets', async () => {
+    const clockFixture = await fixture(1_000);
+    const { service } = clockFixture;
+    const preview = await service.prepare('Note.md', 'content');
+    clockFixture.advance(11 * 60 * 1_000);
+    await expect(service.confirm(preview.token)).rejects.toMatchObject({
+      code: 'CONFIRMATION_INVALID'
+    });
+    await expect(service.prepare('../Outside.md', 'x')).rejects.toMatchObject({
+      code: 'PATH_OUTSIDE_VAULT'
+    });
+    await expect(service.prepare('Attachment.pdf', 'x')).rejects.toMatchObject({
+      code: 'PATH_OUTSIDE_VAULT'
+    });
+    await expect(service.prepare('.obsidian/Plugin.md', 'x')).rejects.toMatchObject({
+      code: 'PATH_OUTSIDE_VAULT'
+    });
+    service.close();
+  });
+
+  it('rejects no-op previews and unknown rollback audit entries', async () => {
+    const { root, service } = await fixture();
+    await writeFile(join(root, 'Note.md'), 'same');
+    await expect(service.prepare('Note.md', 'same')).rejects.toMatchObject({
+      code: 'MUTATION_CONFLICT'
+    });
+    await expect(service.prepareRollback('11111111-1111-4111-8111-111111111111'))
+      .rejects.toMatchObject({ code: 'CONFIRMATION_INVALID' });
+    service.close();
+  });
+
+  it('blocks absolute, reserved, root and non-file Markdown targets', async () => {
+    const { root, service } = await fixture();
+    await mkdir(join(root, 'Folder.md'));
+    for (const path of [
+      root,
+      '',
+      '.second-brain/Internal.md',
+      'Folder.md'
+    ]) {
+      await expect(service.prepare(path, 'x')).rejects.toMatchObject({
+        code: 'PATH_OUTSIDE_VAULT'
+      });
+    }
+    service.close();
+  });
+
+  it('binds a token to one winning confirmation across service instances', async () => {
+    const { root, service } = await fixture();
+    await writeFile(join(root, 'Note.md'), 'before');
+    const preview = await service.prepare('Note.md', 'after');
+    const competitor = new MutationService(root, join(root, '.second-brain', 'index.sqlite'));
+    const outcomes = await Promise.allSettled([
+      service.confirm(preview.token),
+      competitor.confirm(preview.token)
+    ]);
+    expect(outcomes.filter((outcome) => outcome.status === 'fulfilled')).toHaveLength(1);
+    expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toHaveLength(1);
+    expect(await readFile(join(root, 'Note.md'), 'utf8')).toBe('after');
+    service.close();
+    competitor.close();
+  });
+
+  it('blocks a target whose existing parent resolves outside the vault', async () => {
+    const { root, service } = await fixture();
+    const outside = await mkdtemp(join(tmpdir(), 'second-brain-outside-'));
+    roots.push(outside);
+    await symlink(outside, join(root, 'Linked'), 'junction');
+    await expect(service.prepare('Linked/Escape.md', 'x')).rejects.toMatchObject({
+      code: 'PATH_OUTSIDE_VAULT'
+    });
+    service.close();
+  });
+});

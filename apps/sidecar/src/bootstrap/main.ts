@@ -1,5 +1,5 @@
-// Beschreibung: Sidecar-Startpunkt für MCP, Index- und read-only Suchoperationen.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; ADR-000001
+// Beschreibung: Sidecar-Startpunkt für MCP, Index-, Lese- und bestätigte Mutationsoperationen.
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; ADR-000001
 // Agent:        BE — 2026-07-31
 import { mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -9,6 +9,7 @@ import { startMcpServer } from '../mcp-gateway/server.js';
 import { LocalIndex } from '../indexing/sqlite-index.js';
 import { SearchService } from '../search/search-service.js';
 import { toPublicErrorResponse } from '../errors/public-error.js';
+import { MutationService } from '../mutations/mutation-service.js';
 
 const vaultRoot = process.env['SECOND_BRAIN_VAULT_ROOT'];
 
@@ -35,12 +36,16 @@ if (!vaultRoot) {
       process.argv.includes('--search') ||
       process.argv.includes('--read-note') ||
       process.argv.includes('--relationships') ||
-      process.argv.includes('--node-detail')
+      process.argv.includes('--node-detail') ||
+      process.argv.includes('--prepare-mutation') ||
+      process.argv.includes('--confirm-mutation') ||
+      process.argv.includes('--prepare-rollback')
     ) {
       await mkdir(dirname(indexPath), { recursive: true });
       const index = new LocalIndex(indexPath);
       try {
         const search = new SearchService(vaultRoot, index);
+        const mutations = new MutationService(vaultRoot, indexPath);
         let response: unknown;
         if (process.argv.includes('--rebuild-index')) {
           response = await index.rebuild(vaultRoot);
@@ -63,12 +68,27 @@ if (!vaultRoot) {
             process.env['SECOND_BRAIN_RELATIONSHIP_PATH'] ?? '',
             Number(process.env['SECOND_BRAIN_RELATIONSHIP_LIMIT'] ?? 100)
           );
-        } else {
+        } else if (process.argv.includes('--node-detail')) {
           response = index.nodeDetail(
             process.env['SECOND_BRAIN_RELATIONSHIP_PATH'] ?? ''
           );
+        } else if (process.argv.includes('--prepare-mutation')) {
+          response = await mutations.prepare(
+            process.env['SECOND_BRAIN_MUTATION_PATH'] ?? '',
+            process.env['SECOND_BRAIN_MUTATION_CONTENT'] ?? ''
+          );
+        } else if (process.argv.includes('--prepare-rollback')) {
+          response = await mutations.prepareRollback(
+            process.env['SECOND_BRAIN_AUDIT_ID'] ?? ''
+          );
+        } else {
+          response = await mutations.confirm(
+            process.env['SECOND_BRAIN_CONFIRMATION_TOKEN'] ?? ''
+          );
+          await index.synchronize(vaultRoot);
         }
         process.stdout.write(`${JSON.stringify(response)}\n`);
+        mutations.close();
       } finally {
         index.close();
       }

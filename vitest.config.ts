@@ -1,5 +1,5 @@
 // Beschreibung: Definiert Test- und Coverage-Gates für die testbaren Kernmodule.
-// Artefakte:    US-000011; US-000005; US-000012; ADR-000001
+// Artefakte:    US-000011; US-000005; US-000012; US-000014; ADR-000001
 // Agent:        QA — 2026-07-31
 import { defineConfig } from 'vitest/config';
 
@@ -10,8 +10,8 @@ export default defineConfig({
       provider: 'v8',
       include: [
         'packages/{contracts,domain}/src/**/*.ts',
-        'apps/sidecar/src/{bootstrap/setup-service,errors,indexing,policy,relationships,search}/**/*.ts',
-        'apps/obsidian-plugin/src/ipc/{setup-client,search-client}.ts',
+        'apps/sidecar/src/{bootstrap/setup-service,errors,indexing,mutations,policy,relationships,search}/**/*.ts',
+        'apps/obsidian-plugin/src/ipc/{setup-client,search-client,relationship-client,mutation-client}.ts',
         'apps/obsidian-plugin/src/ui/presentation.ts'
       ],
       thresholds: {
