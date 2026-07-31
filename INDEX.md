@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: RELEASED
+Letzte Aktualisierung: 2026-07-31 | Phase: REFINEMENT
 
 ## Aktive Artefakte
 
@@ -22,6 +22,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: RELEASED
 | `requirements/US-000010-android-use.md` | US-000010 | 1.0 | APPROVED | BA | Android-Nutzung nach Desktop-MVP |
 | `requirements/US-000011-claude-desktop-local-setup.md` | US-000011 | 1.0 | APPROVED | BA | Lieferbarer lokaler Claude-Desktop-Slice für Sprint 1 |
 | `requirements/US-000012-full-text-search-and-citations.md` | US-000012 | 1.0 | APPROVED | BA | Lieferbarer Volltext- und Quellen-Slice für Sprint 2 |
+| `requirements/US-000013-local-relationship-exploration.md` | US-000013 | 1.0 | REVIEW | BA | Lieferbarer read-only Relationship-Slice für Sprint 3 |
 | `architecture/ADR-000001-tech-stack.md` | ADR-000001 | 1.0 | APPROVED | AR | Tech-Stack, Systemdesign und NFR-Abdeckung |
 | `architecture/ADR-000002-modular-monolith.md` | ADR-000002 | 1.0 | APPROVED | AR | Prozess- und Modulgrenzen |
 | `architecture/ADR-000003-local-storage-and-retrieval.md` | ADR-000003 | 1.0 | APPROVED | AR | Lokale Datenhaltung und hybride Suche |
@@ -32,6 +33,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: RELEASED
 | `ux/UX-000002-claude-desktop-setup-slice.md` | UX-000002 | 1.0 | APPROVED | UX | Expliziter Claude-Desktop-Setup-Flow für US-000011 |
 | `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | 1.0 | APPROVED | BA+FE+BE | Verbindlicher Sprint-1-Backlog mit US-000011 und US-000005 |
 | `sprints/SP-000003-sprint-2-search.md` | SP-000003 | 1.0 | APPROVED | BA+FE+BE | Sprint-2-Backlog für Volltextsuche, Quellen und Sprint-1-Schuld |
+| `sprints/SP-000004-sprint-3-relationships.md` | SP-000004 | 1.0 | REVIEW | BA+FE+BE | Sprint-3-Backlog für lokale Relationship-Exploration |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
@@ -85,6 +87,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: RELEASED
 | 2026-07-31 | Gate 8 (Sprint 2 Review) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 9 (Sprint 2 Documentation → Done) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 10 (Sprint 2 Release → Released) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 5 (Sprint 3 Refinement → Implementation-ready) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 

@@ -3,15 +3,12 @@
 # Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
 
 project: second-brain
-current-phase: RELEASED
-previous-phase: DONE
+current-phase: REFINEMENT
+previous-phase: RELEASED
 phase-started: 2026-07-31
-sprint: 2
-last-agent: ORCH
-last-artifact: RN-000002
-approval-source: transition-command
-approval-command: /manual second-brain 2
-approved-artifacts: [RV-000003@1.0]
+sprint: 3
+last-agent: BA+FE+BE
+last-artifact: SP-000004
 # Phasen-History (wird vom Orchestrator gepflegt)
 history:
   - phase: INIT
@@ -73,12 +70,7 @@ history:
   - phase: DONE
     started: 2026-07-31
     completed: 2026-07-31
-    artifacts: [RN-000002]
-  - phase: RELEASED
-    started: 2026-07-31
-    completed: 2026-07-31
-    artifacts: [RN-000002]
-    completed: 2026-07-31
+    artifacts: [RN-000001]
   - phase: RELEASED
     started: 2026-07-31
     completed: 2026-07-31
@@ -121,3 +113,13 @@ history:
     artifacts: [DOC-000001@1.1, DOC-000003, FAQ-000001, RN-000002]
   - phase: DONE
     started: 2026-07-31
+    completed: 2026-07-31
+    artifacts: [RN-000002]
+  - phase: RELEASED
+    started: 2026-07-31
+    completed: 2026-07-31
+    artifacts: [RN-000002]
+  - phase: REFINEMENT
+    started: 2026-07-31
+    completed: 2026-07-31
+    artifacts: [US-000013, SP-000004]
