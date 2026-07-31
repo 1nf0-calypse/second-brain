@@ -38,6 +38,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
 | `testing/TP-000004-sprint-3.md` | TP-000004 | 1.0 | APPROVED | QA | Sprint-3-Testplan für Relationship-Exploration |
+| `testing/TR-000006-sprint-3.md` | TR-000006 | 1.0 | CONDITIONAL | QA | Sprint-3-Testlauf mit offener nativer Desktop-Evidenz |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `testing/TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |
@@ -91,11 +92,13 @@ Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 | 2026-07-31 | Gate 5 (Sprint 3 Refinement → Implementation-ready) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5.5 (`/implement`-Preflight, SP-000004) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 6 (Sprint 3 Implementation → Testing) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 7 (Sprint 3 Testing → Review) | CONDITIONAL | 0 | 1 | 0 |
 
 ## In Bearbeitung
 
 Sprint 3 ist vollständig implementiert und an QA übergeben.
-Der Testplan TP-000004 ist freigegeben; die Testausführung ist der nächste Schritt.
+TR-000006 ist `CONDITIONAL`: automatisiert vollständig grün; native Obsidian-/Claude-
+Desktop-Evidenz bleibt als MAJOR-Testumgebungsrisiko für den Review offen.
 
 ## Übergabe: FE/BE → QA — Sprint 3
 

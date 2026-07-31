@@ -11,3 +11,4 @@ Letzte Aktualisierung: 2026-07-31
 | `compatibility/` | Vertragsversion, Client-Scope und Konfiguration |
 | `e2e/` | Vitest-Logik plus Playwright-Clickpfade, Page Object und A11y |
 | `performance/` | Reproduzierbare Search-, Read-, Delta- und Security-Baselines |
+| `performance/relationships-baseline.mjs` | Graphabfrage, Delta, Rebuild und RSS auf 500 synthetischen Notizen |
