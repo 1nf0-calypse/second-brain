@@ -56,6 +56,18 @@ describe('MCP note mutations', () => {
       }));
       expect(confirmed).toMatchObject({ changed: true, relativePath: 'Note.md' });
       expect(await readFile(join(vaultRoot, 'Note.md'), 'utf8')).toBe('after');
+      const rollback = textResult(await client.callTool({
+        name: 'second_brain_prepare_rollback',
+        arguments: { auditId: confirmed['auditId'] }
+      }));
+      expect(rollback).toMatchObject({ action: 'rollback', readOnly: true });
+      expect(await readFile(join(vaultRoot, 'Note.md'), 'utf8')).toBe('after');
+      const rolledBack = textResult(await client.callTool({
+        name: 'second_brain_confirm_rollback',
+        arguments: { token: rollback['token'] }
+      }));
+      expect(rolledBack).toMatchObject({ action: 'rollback', changed: true });
+      expect(await readFile(join(vaultRoot, 'Note.md'), 'utf8')).toBe('before');
     } finally {
       await client.close();
     }

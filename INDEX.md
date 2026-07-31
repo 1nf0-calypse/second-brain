@@ -40,6 +40,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
 | `testing/TP-000004-sprint-3.md` | TP-000004 | 1.0 | APPROVED | QA | Sprint-3-Testplan für Relationship-Exploration |
+| `testing/TP-000005-sprint-4.md` | TP-000005 | 1.0 | APPROVED | QA | Sprint-4-Testplan für Preview, Confirm, Konflikt, Audit und Rollback |
 | `testing/TR-000006-sprint-3.md` | TR-000006 | 1.2 | APPROVED | QA | Automatisierte und native Desktop-Abnahme vollständig bestanden |
 | `testing/BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Schema-4-Migration nativ im aktiven Vault bestätigt |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
@@ -107,9 +108,9 @@ Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 
 ## In Bearbeitung
 
-Sprint 4 ist implementiert und an QA übergeben: kontrolliertes Erstellen oder Aktualisieren
-genau einer Markdown-Notiz mit read-only Preview, einmaligem Confirm-Token, Audit,
-Hash-Konfliktschutz, atomarem Write und bestätigtem Rollback.
+Sprint 4 befindet sich in der Testphase. TP-000005 ist `APPROVED` und deckt die fünf
+Szenarien aus US-000014 mit Service-, CLI-, MCP-, UI-, Security-, Windows-Lock-,
+Performance- und echten Desktop-Systemtests ab.
 
 ## Übergabe: FE+BE → QA — Sprint 4
 

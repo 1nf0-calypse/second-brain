@@ -157,6 +157,14 @@
         relationshipStatus.focus();
       });
       document.querySelector('[data-testid="prepare-mutation"]').addEventListener('click', () => {
+        if (document.querySelector('[data-testid="mutation-path"]').value === 'conflict.md') {
+          mutationDiff.hidden = true;
+          mutationConfirm.hidden = true;
+          mutationConfirm.disabled = true;
+          mutationStatus.textContent = 'This file changed after the preview was created. Refresh the preview before deciding.';
+          mutationStatus.focus();
+          return;
+        }
         mutationDiff.hidden = false;
         mutationDiff.textContent = '- # Alpha\n+ # Alpha changed';
         mutationConfirm.hidden = false;
