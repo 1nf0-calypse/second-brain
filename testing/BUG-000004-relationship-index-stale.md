@@ -1,7 +1,7 @@
 ---
 id: BUG-000004
 title: Bug — Relationship-Ansicht meldet alten Index als Sidecar offline
-version: 1.0
+version: 1.1
 status: BEHOBEN
 author-agent: RV (Code Reviewer)
 date: 2026-07-31
@@ -54,13 +54,13 @@ Nach manueller Indexaktualisierung erschienen `Alpha → Beta`, `Beta → Alpha`
 
 ## Root-Cause
 
-**Direkte Ursache:** `RelationshipView` ruft nur die Relationship-Operation auf.
-`NodeSetupTransport` stellt die inkrementelle Indexaktualisierung bereit, der
-Relationship-Vertrag verwendet sie jedoch nicht.
+**Direkte Ursache:** Der erste Fix synchronisiert vor der Abfrage, aber `LocalIndex`
+überspringt unveränderte Dateien allein anhand ihres Datei-Fingerabdrucks. Es existiert kein
+separater Nachweis, dass der aktuelle Inhalt bereits in Graphkanten projiziert wurde.
 
-**Zugrundeliegende Ursache:** Der UI-Refresh wurde als reines Lesen modelliert. Die neue
-Graphmigration wird angelegt, vorhandene Dateiinhalte werden ohne Synchronisierung aber
-nicht erneut in Kanten projiziert.
+**Zugrundeliegende Ursache:** Dateiindex und Graphprojektion teilen implizit denselben
+Aktualitätszustand. Eine Schemamigration kann deshalb die Graphtabelle anlegen, ohne die
+bereits bekannten Dateien erneut zu projizieren.
 
 **Andere Stellen mit demselben Muster:** Die Search-Ansicht besitzt bereits einen
 Setup-/Update-Flow; der neuen Relationship-Ansicht fehlt dieser erreichbare Recovery-Schritt.
@@ -70,9 +70,9 @@ Vault-Dateien wurden nicht verändert.
 
 ## Fix-Ansatz
 
-Der typisierte Relationship-Refresh führt zuerst die vorhandene inkrementelle
-Indexaktualisierung aus und fragt danach die aktive Notiz ab. Tests belegen Reihenfolge,
-Recovery und unveränderte Originaldateien.
+Zusätzlich zum Refresh erhält jede Datei einen separaten Relationship-Fingerabdruck. Eine
+neue reversible Migration lässt ihn bei Bestandszeilen leer. Die nächste Synchronisierung
+projiziert solche Dateien einmalig neu und setzt ihn erst atomar mit den Kanten.
 
 ## Regressionsrisiko
 
@@ -81,11 +81,14 @@ Recovery und unveränderte Originaldateien.
 
 ## Verifikation
 
-**Automatisierte Verifikation:** 49/49 Vitest-Tests, Coverage-Gates und 8/8 headed
-Playwright-Tests bestanden. Der neue Regressionstest bestätigt, dass Synchronisierung vor
-der Relationship-Abfrage erfolgt und bei Sync-Fehlern keine veraltete Abfrage startet.
+**Erster Fix:** 49/49 Vitest-Tests bestanden, aber die native Nutzerverifikation zeigte
+weiterhin eine leere Liste. Datenbankevidenz: fünf bekannte Dateien, null Graphkanten.
 
-**Native Nutzerverifikation:** Ausstehend nach Installation des Fix-Builds.
+**Migrationsfix:** 50/50 Vitest-Tests, 82,43 % Branch Coverage und 8/8 headed
+Playwright-Tests bestanden. Ein persistenter Altindex mit geleerten Kanten und fehlendem
+Projektions-Fingerabdruck wird im Regressionstest vollständig nachprojiziert.
+
+**Native Nutzerverifikation:** Ausstehend nach Installation des zweiten Fix-Builds.
 
 ## Status-Verlauf
 
@@ -94,6 +97,15 @@ der Relationship-Abfrage erfolgt und bei Sync-Fehlern keine veraltete Abfrage st
 | 2026-07-31 | OFFEN | Nutzerabnahme reproduziert den veralteten Graphindex |
 | 2026-07-31 | IN_BEARBEITUNG | Root-Cause vor Codeänderung dokumentiert |
 | 2026-07-31 | BEHOBEN | Inkrementeller Sync in Relationship-Refresh integriert; Regression grün |
+| 2026-07-31 | IN_BEARBEITUNG | Native Verifikation fehlgeschlagen; fehlender Projektions-Fingerabdruck identifiziert |
+| 2026-07-31 | BEHOBEN | Schema 4 und einmalige Nachprojektion implementiert; Regression grün |
+
+## Änderungshistorie
+
+| Version | Datum | Änderung | Agent |
+|---|---|---|---|
+| 1.1 | 2026-07-31 | Fehlgeschlagenen Nachtest und tiefere Migrationsursache dokumentiert | RV+BE |
+| 1.0 | 2026-07-31 | Ursprünglichen Upgradefehler und ersten Refresh-Fix dokumentiert | RV+FE+BE |
 
 ---
 

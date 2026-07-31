@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { mkdtemp, mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import { describe, expect, it } from 'vitest';
 import { LocalIndex } from '../../apps/sidecar/src/indexing/sqlite-index.js';
 
@@ -67,5 +68,26 @@ describe('LocalIndex relationships', () => {
     await index.synchronize(root);
     expect(index.relationships('Target.md').relationships).toHaveLength(0);
     index.close();
+  });
+
+  it('projiziert unveränderte Bestandsdateien nach der Graphmigration einmalig neu', async () => {
+    const root = await createRelationshipVault();
+    await mkdir(join(root, '.second-brain'));
+    const databasePath = join(root, '.second-brain', 'index.sqlite');
+    const initial = new LocalIndex(databasePath);
+    await initial.synchronize(root);
+    initial.close();
+    const stale = new DatabaseSync(databasePath);
+    stale.exec('DELETE FROM graph_edges; UPDATE files SET relationships_fingerprint = NULL;');
+    stale.close();
+
+    const migrated = new LocalIndex(databasePath);
+    const status = await migrated.synchronize(root);
+
+    expect(status.changedFiles).toBe(2);
+    expect(migrated.relationships('Source.md').relationships.some((relationship) =>
+      relationship.target.relativePath === 'Target.md'
+    )).toBe(true);
+    migrated.close();
   });
 });

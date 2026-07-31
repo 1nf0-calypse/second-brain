@@ -1,5 +1,5 @@
 // Beschreibung: Lokaler SQLite-Index mit Delta-Synchronisierung, FTS5 und Quellen.
-// Artefakte:    US-000005; US-000012; US-000013; ADR-000003
+// Artefakte:    US-000005; US-000012; US-000013; BUG-000004; ADR-000003
 // Agent:        BE — 2026-07-31
 import { createHash } from 'node:crypto';
 import { readFile, readdir, stat } from 'node:fs/promises';
@@ -24,6 +24,7 @@ type VaultMetadata = Omit<VaultFile, 'fingerprint'> & {
   extractionStatus: 'extracted' | 'not_extracted';
 };
 type IndexedContent = VaultFile & VaultMetadata & { content: string };
+type IndexedFileState = VaultFile & { relationshipsFingerprint: string | null };
 
 // Implementiert: US-000005 — Lokale inkrementelle Indexierung
 export class LocalIndex {
@@ -98,7 +99,12 @@ export class LocalIndex {
         "ALTER TABLE files ADD COLUMN extraction_status TEXT NOT NULL DEFAULT 'extracted'"
       );
     }
+    if (!columns.some((column) => String(column['name']) === 'relationships_fingerprint')) {
+      this.database.exec('ALTER TABLE files ADD COLUMN relationships_fingerprint TEXT');
+    }
     this.database.exec(`
+      INSERT OR IGNORE INTO schema_migrations(version, applied_at)
+      VALUES (4, datetime('now'));
       INSERT INTO files_fts(relative_path, content)
       SELECT files.relative_path, files.content
       FROM files
@@ -126,14 +132,23 @@ export class LocalIndex {
 
     for (const file of metadata) {
       const old = previousByPath.get(file.relativePath);
-      if (old && old.modifiedAt === file.modifiedAt && old.size === file.size) {
+      if (
+        old &&
+        old.modifiedAt === file.modifiedAt &&
+        old.size === file.size &&
+        old.relationshipsFingerprint === old.fingerprint
+      ) {
         continue;
       }
       const content = file.extractionStatus === 'extracted'
         ? await this.readContent(join(vaultRoot, file.relativePath))
         : Buffer.alloc(0);
       const fingerprint = fingerprintOf(content);
-      if (!old || old.fingerprint !== fingerprint) {
+      if (
+        !old ||
+        old.fingerprint !== fingerprint ||
+        old.relationshipsFingerprint !== fingerprint
+      ) {
         changed.push({ ...file, fingerprint, content: content.toString('utf8') });
       } else {
         metadataOnly.push(file);
@@ -351,13 +366,19 @@ export class LocalIndex {
     });
   }
 
-  private readFiles(): VaultFile[] {
+  private readFiles(): IndexedFileState[] {
     return this.database
-      .prepare('SELECT relative_path, fingerprint, modified_at, size FROM files')
+      .prepare(`
+        SELECT relative_path, fingerprint, relationships_fingerprint, modified_at, size
+        FROM files
+      `)
       .all()
       .map((row) => ({
         relativePath: String(row['relative_path']),
         fingerprint: String(row['fingerprint']),
+        relationshipsFingerprint: typeof row['relationships_fingerprint'] === 'string'
+          ? row['relationships_fingerprint']
+          : null,
         modifiedAt: Number(row['modified_at']),
         size: Number(row['size'])
       }));
@@ -366,17 +387,20 @@ export class LocalIndex {
   private upsert(file: IndexedContent): void {
     this.database.prepare(`
       INSERT INTO files(
-        relative_path, fingerprint, modified_at, size, content, extraction_status
+        relative_path, fingerprint, relationships_fingerprint,
+        modified_at, size, content, extraction_status
       )
-      VALUES (?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(relative_path) DO UPDATE SET
         fingerprint = excluded.fingerprint,
+        relationships_fingerprint = excluded.relationships_fingerprint,
         modified_at = excluded.modified_at,
         size = excluded.size,
         content = excluded.content,
         extraction_status = excluded.extraction_status
     `).run(
       file.relativePath,
+      file.fingerprint,
       file.fingerprint,
       file.modifiedAt,
       file.size,
