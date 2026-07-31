@@ -1,7 +1,7 @@
 ---
 id: TR-000007
 title: Testergebnis Second Brain Sprint 4
-version: 1.0
+version: 1.1
 status: REJECTED
 author-agent: QA (QA Engineer)
 date: 2026-07-31
@@ -18,9 +18,9 @@ superseded-by: —
 
 **Empfehlung:** `REJECTED`
 
-**Gate 7:** `FAIL` — Build, Lint, automatisierte Tests, Coverage, sichtbare Browserpfade,
-Atomizität und Latenz sind grün. Zwei reproduzierbare MAJOR-Befunde im P0-Mutationspfad
-und die dadurch nicht abgeschlossene native Desktop-Abnahme verhindern die Freigabe.
+**Gate 7:** `FAIL` — Build, Lint, automatisierte Tests, sichtbare Browserpfade, Atomizität
+und der Speicherfix sind grün. BUG-000005 besteht an der realen Windows-Prozessgrenze
+weiterhin; zusätzlich unterschreitet das Mutationsmodul mit 89,23 % sein 90-%-Branchziel.
 
 ## 2. Automatisierte Evidenz
 
@@ -29,11 +29,11 @@ und die dadurch nicht abgeschlossene native Desktop-Abnahme verhindern die Freig
 | Runtime | PASS — Node.js v24.15.0 |
 | `npm run build` | PASS |
 | `npm run lint` | PASS |
-| `npm test` | PASS — 63/63 |
-| `npm run test:coverage` | PASS — 63/63 |
-| `npm run test:e2e` | PASS — 11/11 sichtbares Chromium, 1,4 min |
-| Mutations-Performance-Harness | PASS mit MAJOR-Speicherbefund |
-| Windows-Lock-Systemtest | Atomizität PASS, Fehlersemantik FAIL |
+| `npm test` | PASS — 66/66 |
+| `npm run test:coverage` | PASS — 66/66; Mutationsziel verfehlt |
+| `npx playwright test --reporter=html` | PASS — 11/11 sichtbares Chromium, 16,6 s |
+| Mutations-Performance-Harness | PASS — Speichergrenze stabil, BUG-000006 verifiziert |
+| Windows-Lock-Systemtest | Atomizität PASS, Fehlersemantik erneut FAIL |
 
 Der erste kombinierte Qualitätslauf überschritt wegen paralleler, projektfremder
 Playwright-/Next-Prozesse das 120-s-Kommandolimit. Die Stufen wurden danach einzeln
@@ -43,11 +43,11 @@ vollständig und erfolgreich ausgeführt; es wurde kein Testergebnis übersprung
 
 | Metrik | Ergebnis | Ziel |
 |---|---:|---:|
-| Statements | 92,80 % | ≥80 % |
-| Branches gesamt | 84,28 % | ≥80 % |
-| Funktionen | 95,23 % | ≥80 % |
-| Zeilen | 93,55 % | ≥80 % |
-| Mutationsmodul Branches | 90,00 % | ≥90 % |
+| Statements | 93,35 % | ≥80 % |
+| Branches gesamt | 84,65 % | ≥80 % |
+| Funktionen | 95,34 % | ≥80 % |
+| Zeilen | 94,08 % | ≥80 % |
+| Mutationsmodul Branches | 89,23 % | ≥90 % — FAIL |
 
 ## 3. Akzeptanz- und Testfallstatus
 
@@ -61,7 +61,7 @@ vollständig und erfolgreich ausgeführt; es wurde kein Testergebnis übersprung
 | TC-000406 Update-Rollback | ✅ BESTANDEN automatisiert | 30/30 Performance-Rollbacks plus Integration |
 | TC-000407 neuerer Rollback-Zustand | ✅ BESTANDEN automatisiert | Rollback-Prepare blockiert externe Änderung |
 | TC-000408 untrusted Inhalt | ✅ BESTANDEN soweit automatisiert | keine generische Shell-/Prozessfähigkeit; Text bleibt Payload |
-| TC-000409 Windows-Lock/Abbruch | ❌ FEHLGESCHLAGEN teilweise | Original intakt, 0 Temp-Dateien; falscher `SIDECAR_OFFLINE`-Fehler, BUG-000005 |
+| TC-000409 Windows-Lock/Abbruch | ❌ FEHLGESCHLAGEN | Fix-Nachtest: Original intakt, 0 Temp-Dateien; weiterhin `SIDECAR_OFFLINE`, BUG-000005 |
 | TC-000410 Tastatur/Fokus/320 px | ⚠️ TEILWEISE | sichtbarer Harness grün; native Bedienung unterbrochen |
 | TC-000411 MCP-End-to-End | ✅ BESTANDEN automatisiert | reales SDK-MCP/stdio Prepare/Confirm/Rollback; Claude-UI noch offen |
 | TC-000412 Sprint-1–3-Regression | ✅ BESTANDEN automatisiert | gesamte Suite grün |
@@ -88,15 +88,15 @@ Kein freigegebenes Produktbudget; gemessen wurden reproduzierbare Windows-Baseli
 
 | ID | Ergebnis |
 |---|---|
-| PERF-000401 | 30 Previews à 2 MB: p50 113,65 ms, p95 171,03 ms; Quelle unverändert |
-| PERF-000402 | 30 Confirms: p50 5,73 ms, p95 7,11 ms |
-| PERF-000403 | 30 Rollbacks: p50 5,17 ms, p95 6,62 ms; 30/30 wiederhergestellt |
-| PERF-000404 | 1.000 kleine Previews in 1.507,87 ms; finaler Confirm 5,13 ms; SQLite 240.488.448 Byte einschließlich 30 großer Preview-Payloads |
-| PERF-000405 | sichtbare 11-Test-UI-Suite in 1,4 min; Preview/Confirm/Rollback bedienbar |
+| PERF-000401 | 30 Previews à 2 MB: p50 342,56 ms, p95 623,56 ms; Quelle unverändert |
+| PERF-000402 | 30 Confirms: p50 7,08 ms, p95 24,53 ms |
+| PERF-000403 | 30 Rollbacks: p50 6,74 ms, p95 9,35 ms; 30/30 wiederhergestellt |
+| PERF-000404 | Zwei große Batches stabil bei 160.194.560 Byte; 1.000 kleine Previews in 9.562,95 ms; 19 aktiv; RSS +7.168.000 Byte |
+| PERF-000405 | sichtbare 11-Test-UI-Suite in 16,6 s; Preview/Confirm/Rollback bedienbar |
 
-Einzeloperationen liegen deutlich unter dem technischen 60-s-Timeout. Das unbegrenzte
-Persistieren abgelaufener/verbrauchter Preview-Payloads und der RSS-Anstieg von 158.224.384
-Byte sind als BUG-000006 erfasst; daraus wird keine Performancefreigabe abgeleitet.
+Einzeloperationen liegen deutlich unter dem technischen 60-s-Timeout. Die Datenbank wuchs
+nach Erreichen der 20-Zeilen-Grenze im zweiten großen Batch nicht weiter; BUG-000006 ist
+damit unabhängig verifiziert.
 
 ## 6. Native Desktop-Evidenz
 
@@ -113,10 +113,10 @@ nach Bugfix und ruhigem Desktop erneut.
 
 | ID | Schwere | Status | Befund |
 |---|---|---|---|
-| BUG-000005 | MAJOR | OFFEN | Windows-Dateisperre wird fälschlich als Sidecar offline gemeldet |
-| BUG-000006 | MAJOR | OFFEN | Preview-Payloads besitzen keinen begrenzenden Cleanup-Pfad |
+| BUG-000005 | MAJOR | OFFEN | Reale Windows-Dateisperre wird weiterhin als Sidecar offline gemeldet |
+| BUG-000006 | MAJOR | VERIFIZIERT | Preview-Payloads bleiben nach Erreichen der Grenze stabil |
 
-Keine neuen BLOCKER; zwei offene MAJORs verhindern dennoch die Sprintfreigabe.
+Keine neuen BLOCKER; der wieder offene MAJOR BUG-000005 verhindert die Sprintfreigabe.
 
 ## 8. Gate-7-Prüfung
 
@@ -126,26 +126,29 @@ Keine neuen BLOCKER; zwei offene MAJORs verhindern dennoch die Sprintfreigabe.
 | Offene BLOCKER-Bugs | PASS — keine |
 | Build/Lint/automatisierte Tests | PASS |
 | Browser-Clickpfade sichtbar | PASS |
-| Coverage-Ziele | PASS |
-| Performance-Istwerte | FAIL — BUG-000006 |
+| Coverage-Ziele | FAIL — Mutationsmodul 89,23 % statt ≥90 % |
+| Performance-Istwerte | PASS — BUG-000006 verifiziert |
 | Windows-Lock-Recovery | FAIL — BUG-000005 |
 | Native Desktop-P0-Pfade | OFFEN — nach Fix erneut auszuführen |
 
 ## 9. Definition-of-Done-Selbstprüfung
 
 - [x] TP-000005 ist `APPROVED`; positive und negative US-Tests existieren.
-- [x] Build, Lint, Vitest, Coverage und sichtbares Playwright sind grün.
+- [x] Build, Lint, Vitest und sichtbares Playwright sind grün.
 - [x] Security-, Atomizitäts- und Performance-Evidenz ist gemessen.
 - [x] Neue Bugs nutzen das Template; Root-Cause bleibt bewusst für BE offen.
 - [x] Testergebnis und Freigabeempfehlung sind dokumentiert.
 - [x] Indizes und Phase werden aktualisiert.
-- [ ] BUG-000005 und BUG-000006 sind noch nicht behoben/verifiziert.
+- [x] BUG-000006 ist unabhängig verifiziert.
+- [ ] BUG-000005 besteht am realen Windows-Dateilock fort.
+- [ ] Mutationsmodul erreicht das verbindliche 90-%-Branchziel.
 - [ ] Native Obsidian-/Claude-Desktop-P0-Abnahme ist noch nicht vollständig.
 
 ## 10. Freigabe-Empfehlung
 
-`REJECTED`: Rücksprung zu BE. Nach Root-Cause, Fix und Regressionstests ist `/test-run`
-erneut auszuführen; erst danach folgt Review.
+`REJECTED`: Rücksprung zu BE. Der reale Lock scheitert bereits beim erneuten Lesen vor dem
+atomaren Write und umgeht dadurch die neue Write-Fehlerübersetzung. Dieser Pfad benötigt
+eine Regression; anschließend ist `/test-run` erneut auszuführen.
 
 ---
 
@@ -161,16 +164,16 @@ erneut auszuführen; erst danach folgt Review.
 | Artefakt-ID | Status | Pfad | Hinweise |
 |---|---|---|---|
 | TP-000005 | APPROVED | `testing/TP-000005-sprint-4.md` | Verbindliche Testbasis |
-| TR-000007 | REJECTED | `testing/TR-000007-sprint-4.md` | Automatisiert grün, Gate 7 wegen zwei MAJORs fehlgeschlagen |
-| BUG-000005 | OFFEN | `testing/BUG-000005-lock-error-reported-offline.md` | Fehlersemantik/Recovery |
-| BUG-000006 | OFFEN | `testing/BUG-000006-preview-storage-unbounded.md` | begrenzter Preview-Cleanup |
+| TR-000007 | REJECTED | `testing/TR-000007-sprint-4.md` | v1.1: Lock-Nachtest fehlgeschlagen, Coverageziel verfehlt |
+| BUG-000005 | OFFEN | `testing/BUG-000005-lock-error-reported-offline.md` | reale Pre-Write-Sperre bleibt untypisiert |
+| BUG-000006 | VERIFIZIERT | `testing/BUG-000006-preview-storage-unbounded.md` | begrenzter Preview-Cleanup bestätigt |
 | Performance-Harness | bestanden mit Befund | `tests/performance/mutations-baseline.ts` | reproduziert Latenz und Speicherwachstum |
 
 ### Kritische Informationen für Empfänger
 
-- Vor jeder Codeänderung beide Root-Cause-Abschnitte vollständig ausfüllen.
-- BUG-000005 muss Original/Temp-Bereinigung und Tokenverhalten regressionssicher bewahren.
-- BUG-000006 darf Audit- und Rollbackdaten nicht zusammen mit Preview-Payloads verlieren.
+- BUG-000005 muss auch den gesperrten `readExisting()`-Pfad typisieren, nicht nur Write/Delete.
+- Original-/Temp-Sicherheit und Tokenverhalten müssen regressionssicher erhalten bleiben.
+- Der ergänzte Regressionstest soll zugleich das Mutations-Branchziel wieder auf ≥90 % heben.
 
 ### Offene Fragen (vererbt)
 
@@ -187,4 +190,4 @@ Regressionstests ergänzen und `/test-run second-brain 4` wiederholen.
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.0*
+*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.1*

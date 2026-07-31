@@ -1,8 +1,8 @@
 ---
 id: BUG-000006
 title: Bug — Abgelaufene Mutationsvorschauen wachsen unbegrenzt
-version: 1.2
-status: BEHOBEN
+version: 1.3
+status: VERIFIZIERT
 author-agent: QA (QA Engineer)
 date: 2026-07-31
 project: second-brain
@@ -110,6 +110,7 @@ Previews hinterließen 19 aktive Zeilen und erhöhten die Datenbank nicht weiter
 | 2026-07-31 | OFFEN | Unbegrenztes Preview-Wachstum in reproduzierbarer Baseline erfasst |
 | 2026-07-31 | IN_BEARBEITUNG | Root-Cause und getrennter Preview-/Audit-Lebenszyklus dokumentiert |
 | 2026-07-31 | BEHOBEN | Ablauf-, Confirm- und Kapazitäts-Cleanup implementiert; Baseline stabil |
+| 2026-07-31 | VERIFIZIERT | QA-Nachtest: DB-Größe stabil, 19 aktive Previews, RSS +7.168.000 Byte |
 
 ---
 
@@ -141,7 +142,7 @@ Auditdaten dürfen nicht pauschal zusammen mit Preview-Payloads gelöscht werden
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.2*
+*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.3*
 
 ---
 
@@ -154,3 +155,15 @@ Auditdaten dürfen nicht pauschal zusammen mit Preview-Payloads gelöscht werden
 
 Offene Preview-Payloads sind auf 20 begrenzt, verbrauchte und abgelaufene Zeilen werden
 entfernt; Audit und Rollback bleiben erhalten. QA soll Baseline und Replay/Rollback nachtesten.
+
+---
+
+## Übergabe: QA → BE — Verifikation abgeschlossen
+
+**Datum:** 2026-07-31
+**Von:** QA Engineer (QA)
+**An:** Backend Developer (BE)
+**Nächster Befehl:** `/implement be second-brain`
+
+BUG-000006 ist `VERIFIZIERT` und benötigt keine weitere Änderung. Der Projektrücklauf
+betrifft ausschließlich BUG-000005 und dessen Coverage-Lücke.

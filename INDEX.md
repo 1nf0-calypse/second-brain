@@ -43,9 +43,9 @@ Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 | `testing/TP-000005-sprint-4.md` | TP-000005 | 1.0 | APPROVED | QA | Sprint-4-Testplan für Preview, Confirm, Konflikt, Audit und Rollback |
 | `testing/TR-000006-sprint-3.md` | TR-000006 | 1.2 | APPROVED | QA | Automatisierte und native Desktop-Abnahme vollständig bestanden |
 | `testing/BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Schema-4-Migration nativ im aktiven Vault bestätigt |
-| `testing/TR-000007-sprint-4.md` | TR-000007 | 1.0 | REJECTED | QA | Gate 7 wegen zwei MAJOR-Befunden abgelehnt |
-| `testing/BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.2 | BEHOBEN | BE | Windows-Lock liefert stabilen Write-Fehler bei intaktem Original |
-| `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.2 | BEHOBEN | BE | Preview-Cleanup und feste Obergrenze implementiert |
+| `testing/TR-000007-sprint-4.md` | TR-000007 | 1.1 | REJECTED | QA | Nachtest: Lock-Fehler besteht, Mutations-Coverageziel verfehlt |
+| `testing/BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.3 | OFFEN | QA | Reale Windows-Sperre wird weiterhin als Sidecar offline gemeldet |
+| `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.3 | VERIFIZIERT | QA | Preview-Cleanup und feste Obergrenze unabhängig bestätigt |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
@@ -110,12 +110,13 @@ Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 | 2026-07-31 | Gate 6 (Sprint 4 Implementation → Testing) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 7 (Sprint 4 Testing → Review) | FAIL | 0 | 2 | 0 |
 | 2026-07-31 | Gate 6 (Sprint 4 Bugfix → Testing) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 7 (Sprint 4 Bugfix-Nachtest) | FAIL | 0 | 1 | 0 |
 
 ## In Bearbeitung
 
-Sprint 4 ist nach Behebung von BUG-000005 und BUG-000006 wieder in TESTING. Automatisierung,
-Coverage und die begrenzte Speicherbaseline sind grün; QA übernimmt die unabhängige
-Windows-Lock- und Desktop-Verifikation mit `/test-run second-brain 4`.
+Sprint 4 ist aus dem Gate-7-Nachtest erneut zur Backend-Implementierung zurückgekehrt.
+BUG-000006 ist verifiziert; BUG-000005 bleibt am realen Windows-Lock offen. Der Fix muss
+den gesperrten Pre-Write-Lesepfad abdecken und Mutations-Branch-Coverage auf ≥90 % bringen.
 
 ## Übergabe: BE → QA — Sprint-4-Bugfix
 

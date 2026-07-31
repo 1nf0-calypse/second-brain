@@ -1,8 +1,8 @@
 ---
 id: BUG-000005
 title: Bug — Windows-Dateisperre wird als Sidecar offline gemeldet
-version: 1.2
-status: BEHOBEN
+version: 1.3
+status: OFFEN
 author-agent: QA (QA Engineer)
 date: 2026-07-31
 project: second-brain
@@ -54,6 +54,12 @@ Recovery-Zustand des sicherheitskritischen P0-Schreibpfads ist sachlich falsch.
 {"confirmExit":1,"code":"SIDECAR_OFFLINE","content":"before","tempFiles":0}
 ```
 
+**QA-Nachtest auf Fix-Commit `6e22875`:**
+
+```json
+{"exitCode":1,"code":"SIDECAR_OFFLINE","content":"before","tempFiles":0}
+```
+
 ## Betroffene Komponenten
 
 - `apps/sidecar/src/errors/public-error.ts`
@@ -92,15 +98,16 @@ belegt Originalerhalt, Temp-Bereinigung und den stabilen Code.
 
 ## Verifikation
 
-**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** Durch deterministische
-Dateioperations-Injektion reproduziert; die unabhängige reale Windows-Lock-Wiederholung
-bleibt Aufgabe von QA.
+**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** 2026-07-31 — Ergebnis: Fehler
+besteht an der realen Sidecar-Prozessgrenze weiterhin. Ein exklusives `FileShare.None`-Handle
+führt erneut zu `SIDECAR_OFFLINE`; Originalinhalt und Temp-Bereinigung bleiben korrekt.
 
 **Regressionstest ergänzt:** Ja — `tests/integration/mutation-service.test.ts` und
 `tests/unit/public-error.test.ts`.
 
-**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Ja; der frühere Pfad ergibt
-`SIDECAR_OFFLINE`, der korrigierte Pfad `MUTATION_WRITE_FAILED` bei unverändertem Original.
+**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Nicht verifiziert. Der
+injizierte Write-Fehler besteht, deckt aber die reale Sperre beim erneuten Lesen der
+Zieldatei vor dem Write nicht ab.
 
 ## Status-Verlauf
 
@@ -109,6 +116,7 @@ bleibt Aufgabe von QA.
 | 2026-07-31 | OFFEN | Reale Windows-Lock-Reproduktion; Daten intakt, Fehlercode falsch |
 | 2026-07-31 | IN_BEARBEITUNG | Root-Cause und domänenweiter Fix-Ansatz durch BE dokumentiert |
 | 2026-07-31 | BEHOBEN | Typisierter Write-Fehler und Regressionstests implementiert; an QA übergeben |
+| 2026-07-31 | OFFEN | QA-Nachtest: reale Windows-Sperre liefert weiterhin SIDECAR_OFFLINE |
 
 ---
 
@@ -140,7 +148,7 @@ Kein Wechsel des atomaren Write-Modells ohne neue Architekturentscheidung.
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.2*
+*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.3*
 
 ---
 
@@ -154,3 +162,16 @@ Kein Wechsel des atomaren Write-Modells ohne neue Architekturentscheidung.
 `MUTATION_WRITE_FAILED` ist über Vertrag, Service sowie CLI-/MCP-Fehlergrenze stabil.
 QA soll den ursprünglichen exklusiven Windows-Dateilock erneut an der realen Prozessgrenze
 ausführen und Originalerhalt sowie Temp-Bereinigung bestätigen.
+
+---
+
+## Übergabe: QA → BE — Nachtest fehlgeschlagen
+
+**Datum:** 2026-07-31
+**Von:** QA Engineer (QA)
+**An:** Backend Developer (BE)
+**Nächster Befehl:** `/implement be second-brain`
+
+Die reale Sperre tritt bereits beim Lesen des aktuellen Dateiinhalts vor `atomicWrite()` auf
+und umgeht deshalb die neue Write/Delete-Fehlergrenze. Der nächste Regressionstest muss
+diesen Prozessgrenzfall abdecken und das Mutations-Branchziel auf mindestens 90 % anheben.
