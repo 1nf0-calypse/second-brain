@@ -3,12 +3,12 @@
 # Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
 
 project: second-brain
-current-phase: RELEASED
-previous-phase: DONE
+current-phase: REFINEMENT
+previous-phase: RELEASED
 phase-started: 2026-07-31
-sprint: 1
-last-agent: ORCH
-last-artifact: RN-000001
+sprint: 2
+last-agent: BA+FE+BE
+last-artifact: SP-000003
 
 # Phasen-History (wird vom Orchestrator gepflegt)
 history:
@@ -75,3 +75,6 @@ history:
     started: 2026-07-31
     completed: 2026-07-31
     artifacts: [RN-000001]
+  - phase: REFINEMENT
+    started: 2026-07-31
+    artifacts: [US-000012, SP-000003]

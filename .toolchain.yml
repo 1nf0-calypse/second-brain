@@ -71,11 +71,11 @@ artifacts:
     SB: 2
     CON: 2
     REQ: 2
-    US: 12
+    US: 13
     ADR: 6
     GAP: 1
     UX: 3
-    SP: 3
+    SP: 4
     TP: 3
     TR: 4
     RV: 3
