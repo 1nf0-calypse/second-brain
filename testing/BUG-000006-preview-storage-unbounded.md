@@ -1,8 +1,8 @@
 ---
 id: BUG-000006
 title: Bug — Abgelaufene Mutationsvorschauen wachsen unbegrenzt
-version: 1.0
-status: OFFEN
+version: 1.2
+status: BEHOBEN
 author-agent: QA (QA Engineer)
 date: 2026-07-31
 project: second-brain
@@ -63,18 +63,27 @@ freigegebenen Mutations-Client dauerhaft und ohne Budgetgrenze wachsen.
 
 > Von BE vor jeder Codeänderung auszufüllen.
 
-**Direkte Ursache:** [AUSSTEHEND — BE]
+**Direkte Ursache:** `storePreview()` fügt vollständige Vorher-/Nachher-Inhalte und den Diff
+in `mutation_previews` ein. Weder erfolgreicher Confirm noch Token-Ablauf löschen diese
+Payloads; die Tabelle besitzt außerdem kein Maximum für gleichzeitig offene Previews.
 
-**Zugrundeliegende (systemische) Ursache:** [AUSSTEHEND — BE]
+**Zugrundeliegende (systemische) Ursache:** Tokenablauf wurde nur beim Lesen validiert, aber
+nicht als Datenlebenszyklus modelliert. Audit-Aufbewahrung und kurzlebiger Preview-Speicher
+wurden in der Implementierung nicht getrennt behandelt.
 
-**Andere Stellen mit demselben Muster:** [AUSSTEHEND — BE]
+**Andere Stellen mit demselben Muster:** CLI- und MCP-Prepare nutzen denselben Service und
+verstärken daher denselben lokalen Speicherpfad; `mutation_audit` ist bewusst nicht betroffen.
 
 **Ausgeschlossene Ursachen:** Die gemessenen Latenzen liegen deutlich unter dem Timeout;
 der Befund betrifft Aufbewahrung und Speicherwachstum, nicht die Einzeloperation.
 
 ## Fix-Ansatz
 
-[AUSSTEHEND — BE nach Root-Cause-Analyse]
+Vor jedem Prepare werden abgelaufene und verbrauchte Preview-Zeilen entfernt; nach
+erfolgreichem Audit wird die verwendete Preview sofort gelöscht. Zusätzlich begrenzt der
+Service offene Previews auf eine feste Anzahl und verwirft bei Überlauf die älteste
+unbestätigte Vorschau. Audit-/Rollbackdaten bleiben vollständig erhalten. Regressionstests
+prüfen Ablauf-Cleanup, Sofort-Cleanup, Obergrenze, Replay und Rollback.
 
 ## Regressionsrisiko
 
@@ -83,17 +92,24 @@ der Befund betrifft Aufbewahrung und Speicherwachstum, nicht die Einzeloperation
 
 ## Verifikation
 
-**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** Ausstehend.
+**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** Ja. Zwei aufeinanderfolgende
+30er-Batches mit 2-MB-Vorschauen blieben beide bei 160.194.560 Byte; 1.000 zusätzliche
+Previews hinterließen 19 aktive Zeilen und erhöhten die Datenbank nicht weiter.
 
-**Regressionstest ergänzt:** Nein — Aufgabe des Fixes.
+**Regressionstest ergänzt:** Ja — Lebenszyklus-Test in
+`tests/integration/mutation-service.test.ts` und Wachstumsgrenze in
+`tests/performance/mutations-baseline.ts`.
 
-**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Nicht verifiziert.
+**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Ja; ohne Fix bleiben mehr als
+20 Preview-Zeilen bestehen und die Datenbank wächst im zweiten Batch weiter.
 
 ## Status-Verlauf
 
 | Datum | Status | Kommentar |
 |---|---|---|
 | 2026-07-31 | OFFEN | Unbegrenztes Preview-Wachstum in reproduzierbarer Baseline erfasst |
+| 2026-07-31 | IN_BEARBEITUNG | Root-Cause und getrennter Preview-/Audit-Lebenszyklus dokumentiert |
+| 2026-07-31 | BEHOBEN | Ablauf-, Confirm- und Kapazitäts-Cleanup implementiert; Baseline stabil |
 
 ---
 
@@ -125,4 +141,16 @@ Auditdaten dürfen nicht pauschal zusammen mit Preview-Payloads gelöscht werden
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.0*
+*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.2*
+
+---
+
+## Übergabe: BE → QA
+
+**Datum:** 2026-07-31
+**Von:** Backend Developer (BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 4`
+
+Offene Preview-Payloads sind auf 20 begrenzt, verbrauchte und abgelaufene Zeilen werden
+entfernt; Audit und Rollback bleiben erhalten. QA soll Baseline und Replay/Rollback nachtesten.

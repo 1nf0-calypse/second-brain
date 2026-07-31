@@ -44,8 +44,8 @@ Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 | `testing/TR-000006-sprint-3.md` | TR-000006 | 1.2 | APPROVED | QA | Automatisierte und native Desktop-Abnahme vollständig bestanden |
 | `testing/BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Schema-4-Migration nativ im aktiven Vault bestätigt |
 | `testing/TR-000007-sprint-4.md` | TR-000007 | 1.0 | REJECTED | QA | Gate 7 wegen zwei MAJOR-Befunden abgelehnt |
-| `testing/BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.0 | OFFEN | QA | Windows-Lock wird fälschlich als Sidecar offline gemeldet |
-| `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.0 | OFFEN | QA | Preview-Payloads wachsen ohne Cleanup unbegrenzt |
+| `testing/BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.2 | BEHOBEN | BE | Windows-Lock liefert stabilen Write-Fehler bei intaktem Original |
+| `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.2 | BEHOBEN | BE | Preview-Cleanup und feste Obergrenze implementiert |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
@@ -109,12 +109,29 @@ Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 | 2026-07-31 | Gate 5.5 (`/implement`-Preflight, SP-000005) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 6 (Sprint 4 Implementation → Testing) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 7 (Sprint 4 Testing → Review) | FAIL | 0 | 2 | 0 |
+| 2026-07-31 | Gate 6 (Sprint 4 Bugfix → Testing) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
-Sprint 4 ist aus Gate 7 zur Backend-Implementierung zurückgekehrt. Automatisierung,
-Coverage, Atomizität und Latenz sind grün; BUG-000005 und BUG-000006 müssen vor erneuter
-nativer Desktop-Abnahme behoben und verifiziert werden.
+Sprint 4 ist nach Behebung von BUG-000005 und BUG-000006 wieder in TESTING. Automatisierung,
+Coverage und die begrenzte Speicherbaseline sind grün; QA übernimmt die unabhängige
+Windows-Lock- und Desktop-Verifikation mit `/test-run second-brain 4`.
+
+## Übergabe: BE → QA — Sprint-4-Bugfix
+
+**Datum:** 2026-07-31
+**Von:** Backend Developer (BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 4`
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| BUG-000005 | BEHOBEN | `testing/BUG-000005-lock-error-reported-offline.md` | Stabiler `MUTATION_WRITE_FAILED`; Original bleibt intakt |
+| BUG-000006 | BEHOBEN | `testing/BUG-000006-preview-storage-unbounded.md` | Maximal 20 offene Previews; Audit/Rollback erhalten |
+
+66 Vitest-Tests, Lint, Build und Coverage sind grün. Die doppelte 2-MB-Baseline blieb bei
+160.194.560 Byte stabil; QA muss den echten Windows-Lock und den nativen Desktop-Pfad
+unabhängig nachtesten.
 
 ## Übergabe: FE+BE → QA — Sprint 4
 

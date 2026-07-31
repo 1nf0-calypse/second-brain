@@ -4,6 +4,7 @@
 import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import { afterEach, describe, expect, it } from 'vitest';
 import { MutationService } from '../../apps/sidecar/src/mutations/mutation-service.js';
 
@@ -163,6 +164,63 @@ describe('MutationService', () => {
     await expect(service.prepare('Linked/Escape.md', 'x')).rejects.toMatchObject({
       code: 'PATH_OUTSIDE_VAULT'
     });
+    service.close();
+  });
+
+  it('reports a stable mutation error and preserves the original when replacement fails', async () => {
+    const { root, service: fixtureService } = await fixture();
+    fixtureService.close();
+    await writeFile(join(root, 'Locked.md'), 'before');
+    const service = new MutationService(
+      root,
+      join(root, '.second-brain', 'index.sqlite'),
+      Date.now,
+      {
+        write: () => Promise.reject(Object.assign(new Error('locked'), { code: 'EBUSY' })),
+        remove: () => Promise.resolve(),
+        restore: () => Promise.resolve()
+      }
+    );
+    const preview = await service.prepare('Locked.md', 'after');
+
+    await expect(service.confirm(preview.token)).rejects.toMatchObject({
+      code: 'MUTATION_WRITE_FAILED'
+    });
+    expect(await readFile(join(root, 'Locked.md'), 'utf8')).toBe('before');
+    service.close();
+  });
+
+  it('bounds pending previews and removes confirmed and expired payloads', async () => {
+    const clockFixture = await fixture(1_000);
+    const { root, service } = clockFixture;
+    const tokens: string[] = [];
+    for (let index = 0; index < 25; index += 1) {
+      tokens.push((await service.prepare(`Pending-${index}.md`, `content-${index}`)).token);
+    }
+    const database = new DatabaseSync(join(root, '.second-brain', 'index.sqlite'));
+    const previewCount = (): number =>
+      (database.prepare('SELECT COUNT(*) AS count FROM mutation_previews').get() as { count: number }).count;
+    const firstToken = tokens[0];
+    const latestToken = tokens.at(-1);
+    if (firstToken === undefined || latestToken === undefined) {
+      throw new Error('Preview token fixture was not created.');
+    }
+    expect(previewCount()).toBe(20);
+    await expect(service.confirm(firstToken)).rejects.toMatchObject({ code: 'CONFIRMATION_INVALID' });
+
+    const result = await service.confirm(latestToken);
+    expect(previewCount()).toBe(19);
+    expect((database.prepare('SELECT COUNT(*) AS count FROM mutation_audit').get() as { count: number }).count)
+      .toBe(1);
+
+    clockFixture.advance(11 * 60 * 1_000);
+    await service.prepare('Fresh.md', 'fresh');
+    expect(previewCount()).toBe(1);
+
+    const rollback = await service.prepareRollback(result.auditId);
+    await service.confirm(rollback.token);
+    await expect(readFile(join(root, 'Pending-24.md'), 'utf8')).rejects.toMatchObject({ code: 'ENOENT' });
+    database.close();
     service.close();
   });
 });

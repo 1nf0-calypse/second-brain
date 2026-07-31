@@ -26,5 +26,5 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 | `BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
 | `BUG-000003-scope-error-code-generic.md` | BUG-000003 | 1.2 | VERIFIZIERT | QA | Scope-Verletzung wird über CLI, MCP und Plugin stabil typisiert |
 | `BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Altindex-Migration nativ nach vollständigem Obsidian-Neustart bestätigt |
-| `BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.0 | OFFEN | QA | Windows-Dateisperre erhält falschen SIDECAR_OFFLINE-Fehler |
-| `BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.0 | OFFEN | QA | Abgelaufene Preview-Payloads wachsen unbegrenzt |
+| `BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.2 | BEHOBEN | BE | Windows-Dateisperre erhält stabilen MUTATION_WRITE_FAILED-Fehler |
+| `BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.2 | BEHOBEN | BE | Preview-Payloads sind bereinigt und auf 20 offene Einträge begrenzt |

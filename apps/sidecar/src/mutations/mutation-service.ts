@@ -15,14 +15,30 @@ import {
 import { VaultScopeError } from '../policy/vault-root.js';
 
 const TOKEN_TTL_MS = 10 * 60 * 1_000;
+const MAX_PENDING_PREVIEWS = 20;
 type Clock = () => number;
+type MutationFileOperations = {
+  write(path: string, content: string): Promise<void>;
+  remove(path: string): Promise<void>;
+  restore(path: string, content: string | null): Promise<void>;
+};
+
+const defaultFileOperations: MutationFileOperations = {
+  write: atomicWrite,
+  remove: (path) => rm(path),
+  restore: restoreFile
+};
 
 export class MutationError extends Error {
   public constructor(
-    public readonly code: Extract<ErrorCode, 'MUTATION_CONFLICT' | 'CONFIRMATION_INVALID'>,
-    message: string
+    public readonly code: Extract<
+      ErrorCode,
+      'MUTATION_CONFLICT' | 'MUTATION_WRITE_FAILED' | 'CONFIRMATION_INVALID'
+    >,
+    message: string,
+    cause?: unknown
   ) {
-    super(message);
+    super(message, { cause });
     this.name = 'MutationError';
   }
 }
@@ -36,16 +52,19 @@ export class MutationService {
    * @param vaultRoot Kanonischer freigegebener Vault-Root.
    * @param databasePath Pfad zum lokalen abgeleiteten SQLite-Speicher.
    * @param clock Injizierbare Zeitquelle für Ablaufregressionen.
+   * @param fileOperations Injizierbare atomare Dateioperationen für Fehlerregressionen.
    * @throws SQLite-Fehler bei nicht lesbarem Speicher.
    * @sideEffect Öffnet und migriert lokale Audit-Tabellen.
    */
   public constructor(
     private readonly vaultRoot: string,
     databasePath: string,
-    private readonly clock: Clock = Date.now
+    private readonly clock: Clock = Date.now,
+    private readonly fileOperations: MutationFileOperations = defaultFileOperations
   ) {
     this.database = new DatabaseSync(databasePath);
     this.migrate();
+    this.prunePreviews(MAX_PENDING_PREVIEWS);
   }
 
   /** @returns Nichts. @throws SQLite-Fehler. @sideEffect Schließt den Audit-Speicher. */
@@ -105,10 +124,18 @@ export class MutationService {
         'The note changed after the preview. Create a new preview.'
       );
     }
-    if (preview.afterContent === null) {
-      await rm(target.absolutePath);
-    } else {
-      await atomicWrite(target.absolutePath, preview.afterContent);
+    try {
+      if (preview.afterContent === null) {
+        await this.fileOperations.remove(target.absolutePath);
+      } else {
+        await this.fileOperations.write(target.absolutePath, preview.afterContent);
+      }
+    } catch (error: unknown) {
+      throw new MutationError(
+        'MUTATION_WRITE_FAILED',
+        'The note could not be replaced. Your vault remains consistent. Create a new preview and try again.',
+        error
+      );
     }
     const auditId = randomUUID();
     const afterHash = hashNullable(preview.afterContent);
@@ -130,10 +157,11 @@ export class MutationService {
         preview.sourceAuditId,
         new Date(this.clock()).toISOString()
       );
+      this.database.prepare('DELETE FROM mutation_previews WHERE token = ?').run(token);
       this.database.exec('COMMIT');
     } catch (error: unknown) {
       this.database.exec('ROLLBACK');
-      await restoreFile(target.absolutePath, preview.beforeContent);
+      await this.fileOperations.restore(target.absolutePath, preview.beforeContent);
       throw error;
     }
     return MutationResultSchema.parse({
@@ -222,6 +250,7 @@ export class MutationService {
     after: string | null;
     sourceAuditId: string | null;
   }): MutationPreview {
+    this.prunePreviews(MAX_PENDING_PREVIEWS - 1);
     const token = randomUUID();
     const expiresAt = new Date(this.clock() + TOKEN_TTL_MS).toISOString();
     const afterHash = hashNullable(input.after) ?? hashOf('');
@@ -253,6 +282,33 @@ export class MutationService {
       expiresAt,
       readOnly: true
     });
+  }
+
+  /**
+   * Entfernt nicht mehr bestätigbare Payloads und begrenzt offene Vorschauen.
+   * @param maximumRows Maximale Zahl verbleibender Zeilen vor dem nächsten Insert.
+   * @returns Nichts.
+   * @throws SQLite-Fehler.
+   * @sideEffect Löscht nur kurzlebige Preview-Daten; Auditdaten bleiben erhalten.
+   */
+  private prunePreviews(maximumRows: number): void {
+    const now = new Date(this.clock()).toISOString();
+    this.database.prepare(
+      'DELETE FROM mutation_previews WHERE expires_at <= ? OR used_at IS NOT NULL'
+    ).run(now);
+    const row = this.database.prepare(
+      'SELECT COUNT(*) AS total FROM mutation_previews'
+    ).get();
+    const excess = Number(row?.['total'] ?? 0) - maximumRows;
+    if (excess <= 0) return;
+    this.database.prepare(`
+      DELETE FROM mutation_previews
+      WHERE token IN (
+        SELECT token FROM mutation_previews
+        ORDER BY expires_at ASC, rowid ASC
+        LIMIT ?
+      )
+    `).run(excess);
   }
 
   private readPreview(token: string): {

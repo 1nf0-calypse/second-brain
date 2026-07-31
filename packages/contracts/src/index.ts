@@ -15,6 +15,7 @@ export const ErrorCodeSchema = z.enum([
   'INVALID_QUERY',
   'FILE_NOT_FOUND',
   'MUTATION_CONFLICT',
+  'MUTATION_WRITE_FAILED',
   'CONFIRMATION_INVALID'
 ]);
 

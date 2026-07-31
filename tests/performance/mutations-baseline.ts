@@ -5,6 +5,7 @@ import { mkdtemp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { performance } from 'node:perf_hooks';
+import { DatabaseSync } from 'node:sqlite';
 import { MutationService } from '../../apps/sidecar/src/mutations/mutation-service.js';
 
 function percentile(values: number[], fraction: number): number {
@@ -38,6 +39,14 @@ try {
   if (await readFile(join(vaultRoot, 'Large.md'), 'utf8') !== largeBefore) {
     throw new Error('Preview changed the large source note.');
   }
+  const databaseBytesAfterFirstLargeBatch = (await stat(databasePath)).size;
+  for (let index = 30; index < 60; index += 1) {
+    await service.prepare('Large.md', `${'c'.repeat(1_999_990)}${String(index).padStart(10, '0')}`);
+  }
+  const databaseBytesAfterSecondLargeBatch = (await stat(databasePath)).size;
+  if (databaseBytesAfterSecondLargeBatch > databaseBytesAfterFirstLargeBatch + 12_000_000) {
+    throw new Error('Preview storage continued to grow after reaching its configured bound.');
+  }
 
   await writeFile(join(vaultRoot, 'Cycle.md'), 'cycle-0');
   const confirmDurations: number[] = [];
@@ -67,6 +76,14 @@ try {
   await service.confirm(finalPreview.token);
   const finalConfirmMs = performance.now() - finalConfirmStarted;
   const databaseBytes = (await stat(databasePath)).size;
+  const database = new DatabaseSync(databasePath);
+  const activePreviews = (database.prepare(
+    'SELECT COUNT(*) AS count FROM mutation_previews'
+  ).get() as { count: number }).count;
+  database.close();
+  if (activePreviews > 20) {
+    throw new Error('Preview storage exceeded its configured row bound.');
+  }
   const rssAfter = process.memoryUsage().rss;
 
   process.stdout.write(`${JSON.stringify({
@@ -75,8 +92,11 @@ try {
     rollback: { runs: 30, ...summary(rollbackDurations), restored: 30 },
     previewStorage: {
       entries: 1_000,
+      activePreviews,
       durationMs: Number(storageDurationMs.toFixed(2)),
       databaseBytes,
+      databaseBytesAfterFirstLargeBatch,
+      databaseBytesAfterSecondLargeBatch,
       finalConfirmMs: Number(finalConfirmMs.toFixed(2))
     },
     rssBeforeBytes: rssBefore,

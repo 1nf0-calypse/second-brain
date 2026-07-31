@@ -1,8 +1,8 @@
 ---
 id: BUG-000005
 title: Bug — Windows-Dateisperre wird als Sidecar offline gemeldet
-version: 1.0
-status: OFFEN
+version: 1.2
+status: BEHOBEN
 author-agent: QA (QA Engineer)
 date: 2026-07-31
 project: second-brain
@@ -64,18 +64,26 @@ Recovery-Zustand des sicherheitskritischen P0-Schreibpfads ist sachlich falsch.
 
 > Von BE vor jeder Codeänderung auszufüllen.
 
-**Direkte Ursache:** [AUSSTEHEND — BE]
+**Direkte Ursache:** `atomicWrite()` reicht einen Windows-`EBUSY`/`EPERM`-Fehler nach
+Temp-Bereinigung unverändert weiter. `toPublicErrorResponse()` kennt diesen untypisierten
+Dateisystemfehler nicht und bildet jeden unbekannten Fehler pauschal auf `SIDECAR_OFFLINE` ab.
 
-**Zugrundeliegende (systemische) Ursache:** [AUSSTEHEND — BE]
+**Zugrundeliegende (systemische) Ursache:** Die Mutationsdomäne besitzt keinen eigenen
+öffentlichen Fehlercode für einen fehlgeschlagenen, aber konsistent abgebrochenen Write.
+Der generische Connectivity-Fallback verdeckt deshalb fachliche lokale I/O-Fehler.
 
-**Andere Stellen mit demselben Muster:** [AUSSTEHEND — BE]
+**Andere Stellen mit demselben Muster:** Create, Update und Rollback verwenden denselben
+`atomicWrite`-/`rm`-Pfad und benötigen dieselbe typisierte Fehlergrenze.
 
 **Ausgeschlossene Ursachen:** Der Sidecar ist erreichbar; Originaldatei und atomare
 Temp-Bereinigung funktionieren.
 
 ## Fix-Ansatz
 
-[AUSSTEHEND — BE nach Root-Cause-Analyse]
+Der versionierte Vertrag erhält `MUTATION_WRITE_FAILED`. `MutationService.confirm()` fängt
+Dateisystemfehler ausschließlich um den atomaren Write/Delete ab und wandelt sie in einen
+`MutationError` mit konsistenter Recovery-Sprache um. Ein Windows-Lock-Integrationstest
+belegt Originalerhalt, Temp-Bereinigung und den stabilen Code.
 
 ## Regressionsrisiko
 
@@ -84,17 +92,23 @@ Temp-Bereinigung funktionieren.
 
 ## Verifikation
 
-**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** Ausstehend.
+**Ursprüngliche Reproduktionsschritte erneut ausgeführt:** Durch deterministische
+Dateioperations-Injektion reproduziert; die unabhängige reale Windows-Lock-Wiederholung
+bleibt Aufgabe von QA.
 
-**Regressionstest ergänzt:** Nein — Aufgabe des Fixes.
+**Regressionstest ergänzt:** Ja — `tests/integration/mutation-service.test.ts` und
+`tests/unit/public-error.test.ts`.
 
-**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Nicht verifiziert.
+**Regressionstest schlägt ohne Fix fehl und besteht mit Fix:** Ja; der frühere Pfad ergibt
+`SIDECAR_OFFLINE`, der korrigierte Pfad `MUTATION_WRITE_FAILED` bei unverändertem Original.
 
 ## Status-Verlauf
 
 | Datum | Status | Kommentar |
 |---|---|---|
 | 2026-07-31 | OFFEN | Reale Windows-Lock-Reproduktion; Daten intakt, Fehlercode falsch |
+| 2026-07-31 | IN_BEARBEITUNG | Root-Cause und domänenweiter Fix-Ansatz durch BE dokumentiert |
+| 2026-07-31 | BEHOBEN | Typisierter Write-Fehler und Regressionstests implementiert; an QA übergeben |
 
 ---
 
@@ -126,4 +140,17 @@ Kein Wechsel des atomaren Write-Modells ohne neue Architekturentscheidung.
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.0*
+*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.2*
+
+---
+
+## Übergabe: BE → QA
+
+**Datum:** 2026-07-31
+**Von:** Backend Developer (BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 4`
+
+`MUTATION_WRITE_FAILED` ist über Vertrag, Service sowie CLI-/MCP-Fehlergrenze stabil.
+QA soll den ursprünglichen exklusiven Windows-Dateilock erneut an der realen Prozessgrenze
+ausführen und Originalerhalt sowie Temp-Bereinigung bestätigen.
