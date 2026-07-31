@@ -19,8 +19,8 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 | `TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |
 | `TR-000004-sprint-2.md` | TR-000004 | 1.0 | REJECTED | QA | Sprint-2-Testlauf; Gate 7 wegen Scope-Fehlercode und offener Desktop-P0-Pfade fehlgeschlagen |
 | `TR-000005-sprint-2-retest.md` | TR-000005 | 1.0 | CONDITIONAL | QA | BUG-000003 verifiziert; automatisiert grün, native Desktop-Abnahme offen |
-| `TR-000006-sprint-3.md` | TR-000006 | 1.0 | CONDITIONAL | QA | Sprint-3-Testlauf; automatisiert grün, native Desktop-Evidenz offen |
+| `TR-000006-sprint-3.md` | TR-000006 | 1.1 | CONDITIONAL | QA | Sprint-3-Testlauf; Obsidian nativ grün, Claude-Relationship-Tools noch offen |
 | `BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
 | `BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
 | `BUG-000003-scope-error-code-generic.md` | BUG-000003 | 1.2 | VERIFIZIERT | QA | Scope-Verletzung wird über CLI, MCP und Plugin stabil typisiert |
-| `BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.1 | BEHOBEN | RV+FE+BE | Schema 4 projiziert unveränderte Bestandsdateien einmalig neu |
+| `BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Altindex-Migration nativ nach vollständigem Obsidian-Neustart bestätigt |

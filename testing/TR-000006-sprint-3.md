@@ -1,7 +1,7 @@
 ---
 id: TR-000006
 title: Testergebnis Second Brain Sprint 3
-version: 1.0
+version: 1.1
 status: CONDITIONAL
 author-agent: QA (QA Engineer)
 date: 2026-07-31
@@ -50,12 +50,12 @@ ausgeführt werden und bleibt als MAJOR-Testumgebungsrisiko offen.
 
 | Testfall | Status | Evidenz |
 |---|---|---|
-| TC-000301 Typen/Quellen | ⚠️ TEILWEISE | Unit/Integration + headed Harness grün; echtes Obsidian offen |
-| TC-000302 Navigation/Backlink | ⚠️ TEILWEISE | Headed Navigation grün; echtes Obsidian offen |
+| TC-000301 Typen/Quellen | ✅ BESTANDEN | Unit/Integration, headed Harness und native Obsidian-Abnahme grün |
+| TC-000302 Navigation/Backlink | ✅ BESTANDEN | Headed Navigation und native aktive Notiz grün |
 | TC-000303 Claude-MCP read-only | ⚠️ TEILWEISE | Realer Node-Kindprozess, Vertrag und Hash grün; Claude Desktop offen |
 | TC-000304 Delta/Delete | ✅ BESTANDEN | Integration + Performance, `changedFiles: 1` |
 | TC-000305 Unaufgelöst/untrusted | ✅ BESTANDEN | Unit/Integration; kein navigierbares erfundenes Ziel |
-| TC-000306 UI-Zustände | ⚠️ TEILWEISE | Harness grün; nativer Offline-Zustand offen |
+| TC-000306 UI-Zustände | ✅ BESTANDEN | Harness sowie nativer Fehler-, Leer- und Ergebniszustand geprüft |
 | TC-000307 Vertragsgrenzen | ✅ BESTANDEN | Zod-Schemas und Integrationssuite |
 | TC-000308 A11y/320 px/200 % | ⚠️ TEILWEISE | Headed 640 px als 200-%-Äquivalent; natives Obsidian offen |
 | TC-000309 Unicode/Alias/Mehrdeutigkeit | ✅ BESTANDEN soweit automatisiert | Normalisierung, Alias und unaufgelöstes Ziel geprüft |
@@ -94,6 +94,14 @@ wird mangels freigegebenem Budget keine neue Produktzusage abgeleitet.
 
 ## 6. Native Desktop-Evidenz
 
+Die Nutzerabnahme in Obsidian bestand mit einem synthetischen Vault: `Alpha` enthielt
+einen Link auf `Beta` und den Tag `#alpha`; die Relationship-Ansicht zeigte beide nach der
+automatischen Migration eines vorhandenen Indexes. BUG-000004 ist damit `VERIFIZIERT`.
+Ein vollständiger Obsidian-Neustart war erforderlich; `Strg+R` ersetzte den laufenden
+Plugin-Kindprozess in dieser Umgebung nicht zuverlässig.
+
+Die automatisierte Windows-App-Steuerung blieb unabhängig davon nicht verfügbar:
+
 Die Initialisierung der Windows-App-Steuerung scheiterte vor jeder UI-Aktion mit:
 
 ```text
@@ -126,7 +134,7 @@ war tatsächlich headed; echte Obsidian- und Claude-Desktop-Aktionen wurden nich
 - [x] Keine offenen Produkt-BLOCKER.
 - [x] Testergebnis und Freigabeempfehlung dokumentiert.
 - [x] Indizes und Phase werden aktualisiert.
-- [ ] Echte Obsidian-Relationship-Abnahme — Windows-Control-Pipe nicht verfügbar.
+- [x] Echte Obsidian-Relationship-Abnahme — durch Nutzer im aktiven Review-Vault bestanden.
 - [ ] Echte Claude-Desktop-Abfrage der zwei neuen Tools — Windows-Control-Pipe nicht verfügbar.
 
 ## 9. Freigabe-Empfehlung
@@ -174,4 +182,4 @@ nachholen oder das verbleibende Risiko ausdrücklich dokumentieren.
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.0*
+*Erstellt von: QA-Agent | Datum: 2026-07-31 | Version: 1.1*

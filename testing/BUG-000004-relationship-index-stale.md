@@ -1,8 +1,8 @@
 ---
 id: BUG-000004
 title: Bug — Relationship-Ansicht meldet alten Index als Sidecar offline
-version: 1.1
-status: BEHOBEN
+version: 1.2
+status: VERIFIZIERT
 author-agent: RV (Code Reviewer)
 date: 2026-07-31
 project: second-brain
@@ -88,7 +88,11 @@ weiterhin eine leere Liste. Datenbankevidenz: fünf bekannte Dateien, null Graph
 Playwright-Tests bestanden. Ein persistenter Altindex mit geleerten Kanten und fehlendem
 Projektions-Fingerabdruck wird im Regressionstest vollständig nachprojiziert.
 
-**Native Nutzerverifikation:** Ausstehend nach Installation des zweiten Fix-Builds.
+**Native Nutzerverifikation:** Bestanden im tatsächlich geöffneten OneDrive-Review-Vault.
+Nach vollständigem Obsidian-Neustart migrierte der Sidecar den Altindex automatisch; die
+Relationship-Ansicht zeigte die erwarteten Beziehungen. `Strg+R` lud Plugin und
+Kindprozess in dieser Obsidian-/Windows-Umgebung nicht zuverlässig neu und ist deshalb
+kein zulässiger Installations- oder Nachtestschritt.
 
 ## Status-Verlauf
 
@@ -99,11 +103,13 @@ Projektions-Fingerabdruck wird im Regressionstest vollständig nachprojiziert.
 | 2026-07-31 | BEHOBEN | Inkrementeller Sync in Relationship-Refresh integriert; Regression grün |
 | 2026-07-31 | IN_BEARBEITUNG | Native Verifikation fehlgeschlagen; fehlender Projektions-Fingerabdruck identifiziert |
 | 2026-07-31 | BEHOBEN | Schema 4 und einmalige Nachprojektion implementiert; Regression grün |
+| 2026-07-31 | VERIFIZIERT | Native Nutzerabnahme nach vollständigem Obsidian-Neustart bestanden |
 
 ## Änderungshistorie
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.2 | 2026-07-31 | Native Migration im aktiven OneDrive-Vault verifiziert; Neustartbedingung dokumentiert | QA |
 | 1.1 | 2026-07-31 | Fehlgeschlagenen Nachtest und tiefere Migrationsursache dokumentiert | RV+BE |
 | 1.0 | 2026-07-31 | Ursprünglichen Upgradefehler und ersten Refresh-Fix dokumentiert | RV+FE+BE |
 
