@@ -76,14 +76,14 @@ artifacts:
     GAP: 1
     UX: 3
     SP: 5
-    TP: 4
-    TR: 6
-    RV: 4
-    BUG: 4
+    TP: 5
+    TR: 7
+    RV: 5
+    BUG: 5
     DEBT: 2
     SRP: 1
-    DOC: 4
-    RN: 3
+    DOC: 5
+    RN: 4
     GS: 2
     FAQ: 2
     RETRO: 2

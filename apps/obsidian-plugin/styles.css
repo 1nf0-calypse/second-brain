@@ -1,9 +1,10 @@
 /* Beschreibung: Responsive, barrierearme Styles für die native Setup-View.
- * Artefakte:    US-000011; US-000005; US-000012; UX-000001; UX-000002
+ * Artefakte:    US-000011; US-000005; US-000012; US-000013; UX-000001; UX-000002
  * Agent:        FE — 2026-07-31
  */
 .second-brain-setup,
-.second-brain-search {
+.second-brain-search,
+.second-brain-relationships {
   box-sizing: border-box;
   max-width: 48rem;
   padding: var(--size-4-4);
@@ -15,6 +16,26 @@
 .second-brain-search button {
   min-height: 2.75rem;
   width: 100%;
+}
+
+.second-brain-relationships button {
+  min-height: 2.75rem;
+  width: 100%;
+}
+
+.second-brain-relationship-list {
+  display: grid;
+  gap: var(--size-4-3);
+  list-style: none;
+  padding: 0;
+}
+
+.second-brain-relationship-list li {
+  border: 1px solid var(--background-modifier-border);
+  display: grid;
+  gap: var(--size-4-2);
+  overflow-wrap: anywhere;
+  padding: var(--size-4-3);
 }
 
 .second-brain-search-results {

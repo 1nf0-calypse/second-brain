@@ -1,5 +1,5 @@
-// Beschreibung: Registriert native Setup- und Search-Views in Obsidian.
-// Artefakte:    US-000011; US-000005; US-000012; UX-000001; UX-000002
+// Beschreibung: Registriert native Setup-, Search- und Relationship-Views in Obsidian.
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; UX-000001; UX-000002
 // Agent:        FE — 2026-07-31
 import { FileSystemAdapter, Plugin } from 'obsidian';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -7,6 +7,10 @@ import { join } from 'node:path';
 import { SETUP_VIEW_TYPE, SetupView } from './ui/setup-view.js';
 import { NodeSetupTransport } from './ipc/node-setup-transport.js';
 import { SEARCH_VIEW_TYPE, SearchView } from './ui/search-view.js';
+import {
+  RELATIONSHIP_VIEW_TYPE,
+  RelationshipView
+} from './ui/relationship-view.js';
 
 declare const __SECOND_BRAIN_SIDECAR_SOURCE__: string;
 
@@ -44,6 +48,10 @@ export default class SecondBrainPlugin extends Plugin {
       SEARCH_VIEW_TYPE,
       (leaf) => new SearchView(leaf, transport, vaultRoot)
     );
+    this.registerView(
+      RELATIONSHIP_VIEW_TYPE,
+      (leaf) => new RelationshipView(leaf, transport, vaultRoot)
+    );
     this.addRibbonIcon('brain-circuit', 'Set up Second Brain', () => {
       void this.openSetup();
     });
@@ -52,6 +60,16 @@ export default class SecondBrainPlugin extends Plugin {
       name: 'Open setup',
       callback: () => {
         void this.openSetup();
+      }
+    });
+    this.addRibbonIcon('git-fork', 'Explore Second Brain relationships', () => {
+      void this.openRelationships();
+    });
+    this.addCommand({
+      id: 'open-relationships',
+      name: 'Explore active note relationships',
+      callback: () => {
+        void this.openRelationships();
       }
     });
     this.addRibbonIcon('search', 'Search Second Brain', () => {
@@ -95,6 +113,22 @@ export default class SecondBrainPlugin extends Plugin {
       throw new Error('No workspace leaf is available for Second Brain search.');
     }
     await leaf.setViewState({ type: SEARCH_VIEW_TYPE, active: true });
+    await this.app.workspace.revealLeaf(leaf);
+  }
+
+  /**
+   * Öffnet oder fokussiert die Relationship-Liste der aktiven Notiz.
+   * @returns Promise nach Aktivierung der View.
+   * @throws Obsidian-Workspace-Fehler.
+   * @sideEffect Öffnet ein rechtes Workspace-Pane.
+   */
+  private async openRelationships(): Promise<void> {
+    const existing = this.app.workspace.getLeavesOfType(RELATIONSHIP_VIEW_TYPE)[0];
+    const leaf = existing ?? this.app.workspace.getRightLeaf(false);
+    if (!leaf) {
+      throw new Error('No workspace leaf is available for Second Brain relationships.');
+    }
+    await leaf.setViewState({ type: RELATIONSHIP_VIEW_TYPE, active: true });
     await this.app.workspace.revealLeaf(leaf);
   }
 }

@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
+Letzte Aktualisierung: 2026-07-31 | Phase: DONE
 
 ## Aktive Artefakte
 
@@ -8,7 +8,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 |-------|-----|---------|--------|-------|-------------|
 | `discovery/SB-000001-second-brain.md` | SB-000001 | 1.0 | APPROVED | PM | Stakeholder Brief mit Produktvision, MVP und MoSCoW |
 | `discovery/CON-000001-second-brain.md` | CON-000001 | 1.0 | APPROVED | PM | Bindende Projekt-Constitution |
-| `discovery/DECISIONS.md` | DECISIONS | 1.0 | ACTIVE | PM | Entscheidungsprotokoll |
+| `discovery/DECISIONS.md` | DECISIONS | 1.3 | ACTIVE | PM+MW | Entscheidungsprotokoll einschließlich Relationship-Terminologie |
 | `requirements/REQ-000001-product-requirements.md` | REQ-000001 | 1.0 | APPROVED | BA | Produktanforderungen, NFRs und Story Map |
 | `requirements/US-000001-installation-and-mcp-setup.md` | US-000001 | 1.0 | APPROVED | BA | Installation, Vault-Auswahl und MCP-Einrichtung |
 | `requirements/US-000002-read-search-and-citations.md` | US-000002 | 1.0 | APPROVED | BA | Lesen, Suche, Quellen und Anhänge |
@@ -37,6 +37,10 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
+| `testing/TP-000004-sprint-3.md` | TP-000004 | 1.0 | APPROVED | QA | Sprint-3-Testplan für Relationship-Exploration |
+| `testing/TR-000006-sprint-3.md` | TR-000006 | 1.2 | APPROVED | QA | Automatisierte und native Desktop-Abnahme vollständig bestanden |
+| `testing/BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Schema-4-Migration nativ im aktiven Vault bestätigt |
+| `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `testing/TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |
@@ -51,10 +55,12 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 | `docs/DOC-000001-claude-desktop-setup.md` | DOC-000001 | 1.1 | APPROVED | MW | Claude Desktop lokal verbinden und veralteten Serverpfad ersetzen |
 | `docs/DOC-000002-local-index.md` | DOC-000002 | 1.0 | APPROVED | MW | Lokalen Index aktualisieren und sicher neu aufbauen |
 | `docs/DOC-000003-volltextsuche-und-quellen.md` | DOC-000003 | 1.0 | APPROVED | MW | Volltextsuche, Quellenprüfung und Recovery |
-| `docs/GS-000001.md` | GS-000001 | 1.0 | APPROVED | MW | Einstieg in Installation, Verbindung und Index |
+| `docs/DOC-000004-beziehungen-erkunden.md` | DOC-000004 | 1.0 | APPROVED | MW | Direkte Beziehungen in Obsidian und Claude erkunden |
+| `docs/GS-000001.md` | GS-000001 | 1.1 | APPROVED | MW | Einstieg in Installation, Suche, Beziehungen und Index |
 | `docs/RN-000001-sprint-1.md` | RN-000001 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 1 |
 | `docs/RN-000002-sprint-2.md` | RN-000002 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 2 |
-| `docs/FAQ-000001-suche-und-verbindung.md` | FAQ-000001 | 1.0 | APPROVED | MW | Häufige Fragen zu Installation, Verbindung und Suche |
+| `docs/RN-000003-sprint-3.md` | RN-000003 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 3 |
+| `docs/FAQ-000001-suche-und-verbindung.md` | FAQ-000001 | 1.1 | APPROVED | MW | Fragen zu Installation, Suche, Verbindung und Beziehungen |
 | `retros/RETRO-000001-sprint-1.md` | RETRO-000001 | 1.0 | REVIEW | AC | Sprint-1-Retrospektive |
 | `retros/PC-000001-implicit-approval-integrated-analysis.md` | PC-000001 | 1.1 | ACTIVE | AC | Implizite Freigabe und integrierte Analyse, umgesetzt in Tool Chain v2.11 |
 
@@ -89,8 +95,25 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 | 2026-07-31 | Gate 10 (Sprint 2 Release → Released) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5 (Sprint 3 Refinement → Implementation-ready) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5.5 (`/implement`-Preflight, SP-000004) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 6 (Sprint 3 Implementation → Testing) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 7 (Sprint 3 Testing → Review) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 8 (Sprint 3 Review → Documentation) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 9 (Sprint 3 Documentation → Done) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
+
+Sprint 3 ist fachlich, technisch und dokumentarisch abgeschlossen. DOC-000004,
+FAQ-000001@1.1 und RN-000003 decken die freigegebene Relationship-Exploration ab.
+
+## Übergabe: FE/BE → QA — Sprint 3
+
+**Datum:** 2026-07-31
+**Nächster Befehl:** `/test-plan second-brain 3`
+
+- US-000013: Verträge, SQLite-Kanten, Extraktion, MCP und Obsidian-Relationship-Liste implementiert.
+- Qualität: Build und Lint sauber; 48 Vitest- sowie 8 headed Playwright-Tests bestanden.
+- Coverage: Statements 94,20 %, Branches 81,69 %, Functions 94,91 %, Lines 95,10 %.
+- Scope: ausschließlich explizite, lokale, read-only Beziehungen; keine Inferenz oder Mutation.
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|

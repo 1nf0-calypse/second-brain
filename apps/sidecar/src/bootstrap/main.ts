@@ -1,5 +1,5 @@
 // Beschreibung: Sidecar-Startpunkt für MCP, Index- und read-only Suchoperationen.
-// Artefakte:    US-000011; US-000005; US-000012; ADR-000001
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; ADR-000001
 // Agent:        BE — 2026-07-31
 import { mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -33,7 +33,9 @@ if (!vaultRoot) {
       process.argv.includes('--sync-index') ||
       process.argv.includes('--rebuild-index') ||
       process.argv.includes('--search') ||
-      process.argv.includes('--read-note')
+      process.argv.includes('--read-note') ||
+      process.argv.includes('--relationships') ||
+      process.argv.includes('--node-detail')
     ) {
       await mkdir(dirname(indexPath), { recursive: true });
       const index = new LocalIndex(indexPath);
@@ -49,13 +51,22 @@ if (!vaultRoot) {
             query: process.env['SECOND_BRAIN_SEARCH_QUERY'],
             limit: Number(process.env['SECOND_BRAIN_SEARCH_LIMIT'] ?? 20)
           });
-        } else {
+        } else if (process.argv.includes('--read-note')) {
           response = await search.readNote({
             relativePath: process.env['SECOND_BRAIN_READ_PATH'],
             line: process.env['SECOND_BRAIN_READ_LINE']
               ? Number(process.env['SECOND_BRAIN_READ_LINE'])
               : undefined
           });
+        } else if (process.argv.includes('--relationships')) {
+          response = index.relationships(
+            process.env['SECOND_BRAIN_RELATIONSHIP_PATH'] ?? '',
+            Number(process.env['SECOND_BRAIN_RELATIONSHIP_LIMIT'] ?? 100)
+          );
+        } else {
+          response = index.nodeDetail(
+            process.env['SECOND_BRAIN_RELATIONSHIP_PATH'] ?? ''
+          );
         }
         process.stdout.write(`${JSON.stringify(response)}\n`);
       } finally {

@@ -1,17 +1,17 @@
 ---
 id: FAQ-000001
-title: FAQ — Suche und Verbindung
-version: 1.0
+title: FAQ — Suche, Verbindung und Beziehungen
+version: 1.1
 status: APPROVED
 author-agent: MW (Manual Writer)
 date: 2026-07-31
 project: second-brain
-based-on: DOC-000001, DOC-000003, RV-000003
+based-on: DOC-000001, DOC-000003, DOC-000004, RV-000004
 supersedes: —
 superseded-by: —
 ---
 
-# FAQ: Suche und Verbindung
+# FAQ: Suche, Verbindung und Beziehungen
 
 ## Installation und Verbindung
 
@@ -62,6 +62,39 @@ blockiert.
 *Mehr Details: siehe
 [DOC-000003](DOC-000003-volltextsuche-und-quellen.md).*
 
+## Beziehungen
+
+### Warum zeigt Obsidian keine Beziehungen, obwohl die Notiz einen Link enthält?
+
+Wähle in der Relationship-Ansicht **Refresh active note**. Wenn du das Plugin gerade
+aktualisiert hast, beende Obsidian vollständig und starte es neu. `Strg+R` startet den
+lokalen Dienst nicht in jeder Umgebung zuverlässig neu.
+
+### Warum funktionieren Suche und Indexaufbau in Claude, aber Beziehungen melden `SIDECAR_OFFLINE`?
+
+Claude kann noch einen älteren lokalen Dienst verwenden. Beende Claude Desktop vollständig
+und starte es neu. Prüfe außerdem, ob Claudes Serverkonfiguration auf die Plugin-Installation
+im selben Vault verweist, den du gerade in Obsidian geöffnet hast.
+
+### Welchen Pfad muss ich Claude für eine Notiz geben?
+
+Verwende den Pfad innerhalb des freigegebenen Vaults, zum Beispiel `Alpha.md` für eine
+Notiz in der Wurzel oder `Projekte/Alpha.md` für eine Notiz im Ordner `Projekte`. Verwende
+keine vollständige Windows-Adresse.
+
+### Warum meldet Claude `PATH_OUTSIDE_VAULT`?
+
+Der angegebene Pfad liegt aus Sicht des konfigurierten Vaults außerhalb des erlaubten
+Bereichs. Prüfe, ob Claude und Obsidian denselben Vault verwenden, und gib danach nur den
+relativen Notizpfad an.
+
+### Verändert das Erkunden von Beziehungen meine Notizen?
+
+Nein. Second Brain aktualisiert ausschließlich den abgeleiteten lokalen Index. Die
+Originalnotizen bleiben unverändert.
+
+*Mehr Details: siehe [DOC-000004](DOC-000004-beziehungen-erkunden.md).*
+
 ---
 
 ## Übergabe: MW → ORCH
@@ -69,17 +102,18 @@ blockiert.
 **Datum:** 2026-07-31
 **Von:** Manual Writer (MW)
 **An:** Orchestrator (ORCH)
-**Nächster Befehl:** `/retro second-brain 2` (optional) oder `/refine second-brain 3`
+**Nächster Befehl:** `/retro second-brain 3` (optional) oder `/refine second-brain 4`
 
 ### Übergebene Artefakte
 
 | Artefakt-ID | Status | Pfad | Hinweise |
 |---|---|---|---|
-| FAQ-000001 | APPROVED | `docs/FAQ-000001-suche-und-verbindung.md` | Installation, Verbindung, Suche und Grenzen |
+| FAQ-000001@1.1 | APPROVED | `docs/FAQ-000001-suche-und-verbindung.md` | Installation, Suche, Beziehungen und Grenzen |
 
 ### Kritische Informationen für Empfänger
 
-Die FAQ bildet die tatsächlich im Sprint-2-Review aufgetretenen Einrichtungsfragen ab.
+Die FAQ bildet die tatsächlich in den Sprint-2- und Sprint-3-Reviews aufgetretenen
+Einrichtungs-, Vault- und Neustartfragen ab.
 
 ### Offene Fragen (vererbt)
 
@@ -96,10 +130,11 @@ aktualisieren.
 
 ---
 
-*Erstellt von: MW-Agent | Datum: 2026-07-31 | Version: 1.0*
+*Erstellt von: MW-Agent | Datum: 2026-07-31 | Version: 1.1*
 
 ## Änderungshistorie
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.1 | 2026-07-31 | Vault-Pfade, Sidecar-Neustart und Relationship-Fehler ergänzt | MW |
 | 1.0 | 2026-07-31 | Initiale FAQ aus Sprint-2-Nutzerfragen | MW |

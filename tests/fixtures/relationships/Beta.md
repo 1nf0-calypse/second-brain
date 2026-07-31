@@ -1,0 +1,3 @@
+# Beta
+
+Synthetic relationship target.
