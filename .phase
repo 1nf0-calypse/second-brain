@@ -7,8 +7,8 @@ current-phase: REVIEW
 previous-phase: TESTING
 phase-started: 2026-07-31
 sprint: 3
-last-agent: QA
-last-artifact: BUG-000004@1.2
+last-agent: RV
+last-artifact: RV-000004
 approval-source: transition-command
 approval-command: /implement all second-brain
 approved-artifacts: [US-000013@1.0, SP-000004@1.0]
@@ -99,6 +99,14 @@ history:
   - phase: TESTING
     started: 2026-07-31
     completed: 2026-07-31
+    artifacts: [BUG-000004@1.2, TR-000006@1.1]
+  - phase: REVIEW
+    started: 2026-07-31
+    completed: 2026-07-31
+    artifacts: [BUG-000004@1.1]
+  - phase: TESTING
+    started: 2026-07-31
+    completed: 2026-07-31
     artifacts: [BUG-000004]
   - phase: TESTING
     started: 2026-07-31
@@ -162,3 +170,12 @@ history:
     artifacts: [BUG-000004]
   - phase: IMPLEMENTATION
     started: 2026-07-31
+    completed: 2026-07-31
+    artifacts: [BUG-000004@1.1]
+  - phase: TESTING
+    started: 2026-07-31
+    completed: 2026-07-31
+    artifacts: [BUG-000004@1.2, TR-000006@1.2]
+  - phase: REVIEW
+    started: 2026-07-31
+    artifacts: [RV-000004]

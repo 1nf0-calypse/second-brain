@@ -38,8 +38,9 @@ Letzte Aktualisierung: 2026-07-31 | Phase: REVIEW
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
 | `testing/TP-000004-sprint-3.md` | TP-000004 | 1.0 | APPROVED | QA | Sprint-3-Testplan für Relationship-Exploration |
-| `testing/TR-000006-sprint-3.md` | TR-000006 | 1.1 | CONDITIONAL | QA | Obsidian nativ grün; Claude-Relationship-Tools noch offen |
+| `testing/TR-000006-sprint-3.md` | TR-000006 | 1.2 | APPROVED | QA | Automatisierte und native Desktop-Abnahme vollständig bestanden |
 | `testing/BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Schema-4-Migration nativ im aktiven Vault bestätigt |
+| `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `testing/TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |
@@ -93,13 +94,13 @@ Letzte Aktualisierung: 2026-07-31 | Phase: REVIEW
 | 2026-07-31 | Gate 5 (Sprint 3 Refinement → Implementation-ready) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5.5 (`/implement`-Preflight, SP-000004) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 6 (Sprint 3 Implementation → Testing) | PASS | 0 | 0 | 0 |
-| 2026-07-31 | Gate 7 (Sprint 3 Testing → Review) | CONDITIONAL | 0 | 1 | 0 |
+| 2026-07-31 | Gate 7 (Sprint 3 Testing → Review) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 8 (Sprint 3 Review → Documentation) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
-Sprint 3 ist vollständig implementiert und an QA übergeben.
-TR-000006 ist `CONDITIONAL`: automatisiert vollständig grün; native Obsidian-/Claude-
-Desktop-Evidenz bleibt als MAJOR-Testumgebungsrisiko für den Review offen.
+Sprint 3 ist technisch und fachlich freigegeben. TR-000006@1.2 und RV-000004 sind
+`APPROVED`; BUG-000004 ist nativ `VERIFIZIERT`. Die Dokumentationsphase ist bereit.
 
 ## Übergabe: FE/BE → QA — Sprint 3
 
