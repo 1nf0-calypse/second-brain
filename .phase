@@ -3,14 +3,12 @@
 # Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
 
 project: second-brain
-current-phase: DONE
-previous-phase: DOCUMENTATION
+current-phase: RELEASED
+previous-phase: DONE
 phase-started: 2026-07-31
 sprint: 1
-last-agent: MW
+last-agent: ORCH
 last-artifact: RN-000001
-worktree-path: projects/second-brain/.worktrees/sprint-1
-worktree-branch: feature/sprint-1
 
 # Phasen-History (wird vom Orchestrator gepflegt)
 history:
@@ -72,3 +70,8 @@ history:
     artifacts: [DOC-000001, DOC-000002, GS-000001, RN-000001]
   - phase: DONE
     started: 2026-07-31
+    completed: 2026-07-31
+  - phase: RELEASED
+    started: 2026-07-31
+    completed: 2026-07-31
+    artifacts: [RN-000001]

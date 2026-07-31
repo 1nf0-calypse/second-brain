@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: DONE
+Letzte Aktualisierung: 2026-07-31 | Phase: RELEASED
 
 ## Aktive Artefakte
 
@@ -67,12 +67,14 @@ Letzte Aktualisierung: 2026-07-31 | Phase: DONE
 | 2026-07-30 | Gate 8 (Re-Review) | REJECTED | 0 | 4 | 2 |
 | 2026-07-30 | Gate 8 (korrigierte Nutzerabnahme) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 9 (Documentation → Done) | PASS | 0 | 0 | 1 |
+| 2026-07-31 | Gate 10 (Release → Released) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
 | Datei | ID | Status | Warten auf |
 |-------|-----|--------|-----------|
 | Screenshot-Aufnahmen | — | MINOR | 6 markierte Produktaufnahmen vor öffentlicher Veröffentlichung |
+| Remote-Synchronisierung | `v0.1.0` | OFFEN | Push und Worktree-Cleanup warten auf Nutzerbestätigung |
 
 ## Archiv
 
