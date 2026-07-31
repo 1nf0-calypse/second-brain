@@ -24,3 +24,4 @@ Funktionale und nicht-funktionale Anforderungen, Story Map und entwicklungsfähi
 | `US-000011-claude-desktop-local-setup.md` | US-000011 | 1.0 | APPROVED | BA | Lieferbarer lokaler Claude-Desktop-Slice für Sprint 1 |
 | `US-000012-full-text-search-and-citations.md` | US-000012 | 1.0 | APPROVED | BA | Lieferbarer Volltext- und Quellen-Slice für Sprint 2 |
 | `US-000013-local-relationship-exploration.md` | US-000013 | 1.0 | APPROVED | BA | Lieferbarer read-only Relationship-Slice für Sprint 3 |
+| `US-000014-controlled-human-in-mutations.md` | US-000014 | 1.0 | REVIEW | BA | Human-in-the-Loop-Slice für eine Markdown-Notiz |
