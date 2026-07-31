@@ -2,7 +2,7 @@
 id: US-000012
 title: Volltextsuche mit überprüfbaren Quellen
 version: 1.0
-status: REVIEW
+status: APPROVED
 author-agent: BA (Business Analyst)
 date: 2026-07-31
 project: second-brain

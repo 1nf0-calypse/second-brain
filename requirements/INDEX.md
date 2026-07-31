@@ -22,4 +22,4 @@ Funktionale und nicht-funktionale Anforderungen, Story Map und entwicklungsfähi
 | `US-000009-campaignworld-boundary.md` | US-000009 | 1.0 | APPROVED | BA | Spätere getrennte campaignworld-Integration |
 | `US-000010-android-use.md` | US-000010 | 1.0 | APPROVED | BA | Post-MVP-Android-Nutzung |
 | `US-000011-claude-desktop-local-setup.md` | US-000011 | 1.0 | APPROVED | BA | Lieferbarer lokaler Claude-Desktop-Slice für Sprint 1 |
-| `US-000012-full-text-search-and-citations.md` | US-000012 | 1.0 | REVIEW | BA | Lieferbarer Volltext- und Quellen-Slice für Sprint 2 |
+| `US-000012-full-text-search-and-citations.md` | US-000012 | 1.0 | APPROVED | BA | Lieferbarer Volltext- und Quellen-Slice für Sprint 2 |
