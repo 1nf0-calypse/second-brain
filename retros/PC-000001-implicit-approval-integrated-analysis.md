@@ -1,8 +1,8 @@
 ---
 id: PC-000001
 title: Process Change Proposal — Implizite Freigabe und integrierte Analyse
-version: 1.0
-status: DRAFT
+version: 1.1
+status: ACTIVE
 author-agent: AC (Agile Coach)
 date: 2026-07-31
 project: second-brain
@@ -154,29 +154,29 @@ Review bleiben unverändert stark.
 
 ## Umsetzungs-Checkliste
 
-- [ ] Nutzer hat Änderung freigegeben.
-- [ ] Betroffene Command-, Agenten-, Workflow- und Protokolldateien aktualisiert.
-- [ ] Summary-Dateien synchronisiert.
-- [ ] `RELEASENOTES.md` aktualisiert.
-- [ ] Kompatibilitätsprüfung ausgeführt.
+- [x] Nutzer hat Änderung mit `/coach second-brain` freigegeben.
+- [x] Betroffene Command-, Agenten-, Workflow- und Protokolldateien aktualisiert.
+- [x] Summary-Dateien synchronisiert.
+- [x] `RELEASENOTES.md` aktualisiert.
+- [x] Kompatibilitätsprüfung ausgeführt (99 Prüfungen bestanden).
 - [ ] Änderung in Sprint 2 erprobt.
 - [ ] RETRO-000002 misst Nutzerinteraktionen und Rückläufe.
-- [ ] Status dieses PC-Dokuments auf ACTIVE gesetzt.
+- [x] Status dieses PC-Dokuments auf ACTIVE gesetzt.
 
 ## Status-Verlauf
 
 | Datum | Status | Kommentar |
 |---|---|---|
 | 2026-07-31 | DRAFT | Nach RETRO-000001 erstellt; wartet auf Nutzerfreigabe |
+| 2026-07-31 | APPROVED | Durch `/coach second-brain` explizit freigegeben |
+| 2026-07-31 | ACTIVE | In Tool Chain v2.11 umgesetzt; Commit `77ff313` |
 
 ---
 
 ## Übergabe an den Nutzer
 
-**Entscheidung erforderlich:** PC-000001 freigeben, ändern oder ablehnen.
-
-Bei Freigabe ist der nächste Schritt die Umsetzung in der Tool Chain; erst danach sollte
-Sprint 2 mit dem neuen Übergangsmodell gestartet werden.
+PC-000001 ist freigegeben und in Tool Chain v2.11 (`77ff313`) umgesetzt. Sprint 2 soll das
+neue Übergangsmodell erstmals erproben.
 
 ---
 
@@ -186,4 +186,5 @@ Sprint 2 mit dem neuen Übergangsmodell gestartet werden.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.1 | 2026-07-31 | Freigegeben und in Tool Chain v2.11 umgesetzt | AC |
 | 1.0 | 2026-07-31 | Initialer Vorschlag | AC |

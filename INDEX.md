@@ -45,7 +45,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: DONE
 | `docs/GS-000001.md` | GS-000001 | 1.0 | APPROVED | MW | Einstieg in Installation, Verbindung und Index |
 | `docs/RN-000001-sprint-1.md` | RN-000001 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 1 |
 | `retros/RETRO-000001-sprint-1.md` | RETRO-000001 | 1.0 | REVIEW | AC | Sprint-1-Retrospektive |
-| `retros/PC-000001-implicit-approval-integrated-analysis.md` | PC-000001 | 1.0 | DRAFT | AC | Vorschlag für implizite Freigabe und integrierte Analyse |
+| `retros/PC-000001-implicit-approval-integrated-analysis.md` | PC-000001 | 1.1 | ACTIVE | AC | Implizite Freigabe und integrierte Analyse, umgesetzt in Tool Chain v2.11 |
 
 ## Gate-History
 
