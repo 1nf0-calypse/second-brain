@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
+Letzte Aktualisierung: 2026-07-31 | Phase: TESTING
 
 ## Aktive Artefakte
 
@@ -34,6 +34,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 | `sprints/SP-000003-sprint-2-search.md` | SP-000003 | 1.0 | APPROVED | BA+FE+BE | Sprint-2-Backlog für Volltextsuche, Quellen und Sprint-1-Schuld |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
+| `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `testing/TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |
@@ -71,6 +72,7 @@ Letzte Aktualisierung: 2026-07-31 | Phase: IMPLEMENTATION
 | 2026-07-31 | Gate 10 (Release → Released) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5 (Sprint 2 Refinement → Implementation) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5.5 (`/implement`-Preflight, SP-000003) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 6 (Sprint 2 Implementation → Testing) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
