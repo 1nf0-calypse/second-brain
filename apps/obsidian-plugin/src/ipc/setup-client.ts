@@ -3,6 +3,8 @@
 // Agent:        FE — 2026-07-30
 import {
   IndexStatusSchema,
+  ProviderHandshakeResponseSchema,
+  type ProviderHandshakeResponse,
   SetupResponseSchema,
   type IndexStatus,
   type SetupResponse
@@ -12,6 +14,16 @@ export interface SetupTransport {
   testConnection(vaultRoot: string): Promise<unknown>;
   synchronizeIndex(vaultRoot: string): Promise<unknown>;
   rebuildIndex(vaultRoot: string): Promise<unknown>;
+  inspectProvider(provider: 'chatgpt' | 'mistral', endpoint: string): Promise<unknown>;
+}
+
+/** Validates a credential-free remote endpoint inspection result. */
+export async function inspectRemoteProvider(
+  transport: SetupTransport,
+  provider: 'chatgpt' | 'mistral',
+  endpoint: string
+): Promise<ProviderHandshakeResponse> {
+  return ProviderHandshakeResponseSchema.parse(await transport.inspectProvider(provider, endpoint));
 }
 
 /**

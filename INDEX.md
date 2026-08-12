@@ -39,7 +39,7 @@ Letzte Aktualisierung: 2026-08-12 | Phase: REFINEMENT
 | `sprints/SP-000003-sprint-2-search.md` | SP-000003 | 1.0 | APPROVED | BA+FE+BE | Sprint-2-Backlog für Volltextsuche, Quellen und Sprint-1-Schuld |
 | `sprints/SP-000004-sprint-3-relationships.md` | SP-000004 | 1.0 | APPROVED | BA+FE+BE | Sprint-3-Backlog für lokale Relationship-Exploration |
 | `sprints/SP-000005-sprint-4-controlled-mutations.md` | SP-000005 | 1.0 | APPROVED | BA+FE+BE | Sprint-4-Backlog für kontrollierte Ein-Datei-Mutationen |
-| `sprints/SP-000006-sprint-5-remote-clients-and-consent.md` | SP-000006 | 1.0 | REVIEW | BA+FE+BE | Sprint-5-Backlog für Remote-Clients und minimierten Einmal-Consent |
+| `sprints/SP-000006-sprint-5-remote-clients-and-consent.md` | SP-000006 | 1.0 | APPROVED | BA+FE+BE | Sprint-5-Backlog für Remote-Clients und minimierten Einmal-Consent |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
@@ -124,6 +124,7 @@ Letzte Aktualisierung: 2026-08-12 | Phase: REFINEMENT
 | 2026-08-12 | Gate 9 (Sprint 4 Documentation → Done) | PASS | 0 | 0 | 2 |
 | 2026-08-12 | Gate 10 (Sprint 4 Release → Released) | PASS | 0 | 0 | 0 |
 | 2026-08-12 | Gate 5 (Sprint 5 Refinement → Implementation-ready) | PASS | 0 | 0 | 0 |
+| 2026-08-12 | Gate 5.5 (Sprint 5 Implementierungs-Preflight) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 

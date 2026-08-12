@@ -55,6 +55,14 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
     return this.run('--rebuild-index', vaultRoot, {}, INDEX_TIMEOUT_MS);
   }
 
+  /** Inspects a user-managed remote endpoint without accepting or storing credentials. */
+  public inspectProvider(provider: 'chatgpt' | 'mistral', endpoint: string): Promise<unknown> {
+    return this.run('--provider-handshake', process.cwd(), {
+      SECOND_BRAIN_PROVIDER: provider,
+      SECOND_BRAIN_PROVIDER_ENDPOINT: endpoint
+    }, CONNECTION_TIMEOUT_MS);
+  }
+
   /**
    * Durchsucht den lokalen Index in einem abbrechbaren Prozess.
    * @param vaultRoot Freigegebener Vault-Root.

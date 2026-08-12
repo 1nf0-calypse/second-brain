@@ -10,6 +10,10 @@ import { LocalIndex } from '../indexing/sqlite-index.js';
 import { SearchService } from '../search/search-service.js';
 import { toPublicErrorResponse } from '../errors/public-error.js';
 import { MutationService } from '../mutations/mutation-service.js';
+import {
+  getApprovedProviderConfiguration,
+  inspectProviderConnection
+} from '../providers/provider-service.js';
 
 const vaultRoot = process.env['SECOND_BRAIN_VAULT_ROOT'];
 
@@ -23,7 +27,23 @@ if (!vaultRoot) {
     process.env['SECOND_BRAIN_INDEX_PATH'] ??
     join(vaultRoot, '.second-brain', 'index.sqlite');
   try {
-    if (process.argv.includes('--setup-handshake')) {
+    if (process.argv.includes('--provider-handshake')) {
+      const provider = process.env['SECOND_BRAIN_PROVIDER'];
+      if (provider !== 'chatgpt' && provider !== 'mistral') {
+        throw new Error('PROVIDER_NOT_APPROVED: Select an approved provider.');
+      }
+      const endpoint = process.env['SECOND_BRAIN_PROVIDER_ENDPOINT'] ?? '';
+      const response = inspectProviderConnection({
+        contractVersion: CONTRACT_VERSION,
+        provider,
+        endpoint,
+        expectedScope: ['read:notes', 'consent:once']
+      }, {
+        ...getApprovedProviderConfiguration(provider),
+        endpoint
+      });
+      process.stdout.write(`${JSON.stringify(response)}\n`);
+    } else if (process.argv.includes('--setup-handshake')) {
       const response = await performSetupHandshake({
         contractVersion: process.env['SECOND_BRAIN_CONTRACT_VERSION'] ?? CONTRACT_VERSION,
         client: 'claude-desktop',

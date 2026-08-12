@@ -16,7 +16,11 @@ export const ErrorCodeSchema = z.enum([
   'FILE_NOT_FOUND',
   'MUTATION_CONFLICT',
   'MUTATION_WRITE_FAILED',
-  'CONFIRMATION_INVALID'
+  'CONFIRMATION_INVALID',
+  'PROVIDER_NOT_APPROVED',
+  'PROVIDER_SCOPE_MISMATCH',
+  'CONSENT_REQUIRED',
+  'CONSENT_EXPIRED'
 ]);
 
 export const ErrorResponseSchema = z.object({
@@ -37,6 +41,63 @@ export const SetupResponseSchema = z.object({
   capability: z.literal('setup:read'),
   vaultReady: z.boolean(),
   message: z.string()
+}).strict();
+
+export const ProviderIdSchema = z.enum(['chatgpt', 'mistral']);
+export const DataCategorySchema = z.enum(['text-excerpt', 'pseudonymous-source-id']);
+export const ProviderConfigurationSchema = z.object({
+  provider: ProviderIdSchema,
+  endpoint: z.string().url().startsWith('https://'),
+  sourceUrl: z.string().url(),
+  reviewedAt: z.string().datetime(),
+  policyVersion: z.string().min(1),
+  allowedCategories: z.array(DataCategorySchema).min(1)
+}).strict();
+export const ProviderHandshakeRequestSchema = z.object({
+  contractVersion: z.literal(CONTRACT_VERSION),
+  provider: ProviderIdSchema,
+  endpoint: z.string().url().startsWith('https://'),
+  expectedScope: z.array(z.enum(['read:notes', 'consent:once'])).min(1)
+}).strict();
+export const ProviderHandshakeResponseSchema = z.object({
+  contractVersion: z.literal(CONTRACT_VERSION),
+  provider: ProviderIdSchema,
+  endpoint: z.string().url().startsWith('https://'),
+  connected: z.literal(false),
+  configured: z.boolean(),
+  scopes: z.array(z.enum(['read:notes', 'consent:once'])),
+  message: z.string()
+}).strict();
+export const ConsentPrepareRequestSchema = z.object({
+  provider: ProviderIdSchema,
+  purpose: z.string().trim().min(1).max(200),
+  operation: z.string().trim().min(1).max(100),
+  policyVersion: z.string().min(1),
+  excerpts: z.array(z.object({
+    text: z.string().min(1).max(20_000),
+    sourceId: z.string().regex(/^[a-zA-Z0-9_-]{8,128}$/)
+  }).strict()).min(1).max(20)
+}).strict();
+export const ConsentPreviewSchema = z.object({
+  provider: ProviderIdSchema,
+  purpose: z.string(),
+  operation: z.string(),
+  categories: z.array(DataCategorySchema),
+  payloadHash: z.string().length(64),
+  policyVersion: z.string(),
+  confirmationToken: z.string().uuid(),
+  expiresAt: z.string().datetime()
+}).strict();
+export const ConsentReceiptSchema = z.object({
+  provider: ProviderIdSchema,
+  purpose: z.string(),
+  operation: z.string(),
+  categories: z.array(DataCategorySchema),
+  sourceIds: z.array(z.string()),
+  payloadHash: z.string().length(64),
+  policyVersion: z.string(),
+  confirmedAt: z.string().datetime(),
+  revokedAt: z.string().datetime().nullable()
 }).strict();
 
 export const IndexStatusSchema = z.object({
@@ -161,6 +222,13 @@ export const RollbackPrepareRequestSchema = z.object({
 
 export type SetupRequest = z.infer<typeof SetupRequestSchema>;
 export type SetupResponse = z.infer<typeof SetupResponseSchema>;
+export type ProviderId = z.infer<typeof ProviderIdSchema>;
+export type ProviderConfiguration = z.infer<typeof ProviderConfigurationSchema>;
+export type ProviderHandshakeRequest = z.infer<typeof ProviderHandshakeRequestSchema>;
+export type ProviderHandshakeResponse = z.infer<typeof ProviderHandshakeResponseSchema>;
+export type ConsentPrepareRequest = z.infer<typeof ConsentPrepareRequestSchema>;
+export type ConsentPreview = z.infer<typeof ConsentPreviewSchema>;
+export type ConsentReceipt = z.infer<typeof ConsentReceiptSchema>;
 export type IndexStatus = z.infer<typeof IndexStatusSchema>;
 export type SearchRequest = z.infer<typeof SearchRequestSchema>;
 export type SearchResult = z.infer<typeof SearchResultSchema>;

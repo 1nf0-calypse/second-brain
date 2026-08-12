@@ -1,6 +1,6 @@
 # Sidecar — Index
 
-Letzte Aktualisierung: 2026-07-31
+Letzte Aktualisierung: 2026-08-12
 
 | Pfad | Zweck |
 |---|---|
@@ -12,3 +12,4 @@ Letzte Aktualisierung: 2026-07-31
 | `src/search/` | Gemeinsamer Search-/Read-Service mit Vault-Scope |
 | `src/errors/` | Versionierte öffentliche Fehlerabbildung für CLI und MCP |
 | `src/mutations/` | Persistente Vorschau-Tokens, Hash-Konfliktschutz, atomare Writes, Audit und Rollback |
+| `src/providers/` | Credential-freie Provider-Registry, Endpoint-Inspektion und Einmal-Consent-Grenze |

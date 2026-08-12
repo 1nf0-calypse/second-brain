@@ -3,6 +3,7 @@
 // Agent:        FE — 2026-07-30
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import {
+  inspectRemoteProvider,
   rebuildIndex,
   synchronizeIndex,
   testLocalService,
@@ -84,7 +85,27 @@ export class SetupView extends ItemView {
       text: 'Second Brain does not require an additional LLM API key for this connection.'
     });
     root.createEl('p', {
-      text: 'ChatGPT and Mistral are not included in this Sprint 1 setup.'
+      text: 'Remote clients use a user-managed endpoint. Second Brain never requests or stores provider credentials.'
+    });
+    root.createEl('h2', { text: 'Remote client connection' });
+    const providerLabel = root.createEl('label', { text: 'Provider' });
+    const provider = root.createEl('select', { attr: { 'aria-label': 'Remote provider' } });
+    provider.createEl('option', { text: 'ChatGPT Business, Enterprise, or Edu', value: 'chatgpt' });
+    provider.createEl('option', { text: 'Mistral Connector', value: 'mistral' });
+    providerLabel.htmlFor = 'second-brain-provider';
+    provider.id = 'second-brain-provider';
+    const endpointLabel = root.createEl('label', { text: 'User-managed HTTPS endpoint' });
+    const endpoint = root.createEl('input', {
+      attr: { id: 'second-brain-provider-endpoint', type: 'url', inputmode: 'url' }
+    });
+    endpointLabel.htmlFor = endpoint.id;
+    const inspectButton = root.createEl('button', { text: 'Inspect remote configuration' });
+    inspectButton.disabled = true;
+    endpoint.addEventListener('input', () => {
+      inspectButton.disabled = !endpoint.value.startsWith('https://');
+    });
+    inspectButton.addEventListener('click', () => {
+      void this.runRemoteInspection(inspectButton, provider.value as 'chatgpt' | 'mistral', endpoint.value);
     });
 
     input.addEventListener('change', () => {
@@ -139,6 +160,25 @@ export class SetupView extends ItemView {
       this.setStatus(`${message} No files were changed.`, true);
     } finally {
       testButton.disabled = false;
+    }
+  }
+
+  /** Inspects endpoint scope without collecting a provider credential or sending vault content. */
+  private async runRemoteInspection(
+    button: HTMLButtonElement,
+    provider: 'chatgpt' | 'mistral',
+    endpoint: string
+  ): Promise<void> {
+    button.disabled = true;
+    this.setStatus('Inspecting remote configuration…');
+    try {
+      const result = await inspectRemoteProvider(this.transport, provider, endpoint);
+      this.setStatus(`${result.message} No vault content or credentials were transferred.`, true);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'The remote configuration is invalid.';
+      this.setStatus(`${message} No vault content or credentials were transferred.`, true);
+    } finally {
+      button.disabled = false;
     }
   }
 

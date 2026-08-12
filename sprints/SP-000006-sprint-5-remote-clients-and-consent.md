@@ -2,7 +2,7 @@
 id: SP-000006
 title: Sprint 5 Backlog — Remote-Clients und Datenfluss-Consent
 version: 1.0
-status: REVIEW
+status: APPROVED
 author: BA+FE+BE
 date: 2026-08-12
 project: second-brain
@@ -111,7 +111,6 @@ damit 26 SP und ist als Ist-Abweichung in RM-000001 dokumentiert.
 
 ## Handoff
 
-**Status:** REVIEW — Refinement-Gate bestanden; US-000001 und US-000007 werden im
-Projektboard auf `Ready` gesetzt.  
+**Status:** APPROVED — Gate 5.5 bestanden; Implementierung im Sprint-5-Worktree.
 **Nächster Command:** `/implement all second-brain`
 
