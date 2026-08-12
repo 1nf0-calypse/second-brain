@@ -49,8 +49,11 @@ Letzte Aktualisierung: 2026-08-12 | Phase: REFINEMENT
 | `testing/TR-000006-sprint-3.md` | TR-000006 | 1.2 | APPROVED | QA | Automatisierte und native Desktop-Abnahme vollständig bestanden |
 | `testing/BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Schema-4-Migration nativ im aktiven Vault bestätigt |
 | `testing/TR-000007-sprint-4.md` | TR-000007 | 1.2 | CONDITIONAL | QA | Gate 7 funktional bestanden; native Nutzerabnahme als Review-Auflage erfüllt |
+| `testing/TR-000008-sprint-5.md` | TR-000008 | 1.0 | REJECTED | QA | Gate 7 wegen zwei offenen Sprint-5-BLOCKERN fehlgeschlagen |
 | `testing/BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.6 | VERIFIZIERT | QA | Pre-Write-Lock liefert stabilen Write-Fehler bei intaktem Original |
 | `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.3 | VERIFIZIERT | QA | Preview-Cleanup und feste Obergrenze unabhängig bestätigt |
+| `testing/BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | OFFEN | QA | Produktiver Consent-/Transferpfad fehlt |
+| `testing/BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | OFFEN | QA | Remote-Endpoint-Test führt keinen Handshake aus |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `reviews/RV-000005-sprint-4.md` | RV-000005 | 1.0 | APPROVED | RV | Sprint-4-Mutationsslice in Nutzer- und Technikabnahme freigegeben |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
@@ -127,6 +130,7 @@ Letzte Aktualisierung: 2026-08-12 | Phase: REFINEMENT
 | 2026-08-12 | Gate 5 (Sprint 5 Refinement → Implementation-ready) | PASS | 0 | 0 | 0 |
 | 2026-08-12 | Gate 5.5 (Sprint 5 Implementierungs-Preflight) | PASS | 0 | 0 | 0 |
 | 2026-08-12 | Gate 6 (Sprint 5 Implementation → Testing) | PASS | 0 | 0 | 0 |
+| 2026-08-12 | Gate 7 (Sprint 5 Testing → Review) | FAIL | 2 | 0 | 0 |
 
 ## In Bearbeitung
 
