@@ -1,6 +1,6 @@
 # UX — Index
 
-Letzte Aktualisierung: 2026-07-30
+Letzte Aktualisierung: 2026-08-12
 
 ## Zweck
 
@@ -12,3 +12,4 @@ User Journeys, UI-Zustände, Microcopy, Accessibility und Interaktionsverträge.
 |---|---|---|---|---|---|
 | `UX-000001-mvp-interaction-design.md` | UX-000001 | 1.0 | APPROVED | UX | Alle Stories, sieben Journeys, Zustände, Microcopy und WCAG 2.2 AA |
 | `UX-000002-claude-desktop-setup-slice.md` | UX-000002 | 1.0 | APPROVED | UX | Expliziter Claude-Desktop-Setup-Flow für US-000011 |
+| `UX-000003-remote-client-consent.md` | UX-000003 | 1.0 | APPROVED | UX | Remote-Client-Setup, Einmal-Consent, Fehler und Widerruf für Sprint 5 |

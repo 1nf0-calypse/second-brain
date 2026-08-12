@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-12 | Phase: RELEASED
+Letzte Aktualisierung: 2026-08-12 | Phase: REFINEMENT
 
 ## Aktive Artefakte
 
@@ -10,6 +10,7 @@ Letzte Aktualisierung: 2026-08-12 | Phase: RELEASED
 | `discovery/CON-000001-second-brain.md` | CON-000001 | 1.0 | APPROVED | PM | Bindende Projekt-Constitution |
 | `discovery/DECISIONS.md` | DECISIONS | 1.3 | ACTIVE | PM+MW | Entscheidungsprotokoll einschließlich Relationship-Terminologie |
 | `requirements/REQ-000001-product-requirements.md` | REQ-000001 | 1.0 | APPROVED | BA | Produktanforderungen, NFRs und Story Map |
+| `requirements/RM-000001-roadmap.md` | RM-000001 | 1.0 | APPROVED | BA | Gesamt-Roadmap mit Vorausplanung für Sprint 5–11 |
 | `requirements/US-000001-installation-and-mcp-setup.md` | US-000001 | 1.0 | APPROVED | BA | Installation, Vault-Auswahl und MCP-Einrichtung |
 | `requirements/US-000002-read-search-and-citations.md` | US-000002 | 1.0 | APPROVED | BA | Lesen, Suche, Quellen und Anhänge |
 | `requirements/US-000003-controlled-mutations.md` | US-000003 | 1.0 | APPROVED | BA | Kontrollierte Mutationen und Rollback |
@@ -29,13 +30,16 @@ Letzte Aktualisierung: 2026-08-12 | Phase: RELEASED
 | `architecture/ADR-000003-local-storage-and-retrieval.md` | ADR-000003 | 1.0 | APPROVED | AR | Lokale Datenhaltung und hybride Suche |
 | `architecture/ADR-000004-security-and-mutations.md` | ADR-000004 | 1.0 | APPROVED | AR | Sicherheits- und Mutationsmodell |
 | `architecture/ADR-000005-branching-strategy.md` | ADR-000005 | 1.0 | APPROVED | AR | Branching- und Release-Strategie |
+| `architecture/ADR-000006-client-connectivity-and-external-data-flow.md` | ADR-000006 | 1.0 | APPROVED | AR | Client-Matrix und externe Datenflussgrenze für Sprint 5 |
 | `architecture/STRUCTURE.md` | STRUCTURE | 1.0 | APPROVED | AR | Verbindliche Projektstruktur |
 | `ux/UX-000001-mvp-interaction-design.md` | UX-000001 | 1.0 | APPROVED | UX | Journeys, Zustände, Microcopy und WCAG 2.2 AA |
 | `ux/UX-000002-claude-desktop-setup-slice.md` | UX-000002 | 1.0 | APPROVED | UX | Expliziter Claude-Desktop-Setup-Flow für US-000011 |
+| `ux/UX-000003-remote-client-consent.md` | UX-000003 | 1.0 | APPROVED | UX | Remote-Client-Setup und einzeln bestätigter Datenfluss für Sprint 5 |
 | `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | 1.0 | APPROVED | BA+FE+BE | Verbindlicher Sprint-1-Backlog mit US-000011 und US-000005 |
 | `sprints/SP-000003-sprint-2-search.md` | SP-000003 | 1.0 | APPROVED | BA+FE+BE | Sprint-2-Backlog für Volltextsuche, Quellen und Sprint-1-Schuld |
 | `sprints/SP-000004-sprint-3-relationships.md` | SP-000004 | 1.0 | APPROVED | BA+FE+BE | Sprint-3-Backlog für lokale Relationship-Exploration |
 | `sprints/SP-000005-sprint-4-controlled-mutations.md` | SP-000005 | 1.0 | APPROVED | BA+FE+BE | Sprint-4-Backlog für kontrollierte Ein-Datei-Mutationen |
+| `sprints/SP-000006-sprint-5-remote-clients-and-consent.md` | SP-000006 | 1.0 | REVIEW | BA+FE+BE | Sprint-5-Backlog für Remote-Clients und minimierten Einmal-Consent |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
@@ -119,12 +123,15 @@ Letzte Aktualisierung: 2026-08-12 | Phase: RELEASED
 | 2026-08-12 | Gate 8 (Sprint 4 Review → Documentation) | PASS | 0 | 0 | 1 |
 | 2026-08-12 | Gate 9 (Sprint 4 Documentation → Done) | PASS | 0 | 0 | 2 |
 | 2026-08-12 | Gate 10 (Sprint 4 Release → Released) | PASS | 0 | 0 | 0 |
+| 2026-08-12 | Gate 5 (Sprint 5 Refinement → Implementation-ready) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
-Sprint 4 ist als `v0.4.0` veröffentlicht (RELEASED). Die lokale Vorschau, explizite Bestätigung,
-Konfliktbehandlung und der Rollback wurden abgenommen und dokumentiert. S-001 bleibt als
-nicht blockierende UX-Verbesserung: Den Pfad der zuvor aktiven Notiz vorbelegen.
+Sprint 4 ist als `v0.4.0` veröffentlicht. Sprint 5 ist als SP-000006 für den
+nutzverwalteten ChatGPT-Remote-/Tunneladapter, den Mistral-Connector und den minimierten,
+einzeln bestätigten Datenfluss verfeinert. US-000001 und US-000007 werden im Projektboard
+auf `Ready` gesetzt. S-001 bleibt eine nicht blockierende UX-Verbesserung: Den Pfad der
+zuvor aktiven Notiz vorbelegen.
 
 ## Übergabe: BE → QA — zweiter BUG-000005-Fix
 
