@@ -51,4 +51,46 @@ describe('provider service', () => {
     await expect(service.confirm(preview.confirmationToken, adapter, 'https://remote.example.invalid/mcp'))
       .rejects.toThrow('CONSENT_REQUIRED');
   });
+
+  it('rejects expired one-time consent before invoking the provider adapter', async () => {
+    let now = new Date('2026-08-12T12:00:00.000Z');
+    const service = new ConsentService(() => now);
+    const preview = service.prepare({
+      provider: 'chatgpt', purpose: 'Summarize', operation: 'read:notes', policyVersion: 'v1',
+      excerpts: [{ text: 'minimal text', sourceId: 'source_0003' }]
+    });
+    const execute = vi.fn().mockResolvedValue(undefined);
+    now = new Date('2026-08-12T12:05:00.000Z');
+    await expect(service.confirm(
+      preview.confirmationToken,
+      { execute },
+      'https://remote.example.invalid/mcp'
+    )).rejects.toThrow('CONSENT_EXPIRED');
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it('rejects excluded fields and non-HTTPS endpoints at the contract boundary', () => {
+    const service = new ConsentService();
+    expect(() => service.prepare({
+      provider: 'mistral', purpose: 'Answer', operation: 'read:notes', policyVersion: 'v1',
+      excerpts: [{ text: 'minimal text', sourceId: 'source_0004', relativePath: 'Secret.md' }]
+    })).toThrow();
+    expect(() => inspectProviderConnection({
+      contractVersion: CONTRACT_VERSION,
+      provider: 'mistral', endpoint: 'http://localhost:3000/mcp',
+      expectedScope: ['read:notes', 'consent:once']
+    }, getApprovedProviderConfiguration('mistral'))).toThrow();
+  });
+
+  it('keeps a mismatching provider configuration disconnected', () => {
+    expect(inspectProviderConnection({
+      contractVersion: CONTRACT_VERSION,
+      provider: 'chatgpt', endpoint: 'https://other.example.invalid/mcp',
+      expectedScope: ['read:notes', 'consent:once']
+    }, getApprovedProviderConfiguration('chatgpt'))).toMatchObject({
+      configured: false,
+      connected: false,
+      scopes: []
+    });
+  });
 });

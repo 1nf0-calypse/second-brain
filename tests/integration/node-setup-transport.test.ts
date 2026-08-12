@@ -30,6 +30,18 @@ describe('NodeSetupTransport', () => {
     });
   }, 15_000);
 
+  it('inspiziert einen nutzerverwalteten Remote-Endpunkt ohne Credential', async () => {
+    const transport = new NodeSetupTransport(resolve('dist/sidecar/main.js'), process.execPath);
+    await expect(
+      transport.inspectProvider('chatgpt', 'https://remote.example.invalid/mcp')
+    ).resolves.toMatchObject({
+      provider: 'chatgpt',
+      configured: true,
+      connected: false,
+      scopes: ['read:notes', 'consent:once']
+    });
+  }, 15_000);
+
   it('durchsucht und liest den Vault über den realen Kindprozess', async () => {
     const vaultRoot = await mkdtemp(join(tmpdir(), 'second-brain-transport-search-'));
     await mkdir(join(vaultRoot, '.obsidian'));
