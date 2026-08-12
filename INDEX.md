@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-12 | Phase: DONE
+Letzte Aktualisierung: 2026-08-12 | Phase: RELEASED
 
 ## Aktive Artefakte
 
@@ -118,10 +118,11 @@ Letzte Aktualisierung: 2026-08-12 | Phase: DONE
 | 2026-08-12 | Gate 7 (Sprint 4 finaler Nachtest → Review) | PASS (CONDITIONAL) | 0 | 0 | 0 |
 | 2026-08-12 | Gate 8 (Sprint 4 Review → Documentation) | PASS | 0 | 0 | 1 |
 | 2026-08-12 | Gate 9 (Sprint 4 Documentation → Done) | PASS | 0 | 0 | 2 |
+| 2026-08-12 | Gate 10 (Sprint 4 Release → Released) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
-Sprint 4 ist inhaltlich abgeschlossen (DONE). Die lokale Vorschau, explizite Bestätigung,
+Sprint 4 ist als `v0.4.0` veröffentlicht (RELEASED). Die lokale Vorschau, explizite Bestätigung,
 Konfliktbehandlung und der Rollback wurden abgenommen und dokumentiert. S-001 bleibt als
 nicht blockierende UX-Verbesserung: Den Pfad der zuvor aktiven Notiz vorbelegen.
 
