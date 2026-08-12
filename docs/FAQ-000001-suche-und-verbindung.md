@@ -1,12 +1,12 @@
 ---
 id: FAQ-000001
 title: FAQ — Suche, Verbindung und Beziehungen
-version: 1.1
+version: 1.2
 status: APPROVED
 author-agent: MW (Manual Writer)
 date: 2026-07-31
 project: second-brain
-based-on: DOC-000001, DOC-000003, DOC-000004, RV-000004
+based-on: DOC-000001, DOC-000003, DOC-000004, DOC-000005, RV-000004, RV-000005
 supersedes: —
 superseded-by: —
 ---
@@ -95,11 +95,33 @@ Originalnotizen bleiben unverändert.
 
 *Mehr Details: siehe [DOC-000004](DOC-000004-beziehungen-erkunden.md).*
 
+## Kontrollierte Notizänderungen
+
+### Warum steht beim Obsidian-Status „Sync: Uninitialized“?
+
+Das ist ein Hinweis von Obsidian Sync: Für diesen Vault ist keine Obsidian-Synchronisierung
+eingerichtet. Second Brain arbeitet für Notizvorschau, Bestätigung und Rollback lokal im
+geöffneten Vault; der Sync-Status verhindert diese Schritte nicht.
+
+### Warum meldet die Änderungsansicht `PATH_OUTSIDE_VAULT`?
+
+Gib einen relativen Markdown-Pfad innerhalb des geöffneten Vaults ein, zum Beispiel
+`Testnotiz.md` oder `Projekte/Testnotiz.md`. Vollständige Windows-Pfade, ein leerer Pfad und
+Pfade mit `..` werden zum Schutz deiner Dateien blockiert.
+
+### Kann ich eine bestätigte Änderung zurücknehmen?
+
+Ja. Wähle **Prepare rollback**, prüfe die Rücksetzvorschau und bestätige sie danach. Hat sich
+die Notiz seit der Änderung anderweitig verändert, blockiert Second Brain den Rollback statt
+die neuere Version zu überschreiben.
+
+*Mehr Details: siehe [DOC-000005](DOC-000005-kontrollierte-notizaenderungen.md).*
+
 ---
 
 ## Übergabe: MW → ORCH
 
-**Datum:** 2026-07-31
+**Datum:** 2026-08-12
 **Von:** Manual Writer (MW)
 **An:** Orchestrator (ORCH)
 **Nächster Befehl:** `/retro second-brain 3` (optional) oder `/refine second-brain 4`
@@ -108,7 +130,7 @@ Originalnotizen bleiben unverändert.
 
 | Artefakt-ID | Status | Pfad | Hinweise |
 |---|---|---|---|
-| FAQ-000001@1.1 | APPROVED | `docs/FAQ-000001-suche-und-verbindung.md` | Installation, Suche, Beziehungen und Grenzen |
+| FAQ-000001@1.2 | APPROVED | `docs/FAQ-000001-suche-und-verbindung.md` | Installation, Suche, Beziehungen und kontrollierte Änderungen |
 
 ### Kritische Informationen für Empfänger
 
@@ -130,11 +152,12 @@ aktualisieren.
 
 ---
 
-*Erstellt von: MW-Agent | Datum: 2026-07-31 | Version: 1.1*
+*Erstellt von: MW-Agent | Datum: 2026-08-12 | Version: 1.2*
 
 ## Änderungshistorie
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.2 | 2026-08-12 | Kontrollierte Notizänderungen, relative Pfade und Obsidian-Sync-Hinweis ergänzt | MW |
 | 1.1 | 2026-07-31 | Vault-Pfade, Sidecar-Neustart und Relationship-Fehler ergänzt | MW |
 | 1.0 | 2026-07-31 | Initiale FAQ aus Sprint-2-Nutzerfragen | MW |
