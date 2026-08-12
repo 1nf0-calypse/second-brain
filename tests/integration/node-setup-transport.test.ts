@@ -76,4 +76,20 @@ describe('NodeSetupTransport', () => {
       transport.readNote(vaultRoot, '..\\outside.md')
     ).rejects.toThrow('PATH_OUTSIDE_VAULT');
   }, 15_000);
+
+  it('hält Vorschau und Bestätigung über getrennte Sidecar-Prozesse gebunden', async () => {
+    const vaultRoot = await mkdtemp(join(tmpdir(), 'second-brain-transport-mutation-'));
+    await mkdir(join(vaultRoot, '.obsidian'));
+    await writeFile(join(vaultRoot, 'Note.md'), 'before');
+    const transport = new NodeSetupTransport(resolve('dist/sidecar/main.js'), process.execPath);
+
+    const preview = await transport.prepareMutation(vaultRoot, 'Note.md', 'after') as {
+      token: string; readOnly: boolean;
+    };
+    expect(preview.readOnly).toBe(true);
+    const result = await transport.confirmMutation(vaultRoot, preview.token);
+    expect(result).toMatchObject({ action: 'update', relativePath: 'Note.md', changed: true });
+    await expect(transport.confirmMutation(vaultRoot, preview.token))
+      .rejects.toThrow('CONFIRMATION_INVALID');
+  }, 15_000);
 });

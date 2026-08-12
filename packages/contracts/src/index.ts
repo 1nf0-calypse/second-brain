@@ -1,5 +1,5 @@
-// Beschreibung: Versionierte Laufzeitverträge für Setup, Suche und Beziehungen.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; ADR-000001; ADR-000004
+// Beschreibung: Versionierte Laufzeitverträge für Setup, Suche, Beziehungen und Mutationen.
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; ADR-000001; ADR-000004
 // Agent:        BE — 2026-07-31
 import { z } from 'zod';
 
@@ -13,7 +13,10 @@ export const ErrorCodeSchema = z.enum([
   'CONNECTION_TIMEOUT',
   'INDEX_CORRUPT',
   'INVALID_QUERY',
-  'FILE_NOT_FOUND'
+  'FILE_NOT_FOUND',
+  'MUTATION_CONFLICT',
+  'MUTATION_WRITE_FAILED',
+  'CONFIRMATION_INVALID'
 ]);
 
 export const ErrorResponseSchema = z.object({
@@ -126,6 +129,36 @@ export const NodeDetailResponseSchema = z.object({
   readOnly: z.literal(true)
 }).strict();
 
+export const MutationActionSchema = z.enum(['create', 'update', 'rollback']);
+export const MutationPrepareRequestSchema = z.object({
+  relativePath: z.string().trim().min(1),
+  content: z.string().max(2_000_000)
+}).strict();
+export const MutationPreviewSchema = z.object({
+  token: z.string().uuid(),
+  action: MutationActionSchema,
+  relativePath: z.string().min(1),
+  beforeHash: z.string().length(64).nullable(),
+  afterHash: z.string().length(64),
+  diff: z.string(),
+  expiresAt: z.string().datetime(),
+  readOnly: z.literal(true)
+}).strict();
+export const MutationConfirmRequestSchema = z.object({
+  token: z.string().uuid()
+}).strict();
+export const MutationResultSchema = z.object({
+  auditId: z.string().uuid(),
+  action: MutationActionSchema,
+  relativePath: z.string().min(1),
+  beforeHash: z.string().length(64).nullable(),
+  afterHash: z.string().length(64).nullable(),
+  changed: z.literal(true)
+}).strict();
+export const RollbackPrepareRequestSchema = z.object({
+  auditId: z.string().uuid()
+}).strict();
+
 export type SetupRequest = z.infer<typeof SetupRequestSchema>;
 export type SetupResponse = z.infer<typeof SetupResponseSchema>;
 export type IndexStatus = z.infer<typeof IndexStatusSchema>;
@@ -139,5 +172,10 @@ export type RelationshipQueryRequest = z.infer<typeof RelationshipQueryRequestSc
 export type RelationshipQueryResponse = z.infer<typeof RelationshipQueryResponseSchema>;
 export type NodeDetailRequest = z.infer<typeof NodeDetailRequestSchema>;
 export type NodeDetailResponse = z.infer<typeof NodeDetailResponseSchema>;
+export type MutationPrepareRequest = z.infer<typeof MutationPrepareRequestSchema>;
+export type MutationPreview = z.infer<typeof MutationPreviewSchema>;
+export type MutationConfirmRequest = z.infer<typeof MutationConfirmRequestSchema>;
+export type MutationResult = z.infer<typeof MutationResultSchema>;
+export type RollbackPrepareRequest = z.infer<typeof RollbackPrepareRequestSchema>;
 export type ErrorCode = z.infer<typeof ErrorCodeSchema>;
 export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;

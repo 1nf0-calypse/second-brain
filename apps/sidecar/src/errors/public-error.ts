@@ -1,5 +1,5 @@
 // Beschreibung: Bildet interne Sidecar-Fehler auf den versionierten öffentlichen Vertrag ab.
-// Artefakte:    US-000012; BUG-000003; ADR-000004
+// Artefakte:    US-000012; US-000014; BUG-000003; ADR-000004
 // Agent:        BE — 2026-07-31
 import { ZodError } from 'zod';
 import {
@@ -7,6 +7,7 @@ import {
   type ErrorResponse
 } from '@second-brain/contracts';
 import { VaultScopeError } from '../policy/vault-root.js';
+import { MutationError } from '../mutations/mutation-service.js';
 
 /**
  * Erzeugt eine laufzeitvalidierte, inhaltsarme Fehlerantwort für öffentliche Transporte.
@@ -16,6 +17,13 @@ import { VaultScopeError } from '../policy/vault-root.js';
  */
 export function toPublicErrorResponse(error: unknown): ErrorResponse {
   if (error instanceof VaultScopeError) {
+    return ErrorResponseSchema.parse({
+      level: 'error',
+      code: error.code,
+      message: error.message
+    });
+  }
+  if (error instanceof MutationError) {
     return ErrorResponseSchema.parse({
       level: 'error',
       code: error.code,

@@ -1,5 +1,5 @@
-// Beschreibung: Read-only MCP-Gateway für Setup, Index, Suche und Quellenlesen.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; ADR-000001; ADR-000004
+// Beschreibung: Capability-basiertes MCP-Gateway für Lesen und bestätigte Mutationen.
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; ADR-000001; ADR-000004
 // Agent:        BE — 2026-07-31
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
@@ -9,14 +9,18 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import {
   CONTRACT_VERSION,
+  MutationConfirmRequestSchema,
+  MutationPrepareRequestSchema,
   NodeDetailRequestSchema,
-  RelationshipQueryRequestSchema
+  RelationshipQueryRequestSchema,
+  RollbackPrepareRequestSchema
 } from '@second-brain/contracts';
 import { LocalIndex } from '../indexing/sqlite-index.js';
 import { performSetupHandshake } from '../bootstrap/setup-service.js';
 import { validateVaultRoot } from '../policy/vault-root.js';
 import { SearchService } from '../search/search-service.js';
 import { toMcpToolError } from '../errors/public-error.js';
+import { MutationService } from '../mutations/mutation-service.js';
 
 /**
  * Startet den MCP-Server über stdio.
@@ -30,6 +34,7 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
   const canonicalVault = await validateVaultRoot(vaultRoot);
   const index = new LocalIndex(indexPath);
   const search = new SearchService(canonicalVault, index);
+  const mutations = new MutationService(canonicalVault, indexPath);
   // Der Low-Level-Server ist hier bewusst gewählt, weil die Capability-Liste statisch und
   // streng read-only ist; der High-Level-Wrapper würde keine zusätzliche Policy liefern.
   // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -110,6 +115,49 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
           required: ['relativePath'],
           additionalProperties: false
         }
+      },
+      {
+        name: 'second_brain_prepare_note_change',
+        description: 'Creates a read-only preview for one Markdown create or update. Does not change the vault.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            relativePath: { type: 'string', minLength: 1 },
+            content: { type: 'string', maxLength: 2000000 }
+          },
+          required: ['relativePath', 'content'],
+          additionalProperties: false
+        }
+      },
+      {
+        name: 'second_brain_confirm_note_change',
+        description: 'Applies exactly one previously previewed note change using its confirmation token.',
+        inputSchema: {
+          type: 'object',
+          properties: { token: { type: 'string', format: 'uuid' } },
+          required: ['token'],
+          additionalProperties: false
+        }
+      },
+      {
+        name: 'second_brain_prepare_rollback',
+        description: 'Creates a read-only rollback preview for one audited mutation.',
+        inputSchema: {
+          type: 'object',
+          properties: { auditId: { type: 'string', format: 'uuid' } },
+          required: ['auditId'],
+          additionalProperties: false
+        }
+      },
+      {
+        name: 'second_brain_confirm_rollback',
+        description: 'Applies one previously previewed rollback using its confirmation token.',
+        inputSchema: {
+          type: 'object',
+          properties: { token: { type: 'string', format: 'uuid' } },
+          required: ['token'],
+          additionalProperties: false
+        }
       }
     ]
   }));
@@ -144,6 +192,25 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
       if (request.params.name === 'second_brain_node_detail') {
         const input = NodeDetailRequestSchema.parse(request.params.arguments ?? {});
         const result = index.nodeDetail(input.relativePath);
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_prepare_note_change') {
+        const input = MutationPrepareRequestSchema.parse(request.params.arguments ?? {});
+        const result = await mutations.prepare(input.relativePath, input.content);
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (
+        request.params.name === 'second_brain_confirm_note_change' ||
+        request.params.name === 'second_brain_confirm_rollback'
+      ) {
+        const input = MutationConfirmRequestSchema.parse(request.params.arguments ?? {});
+        const result = await mutations.confirm(input.token);
+        await index.synchronize(canonicalVault);
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_prepare_rollback') {
+        const input = RollbackPrepareRequestSchema.parse(request.params.arguments ?? {});
+        const result = await mutations.prepareRollback(input.auditId);
         return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
       }
     } catch (error: unknown) {

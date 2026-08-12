@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-07-31 | Phase: REFINEMENT
+Letzte Aktualisierung: 2026-08-12 | Phase: DONE
 
 ## Aktive Artefakte
 
@@ -40,9 +40,14 @@ Letzte Aktualisierung: 2026-07-31 | Phase: REFINEMENT
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
 | `testing/TP-000004-sprint-3.md` | TP-000004 | 1.0 | APPROVED | QA | Sprint-3-Testplan für Relationship-Exploration |
+| `testing/TP-000005-sprint-4.md` | TP-000005 | 1.0 | APPROVED | QA | Sprint-4-Testplan für Preview, Confirm, Konflikt, Audit und Rollback |
 | `testing/TR-000006-sprint-3.md` | TR-000006 | 1.2 | APPROVED | QA | Automatisierte und native Desktop-Abnahme vollständig bestanden |
 | `testing/BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Schema-4-Migration nativ im aktiven Vault bestätigt |
+| `testing/TR-000007-sprint-4.md` | TR-000007 | 1.2 | CONDITIONAL | QA | Gate 7 funktional bestanden; native Nutzerabnahme als Review-Auflage erfüllt |
+| `testing/BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.6 | VERIFIZIERT | QA | Pre-Write-Lock liefert stabilen Write-Fehler bei intaktem Original |
+| `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.3 | VERIFIZIERT | QA | Preview-Cleanup und feste Obergrenze unabhängig bestätigt |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
+| `reviews/RV-000005-sprint-4.md` | RV-000005 | 1.0 | APPROVED | RV | Sprint-4-Mutationsslice in Nutzer- und Technikabnahme freigegeben |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `testing/TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `testing/TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |
@@ -62,7 +67,9 @@ Letzte Aktualisierung: 2026-07-31 | Phase: REFINEMENT
 | `docs/RN-000001-sprint-1.md` | RN-000001 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 1 |
 | `docs/RN-000002-sprint-2.md` | RN-000002 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 2 |
 | `docs/RN-000003-sprint-3.md` | RN-000003 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 3 |
-| `docs/FAQ-000001-suche-und-verbindung.md` | FAQ-000001 | 1.1 | APPROVED | MW | Fragen zu Installation, Suche, Verbindung und Beziehungen |
+| `docs/DOC-000005-kontrollierte-notizaenderungen.md` | DOC-000005 | 1.0 | APPROVED | MW | Notizänderungen als Vorschau prüfen, bestätigen und zurücksetzen |
+| `docs/RN-000004-sprint-4.md` | RN-000004 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 4 |
+| `docs/FAQ-000001-suche-und-verbindung.md` | FAQ-000001 | 1.2 | APPROVED | MW | Fragen zu Installation, Suche, Verbindung und kontrollierten Änderungen |
 | `retros/RETRO-000001-sprint-1.md` | RETRO-000001 | 1.0 | REVIEW | AC | Sprint-1-Retrospektive |
 | `retros/PC-000001-implicit-approval-integrated-analysis.md` | PC-000001 | 1.1 | ACTIVE | AC | Implizite Freigabe und integrierte Analyse, umgesetzt in Tool Chain v2.11 |
 
@@ -103,12 +110,85 @@ Letzte Aktualisierung: 2026-07-31 | Phase: REFINEMENT
 | 2026-07-31 | Gate 9 (Sprint 3 Documentation → Done) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5 (Sprint 4 Refinement → Implementation-ready) | PASS | 0 | 0 | 0 |
 | 2026-07-31 | Gate 5.5 (`/implement`-Preflight, SP-000005) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 6 (Sprint 4 Implementation → Testing) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 7 (Sprint 4 Testing → Review) | FAIL | 0 | 2 | 0 |
+| 2026-07-31 | Gate 6 (Sprint 4 Bugfix → Testing) | PASS | 0 | 0 | 0 |
+| 2026-07-31 | Gate 7 (Sprint 4 Bugfix-Nachtest) | FAIL | 0 | 1 | 0 |
+| 2026-07-31 | Gate 6 (Sprint 4 zweiter Bugfix → Testing) | PASS | 0 | 0 | 0 |
+| 2026-08-12 | Gate 7 (Sprint 4 finaler Nachtest → Review) | PASS (CONDITIONAL) | 0 | 0 | 0 |
+| 2026-08-12 | Gate 8 (Sprint 4 Review → Documentation) | PASS | 0 | 0 | 1 |
+| 2026-08-12 | Gate 9 (Sprint 4 Documentation → Done) | PASS | 0 | 0 | 2 |
 
 ## In Bearbeitung
 
-Sprint 4 ist mit US-000014 und SP-000005 `APPROVED`: kontrolliertes Erstellen oder
-Aktualisieren genau einer Markdown-Notiz mit Preview, Confirm, Audit, Konfliktschutz und
-Rollback. Löschen und höhere Autonomie sind ausgeschlossen.
+Sprint 4 ist inhaltlich abgeschlossen (DONE). Die lokale Vorschau, explizite Bestätigung,
+Konfliktbehandlung und der Rollback wurden abgenommen und dokumentiert. S-001 bleibt als
+nicht blockierende UX-Verbesserung: Den Pfad der zuvor aktiven Notiz vorbelegen.
+
+## Übergabe: BE → QA — zweiter BUG-000005-Fix
+
+**Datum:** 2026-07-31
+**Von:** Backend Developer (BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 4`
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| BUG-000005 | BEHOBEN | `testing/BUG-000005-lock-error-reported-offline.md` | Pre-Write-Read jetzt Teil der Mutationserror-Grenze |
+| BUG-000006 | VERIFIZIERT | `testing/BUG-000006-preview-storage-unbounded.md` | Unverändert abgeschlossen |
+
+Build, Lint, 68 Vitest-Tests und 11 Playwright-Tests bestehen. QA soll den exklusiven
+Windows-Lock an der Sidecar-Prozessgrenze erneut ausführen und danach Gate 7 bewerten.
+
+## Übergabe: BE → QA — Sprint-4-Bugfix
+
+**Datum:** 2026-07-31
+**Von:** Backend Developer (BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 4`
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| BUG-000005 | BEHOBEN | `testing/BUG-000005-lock-error-reported-offline.md` | Stabiler `MUTATION_WRITE_FAILED`; Original bleibt intakt |
+| BUG-000006 | BEHOBEN | `testing/BUG-000006-preview-storage-unbounded.md` | Maximal 20 offene Previews; Audit/Rollback erhalten |
+
+66 Vitest-Tests, Lint, Build und Coverage sind grün. Die doppelte 2-MB-Baseline blieb bei
+160.194.560 Byte stabil; QA muss den echten Windows-Lock und den nativen Desktop-Pfad
+unabhängig nachtesten.
+
+## Übergabe: FE+BE → QA — Sprint 4
+
+**Datum:** 2026-07-31
+**Von:** Frontend + Backend Developer (FE+BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-plan second-brain 4`
+
+### Übergebene Artefakte
+
+| Artefakt-ID | Status | Pfad | Hinweise |
+|---|---|---|---|
+| US-000014 | implementiert | `packages/contracts/`, `apps/sidecar/`, `apps/obsidian-plugin/` | Preview/Confirm/Audit/Rollback für genau eine Markdown-Datei |
+| Integrationstests | bestanden | `tests/integration/mutation-service.test.ts`, `tests/integration/mcp-mutations.test.ts` | Service, Prozessgrenze, MCP/stdio, Konflikt und Replay |
+| UI-E2E | bestanden | `tests/e2e/mutations.spec.ts` | Separate Vorschau und Bestätigung einschließlich Rollback |
+
+### Kritische Informationen für Empfänger
+
+- Bestätigungstokens gelten zehn Minuten, sind persistent und genau einmal verwendbar.
+- Änderungen nach der Vorschau werden über SHA-256 erkannt und blockiert.
+- Mutationsmodul erreicht 90 % Branch-Coverage; 62 Vitest- und 10 Playwright-Tests bestehen.
+
+### Offene Fragen (vererbt)
+
+Keine.
+
+### Nicht-Ziele (explizit ausgeschlossen)
+
+Direktes Löschen, Verschieben/Umbenennen, Mehrdatei-Mutationen und autonome Schreibmodi.
+
+### Empfehlungen
+
+QA sollte den nativen Obsidian-Pfad für Update, Create, Konflikt, Token-Replay und Rollback
+mit einem synthetischen Vault abnehmen.
 
 ## Übergabe: FE/BE → QA — Sprint 3
 

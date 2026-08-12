@@ -1,5 +1,5 @@
 // Beschreibung: Registriert native Setup-, Search- und Relationship-Views in Obsidian.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; UX-000001; UX-000002
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; UX-000001; UX-000002
 // Agent:        FE — 2026-07-31
 import { FileSystemAdapter, Plugin } from 'obsidian';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -11,6 +11,7 @@ import {
   RELATIONSHIP_VIEW_TYPE,
   RelationshipView
 } from './ui/relationship-view.js';
+import { MUTATION_VIEW_TYPE, MutationView } from './ui/mutation-view.js';
 
 declare const __SECOND_BRAIN_SIDECAR_SOURCE__: string;
 
@@ -52,6 +53,10 @@ export default class SecondBrainPlugin extends Plugin {
       RELATIONSHIP_VIEW_TYPE,
       (leaf) => new RelationshipView(leaf, transport, vaultRoot)
     );
+    this.registerView(
+      MUTATION_VIEW_TYPE,
+      (leaf) => new MutationView(leaf, transport, vaultRoot)
+    );
     this.addRibbonIcon('brain-circuit', 'Set up Second Brain', () => {
       void this.openSetup();
     });
@@ -80,6 +85,16 @@ export default class SecondBrainPlugin extends Plugin {
       name: 'Search vault',
       callback: () => {
         void this.openSearch();
+      }
+    });
+    this.addRibbonIcon('file-pen-line', 'Review a Second Brain note change', () => {
+      void this.openMutations();
+    });
+    this.addCommand({
+      id: 'open-mutations',
+      name: 'Review and confirm a note change',
+      callback: () => {
+        void this.openMutations();
       }
     });
   }
@@ -129,6 +144,16 @@ export default class SecondBrainPlugin extends Plugin {
       throw new Error('No workspace leaf is available for Second Brain relationships.');
     }
     await leaf.setViewState({ type: RELATIONSHIP_VIEW_TYPE, active: true });
+    await this.app.workspace.revealLeaf(leaf);
+  }
+
+  private async openMutations(): Promise<void> {
+    const existing = this.app.workspace.getLeavesOfType(MUTATION_VIEW_TYPE)[0];
+    const leaf = existing ?? this.app.workspace.getRightLeaf(false);
+    if (!leaf) {
+      throw new Error('No workspace leaf is available for Second Brain note changes.');
+    }
+    await leaf.setViewState({ type: MUTATION_VIEW_TYPE, active: true });
     await this.app.workspace.revealLeaf(leaf);
   }
 }

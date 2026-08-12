@@ -1,7 +1,7 @@
 ---
 id: DECISIONS
 title: Entscheidungsprotokoll — Second Brain
-version: 1.3
+version: 1.4
 status: ACTIVE
 author-agent: PM (Product Manager)
 date: 2026-07-30
@@ -17,6 +17,15 @@ Leichtgewichtiges, chronologisches Protokoll aller wesentlichen Entscheidungen i
 ---
 
 ## Aktive Entscheidungen
+
+### D-000009 — Nutzerbegriffe und Scope für kontrollierte Notizänderungen
+
+**Datum:** 2026-08-12 | **Kategorie:** Dokumentation | **Status:** ACTIVE
+Die Dokumentation verwendet **Vorschau**, **Bestätigung**, **Rücksetzvorschau**,
+**Rücksetzen**, **relativer Markdown-Pfad** und **Audit-ID**. Obsidian Sync wird als
+unabhängige Vault-Funktion beschrieben: Ein Sync-Status wie „Uninitialized“ blockiert keine
+lokale Second-Brain-Notizänderung. Die Dokumentation verspricht keine Lösch-, Mehrdatei- oder
+automatische Änderungsfunktion.
 
 ### D-000008 — Nutzerbegriffe und Recovery für direkte Beziehungen
 
@@ -80,6 +89,7 @@ vollständigen Frontend-Ausarbeitung priorisiert.
 
 | ID | Datum | Kategorie | Kurztitel | Agent | Status |
 |----|-------|---------|---------|-------|--------|
+| D-000009 | 2026-08-12 | Dokumentation | Begriffe und Scope für kontrollierte Notizänderungen | MW | ACTIVE |
 | D-000008 | 2026-07-31 | Dokumentation | Begriffe und Recovery für direkte Beziehungen | MW | ACTIVE |
 | D-000007 | 2026-07-31 | Dokumentation | Nutzerbegriffe und Sprint-2-Umfang | MW | ACTIVE |
 | D-000006 | 2026-07-31 | Dokumentation | Nutzerbegriffe und Sprint-1-Umfang | MW | ACTIVE |
@@ -101,12 +111,13 @@ Entscheidungen, die revidiert oder überschrieben wurden, bleiben hier sichtbar.
 
 ---
 
-*Erstellt von: PM-Agent | Datum: 2026-07-30 | Letzte Aktualisierung: 2026-07-31*
+*Erstellt von: PM-Agent | Datum: 2026-07-30 | Letzte Aktualisierung: 2026-08-12*
 
 ## Änderungshistorie
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.4 | 2026-08-12 | D-000009 zu Mutationsterminologie und Obsidian-Sync-Abgrenzung ergänzt | MW |
 | 1.3 | 2026-07-31 | D-000008 zu Beziehungen, relativen Pfaden und Neustart ergänzt | MW |
 | 1.2 | 2026-07-31 | D-000007 zu Suche, Quellen und lokaler Installation ergänzt | MW |
 | 1.1 | 2026-07-31 | D-000006 zu Terminologie und Dokumentationsumfang ergänzt | MW |

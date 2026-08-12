@@ -7,6 +7,7 @@ import {
   toPublicErrorResponse
 } from '../../apps/sidecar/src/errors/public-error.js';
 import { VaultScopeError } from '../../apps/sidecar/src/policy/vault-root.js';
+import { MutationError } from '../../apps/sidecar/src/mutations/mutation-service.js';
 import { SearchRequestSchema } from '../../packages/contracts/src/index.js';
 
 describe('public sidecar errors', () => {
@@ -51,6 +52,17 @@ describe('public sidecar errors', () => {
       level: 'error',
       code: 'SIDECAR_OFFLINE',
       message: 'The local service could not complete the request.'
+    });
+  });
+
+  it('erhält einen sicheren Schreibfehler am öffentlichen Vertragsrand', () => {
+    expect(toPublicErrorResponse(new MutationError(
+      'MUTATION_WRITE_FAILED',
+      'The note could not be replaced. Your vault remains consistent. Create a new preview and try again.'
+    ))).toEqual({
+      level: 'error',
+      code: 'MUTATION_WRITE_FAILED',
+      message: 'The note could not be replaced. Your vault remains consistent. Create a new preview and try again.'
     });
   });
 });

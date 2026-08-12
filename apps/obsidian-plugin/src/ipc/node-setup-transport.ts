@@ -1,5 +1,5 @@
 // Beschreibung: Lokaler Kindprozess-Transport mit operationsspezifischen Zeitlimits.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; BUG-000003; ADR-000001
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; BUG-000003; ADR-000001
 // Agent:        BE — 2026-07-31
 import { execFile } from 'node:child_process';
 import {
@@ -9,12 +9,14 @@ import {
 import type { SetupTransport } from './setup-client.js';
 import type { SearchTransport } from './search-client.js';
 import type { RelationshipTransport } from './relationship-client.js';
+import type { MutationTransport } from './mutation-client.js';
 
 const CONNECTION_TIMEOUT_MS = 5_000;
 const SEARCH_TIMEOUT_MS = 10_000;
 const INDEX_TIMEOUT_MS = 60_000;
+const MUTATION_TIMEOUT_MS = 60_000;
 
-export class NodeSetupTransport implements SetupTransport, SearchTransport, RelationshipTransport {
+export class NodeSetupTransport implements SetupTransport, SearchTransport, RelationshipTransport, MutationTransport {
   public constructor(
     private readonly sidecarEntry: string,
     private readonly nodeExecutable = 'node'
@@ -125,6 +127,29 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
       SEARCH_TIMEOUT_MS,
       signal
     );
+  }
+
+  public prepareMutation(
+    vaultRoot: string,
+    relativePath: string,
+    content: string
+  ): Promise<unknown> {
+    return this.run('--prepare-mutation', vaultRoot, {
+      SECOND_BRAIN_MUTATION_PATH: relativePath,
+      SECOND_BRAIN_MUTATION_CONTENT: content
+    }, MUTATION_TIMEOUT_MS);
+  }
+
+  public confirmMutation(vaultRoot: string, token: string): Promise<unknown> {
+    return this.run('--confirm-mutation', vaultRoot, {
+      SECOND_BRAIN_CONFIRMATION_TOKEN: token
+    }, MUTATION_TIMEOUT_MS);
+  }
+
+  public prepareRollback(vaultRoot: string, auditId: string): Promise<unknown> {
+    return this.run('--prepare-rollback', vaultRoot, {
+      SECOND_BRAIN_AUDIT_ID: auditId
+    }, MUTATION_TIMEOUT_MS);
   }
 
   /**
