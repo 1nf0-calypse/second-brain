@@ -17,6 +17,8 @@ import {
   type ProviderId
 } from '@second-brain/contracts';
 
+// Implementiert: US-000001, US-000007 — Provider-Port, Setup-Grenze und Einmal-Consent.
+
 const CONSENT_TTL_MS = 5 * 60 * 1000;
 const REQUIRED_SCOPES = ['read:notes', 'consent:once'] as const;
 
