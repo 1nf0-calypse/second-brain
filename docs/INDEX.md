@@ -2,7 +2,7 @@
 
 Nutzerorientierte Anleitungen und Release-Informationen für Second Brain MCP.
 
-Letzte Aktualisierung: 2026-08-12
+Letzte Aktualisierung: 2026-08-13
 
 | Datei | ID | Version | Status | Kurzbeschreibung |
 |---|---|---|---|---|
@@ -17,3 +17,5 @@ Letzte Aktualisierung: 2026-08-12
 | `DOC-000005-kontrollierte-notizaenderungen.md` | DOC-000005 | 1.0 | APPROVED | Notizänderungen als Vorschau prüfen, bestätigen und zurücksetzen |
 | `RN-000004-sprint-4.md` | RN-000004 | 1.0 | APPROVED | Release Notes für Sprint 4 |
 | `FAQ-000001-suche-und-verbindung.md` | FAQ-000001 | 1.2 | APPROVED | Fragen zu Installation, Suche, Beziehungen und kontrollierten Änderungen |
+| `DOC-000006-remote-provider-und-einmal-consent.md` | DOC-000006 | 1.0 | APPROVED | Remote-Provider prüfen, aktiven Vault verwenden und Text einmalig freigeben |
+| `RN-000005-sprint-5.md` | RN-000005 | 1.0 | APPROVED | Release Notes für Sprint 5 |

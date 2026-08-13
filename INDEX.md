@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
+Letzte Aktualisierung: 2026-08-13 | Phase: DONE
 
 ## Aktive Artefakte
 
@@ -8,7 +8,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 |-------|-----|---------|--------|-------|-------------|
 | `discovery/SB-000001-second-brain.md` | SB-000001 | 1.0 | APPROVED | PM | Stakeholder Brief mit Produktvision, MVP und MoSCoW |
 | `discovery/CON-000001-second-brain.md` | CON-000001 | 1.0 | APPROVED | PM | Bindende Projekt-Constitution |
-| `discovery/DECISIONS.md` | DECISIONS | 1.3 | ACTIVE | PM+MW | Entscheidungsprotokoll einschließlich Relationship-Terminologie |
+| `discovery/DECISIONS.md` | DECISIONS | 1.5 | ACTIVE | PM+MW | Entscheidungsprotokoll einschließlich Remote-Provider- und Consent-Terminologie |
 | `requirements/REQ-000001-product-requirements.md` | REQ-000001 | 1.0 | APPROVED | BA | Produktanforderungen, NFRs und Story Map |
 | `requirements/RM-000001-roadmap.md` | RM-000001 | 1.0 | APPROVED | BA | Gesamt-Roadmap mit Vorausplanung für Sprint 5–11 |
 | `requirements/US-000001-installation-and-mcp-setup.md` | US-000001 | 1.0 | APPROVED | BA | Installation, Vault-Auswahl und MCP-Einrichtung |
@@ -55,7 +55,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 | `testing/BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | VERIFIZIERT | QA | Consent-/Transferpfad unabhängig nachgetestet |
 | `testing/BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | VERIFIZIERT | QA | Handshake- und Scope-Negativpfade unabhängig nachgetestet |
 | `testing/BUG-000009-provider-consent-not-server-bound.md` | BUG-000009 | 1.0 | VERIFIZIERT | QA | Serverseitige Prepare→Confirm-Bindung unabhängig nachgetestet |
-| `reviews/RV-000006-sprint-5.md` | RV-000006 | 1.0 | REJECTED | RV | Sprint-5-Review wegen fehlender serverseitiger Consent-Bindung abgelehnt |
+| `reviews/RV-000006-sprint-5.md` | RV-000006 | 1.1 | APPROVED | RV | Sprint-5-Re-Review nach servergebundenem Einmal-Consent und automatischem Vault-Pfad freigegeben |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `reviews/RV-000005-sprint-4.md` | RV-000005 | 1.0 | APPROVED | RV | Sprint-4-Mutationsslice in Nutzer- und Technikabnahme freigegeben |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
@@ -80,6 +80,8 @@ Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 | `docs/DOC-000005-kontrollierte-notizaenderungen.md` | DOC-000005 | 1.0 | APPROVED | MW | Notizänderungen als Vorschau prüfen, bestätigen und zurücksetzen |
 | `docs/RN-000004-sprint-4.md` | RN-000004 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 4 |
 | `docs/FAQ-000001-suche-und-verbindung.md` | FAQ-000001 | 1.2 | APPROVED | MW | Fragen zu Installation, Suche, Verbindung und kontrollierten Änderungen |
+| `docs/DOC-000006-remote-provider-und-einmal-consent.md` | DOC-000006 | 1.0 | APPROVED | MW | Remote-Provider prüfen und einen Textauszug bewusst einmalig freigeben |
+| `docs/RN-000005-sprint-5.md` | RN-000005 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 5 |
 | `retros/RETRO-000001-sprint-1.md` | RETRO-000001 | 1.0 | REVIEW | AC | Sprint-1-Retrospektive |
 | `retros/PC-000001-implicit-approval-integrated-analysis.md` | PC-000001 | 1.1 | ACTIVE | AC | Implizite Freigabe und integrierte Analyse, umgesetzt in Tool Chain v2.11 |
 
@@ -137,13 +139,14 @@ Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 | 2026-08-13 | Gate 7 (Sprint 5 Bugfix-Nachtest → Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
 | 2026-08-13 | Gate 8 (Sprint 5 Review → Implementation) | REJECTED | 1 | 1 | 1 |
 | 2026-08-13 | Gate 7 (Sprint 5 Consent-Bugfix → Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
+| 2026-08-13 | Gate 8 (Sprint 5 Re-Review → Documentation) | PASS | 0 | 0 | 0 |
+| 2026-08-13 | Gate 9 (Sprint 5 Documentation → Done) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
-Sprint 4 ist als `v0.4.0` veröffentlicht. Sprint 5 wurde im Gate 8 abgelehnt:
-BUG-000009 belegt, dass der Sidecar einen Providertransfer ohne serverseitig gebundenen
-Einmal-Consent ausführen kann. Die Rückkehr geht an BE; der Nutzerflow funktionierte, wurde
-aber als umständlich bewertet.
+Sprint 4 ist als `v0.4.0` veröffentlicht. Sprint 5 ist dokumentiert und abgeschlossen:
+Der Providertransfer ist an einen serverseitig persistierten, einmalig verbrauchten Review
+gebunden. Der aktive Obsidian-Vault wird im Setup automatisch übernommen.
 
 ## Übergabe: BE → QA — zweiter BUG-000005-Fix
 
