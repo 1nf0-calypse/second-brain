@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-13 | Phase: REVIEW
+Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 
 ## Aktive Artefakte
 
@@ -59,6 +59,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: REVIEW
 | `testing/BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | VERIFIZIERT | QA | Handshake- und Scope-Negativpfade unabhängig nachgetestet |
 | `testing/BUG-000009-provider-consent-not-server-bound.md` | BUG-000009 | 1.0 | VERIFIZIERT | QA | Serverseitige Prepare→Confirm-Bindung unabhängig nachgetestet |
 | `reviews/RV-000006-sprint-5.md` | RV-000006 | 1.1 | APPROVED | RV | Sprint-5-Re-Review nach servergebundenem Einmal-Consent und automatischem Vault-Pfad freigegeben |
+| `reviews/RV-000007-sprint-6.md` | RV-000007 | 1.0 | REQUEST_CHANGES | RV | Autonomie-Policy umgeht Budget bei Reaktivierung, Pause und nativer Ausführung nicht vollständig |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `reviews/RV-000005-sprint-4.md` | RV-000005 | 1.0 | APPROVED | RV | Sprint-4-Mutationsslice in Nutzer- und Technikabnahme freigegeben |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
@@ -146,6 +147,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: REVIEW
 | 2026-08-13 | Gate 9 (Sprint 5 Documentation → Done) | PASS | 0 | 0 | 0 |
 | 2026-08-13 | Gate 5.5 (Sprint 6 Implementierungs-Preflight) | PASS | 0 | 0 | 0 |
 | 2026-08-13 | Gate 7 (Sprint 6 Testing -> Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
+| 2026-08-13 | Gate 8 (Sprint 6 Review -> Implementation) | REQUEST_CHANGES | 0 | 3 | 0 |
 
 ## In Bearbeitung
 
@@ -153,10 +155,10 @@ Sprint 5 ist dokumentiert und abgeschlossen. Sprint 6 ist verfeinert: Human-on u
 Human-out sind bewusst aktivierbar und auf 60 Markdown-Erstellungen/-Aktualisierungen in
 60 Minuten begrenzt. Löschungen bleiben automatisch ausgeschlossen.
 
-Sprint 6 implementiert diese Policy serverseitig: Budget, Ablauf und Pause werden lokal
-persistiert und vor einem automatischen Write atomar beansprucht. Build, Lint, 84 Vitest-
-und 16 headed Playwright-Tests sind grün. Als Review-Auflagen verbleiben die native
-Obsidian-Abnahme und ein gezielter Browser-Harness-Test der Autonomieansicht.
+Sprint 6 ist nach dem Review zurück in der Implementierung: Reaktivierung muss das 60/60-
+Fenster respektieren, eine Pause auch bereits reservierte Writes sperren und die native
+Ansicht den automatischen Create-/Update-Pfad tatsächlich anbieten. Danach folgen Race-,
+Budget- und headed UI-Nachtests.
 
 ## Übergabe: BE → QA — zweiter BUG-000005-Fix
 
