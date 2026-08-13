@@ -1,14 +1,14 @@
 ---
 id: TR-000008
 title: Testergebnis Second Brain Sprint 5
-version: 1.1
+version: 1.2
 status: CONDITIONAL
 author-agent: QA (QA Engineer)
 date: 2026-08-13
 project: second-brain
 sprint: 5
 based-on: TP-000006@1.1, US-000001, US-000007, SP-000006
-supersedes: TR-000008@1.0
+supersedes: TR-000008@1.1
 superseded-by: —
 ---
 
@@ -26,18 +26,18 @@ superseded-by: —
 | Runtime | PASS — Node.js v24.15.0, npm 11.12.1 |
 | `npm run build` | PASS |
 | `npm run lint` | PASS |
-| `npm test` | PASS — 79/79 Tests, 17 Dateien, 2,66 s |
-| `npm run test:coverage` | PASS — 79/79 Tests, 2,88 s |
-| headed `npm run test:e2e` | PASS — 16/16 Playwright-Fälle, 8,4 s |
+| `npm test` | PASS — 81/81 Tests, 17 Dateien, 5,13 s |
+| `npm run test:coverage` | PASS — 81/81 Tests, 5,44 s |
+| headed `npm run test:e2e` | PASS — 16/16 Playwright-Fälle, 15,6 s |
 
 ### Coverage
 
 | Metrik | Ergebnis | Ziel |
 |---|---:|---:|
-| Statements | 94,44 % | >=80 % — PASS |
+| Statements | 94,23 % | >=80 % — PASS |
 | Branches | 85,33 % | >=80 % — PASS |
-| Funktionen | 94,50 % | >=80 % — PASS |
-| Zeilen | 95,17 % | >=80 % — PASS |
+| Funktionen | 93,47 % | >=80 % — PASS |
+| Zeilen | 94,94 % | >=80 % — PASS |
 
 Der Coverage-Scope enthält nicht jedes `providers`-Modul. Die Gesamtwerte sind daher kein Ersatz für die gezielten Boundary-Tests in `tests/unit/provider-service.test.ts`.
 
@@ -74,6 +74,7 @@ PERF-000501–000503 (100/1.000/100 Prozess-Iterationen mit p50/p95/max und RSS)
 |---|---|---|
 | BUG-000007 | Ursprünglicher Consent-Clickpfad: Review, Checkbox, Einmaltransfer, Cancel, Payload-Änderung, Replay und Disconnect über Unit-/headed-Regressionen geprüft. | VERIFIZIERT |
 | BUG-000008 | Ursprüngliche ungültige Endpoint-Reproduktion: der Verbindungstest lehnt nun unerreichbare Endpoints ab; Initialize/Manifest/exakte Scopes sind als Adaptervertrag getestet. | VERIFIZIERT |
+| BUG-000009 | Confirm ohne gespeicherten Token wird über einen echten Child-Process mit `CONSENT_REQUIRED` abgewiesen; Prepare/Confirm über Prozessgrenze und Replay nach erstem Confirm bestehen. | VERIFIZIERT |
 
 Die Schließung der Bugs behauptet keine externe Provider-Zertifizierung. Diese wird als eigenständige MAJOR-Auflage nachgewiesen, sobald die Nutzerendpoints verfügbar sind.
 
@@ -86,6 +87,7 @@ Die Schließung der Bugs behauptet keine externe Provider-Zertifizierung. Diese 
 | headed Browser-Regressionen | PASS |
 | BUG-000007 ursprüngliche Reproduktion | PASS |
 | BUG-000008 ursprüngliche Reproduktion | PASS |
+| BUG-000009 ursprüngliche Reproduktion | PASS |
 | offene BLOCKER | PASS — 0 |
 | echter Obsidian-Host und reale Provider-Workspaces | CONDITIONAL — 2 MAJOR-Auflagen |
 
@@ -120,6 +122,7 @@ Die Schließung der Bugs behauptet keine externe Provider-Zertifizierung. Diese 
 | TR-000008 | CONDITIONAL | `testing/TR-000008-sprint-5.md` | Gate 7 PASS mit 2 MAJOR-Auflagen |
 | BUG-000007 | VERIFIZIERT | `testing/BUG-000007-consent-flow-unreachable.md` | Consent- und Einmaltransfer-Nachtest bestanden |
 | BUG-000008 | VERIFIZIERT | `testing/BUG-000008-provider-handshake-not-performed.md` | Handshake-Nachtest bestanden |
+| BUG-000009 | VERIFIZIERT | `testing/BUG-000009-provider-consent-not-server-bound.md` | Serverseitige Prepare→Confirm-Bindung nachgetestet |
 
 ### Offene Auflagen
 
@@ -129,4 +132,4 @@ Die Schließung der Bugs behauptet keine externe Provider-Zertifizierung. Diese 
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-08-13 | Version: 1.1*
+*Erstellt von: QA-Agent | Datum: 2026-08-13 | Version: 1.2*

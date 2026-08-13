@@ -2,7 +2,7 @@
 id: BUG-000009
 title: Bug — Providertransfer ist nicht an den serverseitigen Einmal-Consent gebunden
 version: 1.0
-status: BEHOBEN
+status: VERIFIZIERT
 author-agent: RV (Code Reviewer)
 date: 2026-08-13
 project: second-brain
@@ -127,12 +127,18 @@ Prepare→Confirm über die persistente Prozessgrenze und Replay nach dem ersten
 
 **Regressionstest ergänzt:** Ja (`tests/integration/node-setup-transport.test.ts`).
 
+**QA-Nachtest (2026-08-13):** Build, Lint, 81/81 Vitest-Tests, Coverage und 16/16 headed
+Playwright-Fälle bestehen. Der Child-Process-Nachtest weist einen Confirm ohne Token mit
+`CONSENT_REQUIRED` ab, speichert Prepare über die Prozessgrenze und weist Replay nach dem
+ersten Confirm ab. Der Token wird vor dem erwarteten Remote-Fehler verbraucht.
+
 ## Status-Verlauf
 
 | Datum | Status | Kommentar |
 |---|---|---|
 | 2026-08-13 | OFFEN | RV-Code-Review: Serverseitige Consent-Bindung fehlt. |
 | 2026-08-13 | BEHOBEN | BE: persistierter Prepare-Token, separater Confirm ohne Payload und atomarer Einmalverbrauch implementiert. |
+| 2026-08-13 | VERIFIZIERT | QA: unabhängiger Prozessgrenzen-Nachtest, vollständige Regression und headed Browserlauf bestanden. |
 
 ---
 

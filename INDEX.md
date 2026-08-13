@@ -49,12 +49,12 @@ Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 | `testing/TR-000006-sprint-3.md` | TR-000006 | 1.2 | APPROVED | QA | Automatisierte und native Desktop-Abnahme vollständig bestanden |
 | `testing/BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Schema-4-Migration nativ im aktiven Vault bestätigt |
 | `testing/TR-000007-sprint-4.md` | TR-000007 | 1.2 | CONDITIONAL | QA | Gate 7 funktional bestanden; native Nutzerabnahme als Review-Auflage erfüllt |
-| `testing/TR-000008-sprint-5.md` | TR-000008 | 1.1 | CONDITIONAL | QA | Beide Sprint-5-BLOCKER verifiziert; native und reale Provider-Abnahme als MAJOR-Auflage offen |
+| `testing/TR-000008-sprint-5.md` | TR-000008 | 1.2 | CONDITIONAL | QA | Alle Sprint-5-BLOCKER verifiziert; native und reale Provider-Abnahme als MAJOR-Auflage offen |
 | `testing/BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.6 | VERIFIZIERT | QA | Pre-Write-Lock liefert stabilen Write-Fehler bei intaktem Original |
 | `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.3 | VERIFIZIERT | QA | Preview-Cleanup und feste Obergrenze unabhängig bestätigt |
 | `testing/BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | VERIFIZIERT | QA | Consent-/Transferpfad unabhängig nachgetestet |
 | `testing/BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | VERIFIZIERT | QA | Handshake- und Scope-Negativpfade unabhängig nachgetestet |
-| `testing/BUG-000009-provider-consent-not-server-bound.md` | BUG-000009 | 1.0 | BEHOBEN | BE | Persistierter Prepare-Token und atomarer Confirm implementiert |
+| `testing/BUG-000009-provider-consent-not-server-bound.md` | BUG-000009 | 1.0 | VERIFIZIERT | QA | Serverseitige Prepare→Confirm-Bindung unabhängig nachgetestet |
 | `reviews/RV-000006-sprint-5.md` | RV-000006 | 1.0 | REJECTED | RV | Sprint-5-Review wegen fehlender serverseitiger Consent-Bindung abgelehnt |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `reviews/RV-000005-sprint-4.md` | RV-000005 | 1.0 | APPROVED | RV | Sprint-4-Mutationsslice in Nutzer- und Technikabnahme freigegeben |
@@ -136,6 +136,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 | 2026-08-13 | Gate 6 (Sprint 5 Bugfix → Testing) | PASS | 0 | 0 | 0 |
 | 2026-08-13 | Gate 7 (Sprint 5 Bugfix-Nachtest → Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
 | 2026-08-13 | Gate 8 (Sprint 5 Review → Implementation) | REJECTED | 1 | 1 | 1 |
+| 2026-08-13 | Gate 7 (Sprint 5 Consent-Bugfix → Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
 
 ## In Bearbeitung
 
