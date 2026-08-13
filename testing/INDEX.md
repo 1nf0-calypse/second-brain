@@ -32,3 +32,4 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 | `BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.3 | VERIFIZIERT | QA | Preview-Speichergrenze und Cleanup unabhängig bestätigt |
 | `BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | VERIFIZIERT | QA | Consent-/Transferpfad unabhängig nachgetestet |
 | `BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | VERIFIZIERT | QA | Handshake- und Scope-Negativpfade unabhängig nachgetestet |
+| `BUG-000009-provider-consent-not-server-bound.md` | BUG-000009 | 1.0 | OFFEN | RV | Serverseitige Bindung des Einmal-Consent fehlt |
