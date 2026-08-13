@@ -2,7 +2,7 @@
 id: BUG-000007
 title: Bug — Externer Einmal-Consent ist produktiv nicht erreichbar
 version: 1.0
-status: BEHOBEN
+status: VERIFIZIERT
 author-agent: QA (QA Engineer)
 date: 2026-08-12
 project: second-brain
@@ -112,6 +112,7 @@ authentifizierten Nutzerendpunkt.
 |---|---|---|
 | 2026-08-12 | OFFEN | Produktiver Consent-Pfad und Adapter fehlen |
 | 2026-08-13 | BEHOBEN | Produktpfad, exakte Payload-Bindung, Receipt und Browserregression an QA übergeben |
+| 2026-08-13 | VERIFIZIERT | QA-Nachtest: 79/79 Vitest- und 16/16 headed Playwright-Regressionen; ursprünglicher Review-/Einmaltransferpfad besteht im Harness/Service. |
 
 ## Übergabe: QA → FE+BE
 

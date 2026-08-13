@@ -2,7 +2,7 @@
 id: TP-000006
 title: Testplan Second Brain Sprint 5
 version: 1.1
-status: REVIEW
+status: APPROVED
 author-agent: QA (QA Engineer)
 date: 2026-08-13
 project: second-brain

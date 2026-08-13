@@ -2,7 +2,7 @@
 id: BUG-000008
 title: Bug — Remote-Endpoint-Test führt keinen Handshake aus
 version: 1.0
-status: BEHOBEN
+status: VERIFIZIERT
 author-agent: QA (QA Engineer)
 date: 2026-08-12
 project: second-brain
@@ -109,6 +109,7 @@ authentifizierten Nutzerendpunkt.
 |---|---|---|
 | 2026-08-12 | OFFEN | Selbstvergleich statt Remote-Handshake festgestellt |
 | 2026-08-13 | BEHOBEN | Netzwerk-, Manifest- und exakter Scope-Handshake an QA übergeben |
+| 2026-08-13 | VERIFIZIERT | QA-Nachtest: 79/79 Vitest- und 16/16 headed Playwright-Regressionen; ungültiger Endpoint, Scope-Abweichung und Credential-URL werden abgewiesen. |
 
 ## Übergabe: QA → BE
 
