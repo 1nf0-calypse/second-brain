@@ -153,8 +153,9 @@ export class SetupView extends ItemView {
     const excerptLabel = root.createEl('label', { text: 'Exact text excerpt to send once' });
     const excerpt = root.createEl('textarea', { attr: { id: 'second-brain-transfer-excerpt', rows: '4' } });
     excerptLabel.htmlFor = excerpt.id;
-    const reviewed = root.createEl('input', { attr: { type: 'checkbox', id: 'second-brain-transfer-reviewed' } });
-    const reviewedLabel = root.createEl('label', { text: 'I reviewed the exact data above.' });
+    const reviewConfirmation = root.createDiv({ cls: 'second-brain-consent-confirmation' });
+    const reviewed = reviewConfirmation.createEl('input', { attr: { type: 'checkbox', id: 'second-brain-transfer-reviewed' } });
+    const reviewedLabel = reviewConfirmation.createEl('label', { text: 'I reviewed the exact data above.' });
     reviewedLabel.htmlFor = reviewed.id;
     const transferButton = root.createEl('button', { text: 'Allow this transfer once' });
     const cancelButton = root.createEl('button', { text: 'Cancel — do not send data' });

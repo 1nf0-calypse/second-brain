@@ -22,8 +22,25 @@
 }
 
 .second-brain-setup input[type='checkbox'] {
-  min-height: auto;
-  width: auto;
+  accent-color: var(--interactive-accent);
+  block-size: 1.25rem;
+  flex: 0 0 1.25rem;
+  inline-size: 1.25rem;
+  margin: 0;
+}
+
+.second-brain-consent-confirmation {
+  align-items: center;
+  border: 1px solid var(--background-modifier-border);
+  display: flex;
+  gap: var(--size-4-2);
+  margin-block-start: var(--size-4-3);
+  padding: var(--size-4-2) var(--size-4-3);
+}
+
+.second-brain-setup .second-brain-consent-confirmation label {
+  display: inline;
+  margin: 0;
 }
 
 .second-brain-setup label,
