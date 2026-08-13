@@ -2,7 +2,7 @@
 id: BUG-000007
 title: Bug — Externer Einmal-Consent ist produktiv nicht erreichbar
 version: 1.0
-status: OFFEN
+status: BEHOBEN
 author-agent: QA (QA Engineer)
 date: 2026-08-12
 project: second-brain
@@ -72,18 +72,25 @@ in UX/TP, nicht in `apps/`.
 
 ## Root-Cause
 
-**Direkte Ursache:** [Von FE/BE vor jeder Codeänderung auszufüllen.]
+**Direkte Ursache:** Die `ConsentService`-Methoden waren weder über einen Sidecar-Befehl noch
+über den Plugin-Transport erreichbar. Zudem enthielt der Adapter-Auftrag nur den Hash des
+geprüften Payloads; ein bestätigter Minimalpayload konnte daher nie übertragen werden.
 
-**Zugrundeliegende (systemische) Ursache:** [Von FE/BE auszufüllen.]
+**Zugrundeliegende (systemische) Ursache:** Die Sprint-5-Implementierung behandelte den
+Consent-Service als isolierte Unit-Test-Komponente und modellierte keine durchgängige
+UI → IPC → Sidecar → Remote-MCP-Trust-Boundary.
 
-**Andere Stellen mit demselben Muster:** [Von FE/BE auszufüllen.]
+**Andere Stellen mit demselben Muster:** Der Provider-Handshake war ebenfalls nur eine
+lokale Schema-/Registry-Prüfung (BUG-000008), ohne konkreten Remote-Adapter.
 
 **Ausgeschlossene Ursachen:** Automatisierte Tests und Build schlagen nicht fehl; die
 vorhandenen Unit-Tests prüfen nur die isolierte Klasse.
 
 ## Fix-Ansatz
 
-[Von FE/BE nach Root-Cause-Analyse auszufüllen.]
+Ein sichtbarer Review- und Einmal-Confirm-Pfad ruft einen Sidecar-Transferbefehl auf. Der
+Sidecar erstellt und bestätigt den unveränderten Minimalpayload in einem Vorgang und gibt ihn
+erst danach an einen konkreten HTTPS-MCP-Adapter weiter; Quittungen bleiben textfrei.
 
 ## Regressionsrisiko
 
@@ -93,13 +100,18 @@ eine echte Netzwerkgrenze müssen konsistent verbunden werden.
 
 ## Verifikation
 
-*(Nach Fix durch QA: TC-000507–510 und E2E-000503–506.)*
+**Implementierungsverifikation (2026-08-13):** `npm run lint`, `npm run build`,
+`npm test` (79 Tests), `npm run test:coverage` und der sichtbare Playwright-Lauf (16 Tests)
+sind grün. Der Browserlauf deckt Review, Checkbox-Gate, Payload-Invalidierung, Cancel,
+Quittung und Disconnect ab. QA prüft TC-000507–510 zusätzlich gegen einen erreichbaren,
+authentifizierten Nutzerendpunkt.
 
 ## Status-Verlauf
 
 | Datum | Status | Kommentar |
 |---|---|---|
 | 2026-08-12 | OFFEN | Produktiver Consent-Pfad und Adapter fehlen |
+| 2026-08-13 | BEHOBEN | Produktpfad, exakte Payload-Bindung, Receipt und Browserregression an QA übergeben |
 
 ## Übergabe: QA → FE+BE
 
@@ -131,3 +143,14 @@ Keine Provider-Credential-Speicherung und keine dauerhafte Freigabe.
 ---
 
 *Erstellt von: QA-Agent | Datum: 2026-08-12 | Version: 1.0*
+
+## Übergabe: FE+BE → QA
+
+**Datum:** 2026-08-13
+**Von:** Frontend- und Backend-Agent (FE+BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 5`
+
+Der öffentliche Pfad reicht vom nativen Review über IPC und Sidecar bis zum allowlisteten
+HTTPS-MCP-Adapter. Einmalverbrauch wird vor dem Netzwerk-Await geclaimt; Policy-Drift,
+Replay, Ablauf, breitere Scopes und URL-Credentials werden vor dem Transfer abgewiesen.

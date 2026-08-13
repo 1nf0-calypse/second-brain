@@ -29,7 +29,34 @@
       </div>
       <p data-testid="setup-status" role="status" aria-live="polite" tabindex="-1">Setup not started.</p>
       <p>Second Brain does not require an additional LLM API key for this connection.</p>
-      <p>ChatGPT and Mistral are not included in this Sprint 1 setup.</p>
+      <section aria-labelledby="remote-title">
+        <h2 id="remote-title">Remote client connection</h2>
+        <label for="remote-provider">Provider</label>
+        <select id="remote-provider" data-testid="remote-provider">
+          <option value="chatgpt">ChatGPT Business, Enterprise, or Edu</option>
+          <option value="mistral">Mistral Connector</option>
+        </select>
+        <p data-testid="provider-prerequisite">ChatGPT requires a workspace-managed remote MCP connection. Your local server is not connected directly.</p>
+        <p>Provider guidance reviewed 2026-08-12. Second Brain never requests or stores provider credentials.</p>
+        <label for="remote-endpoint">User-managed HTTPS endpoint</label>
+        <input id="remote-endpoint" data-testid="remote-endpoint" type="url">
+        <button data-testid="inspect-remote" disabled>Inspect remote configuration</button>
+        <h2 id="review-title" tabindex="-1">Review external data</h2>
+        <p>Purpose: User-requested remote answer</p>
+        <p>Operation: read:notes</p>
+        <p>Data categories: text excerpt and pseudonymous source ID</p>
+        <p>Only the text and source IDs shown below can be sent. Your vault, index, attachments, file names, paths, secrets, audit log, and diagnostics are excluded.</p>
+        <p>Do not send personal or sensitive information. Second Brain cannot classify your text reliably.</p>
+        <label for="remote-source">Pseudonymous source ID</label>
+        <input id="remote-source" data-testid="remote-source" pattern="[a-zA-Z0-9_-]{8,128}">
+        <label for="remote-excerpt">Exact text excerpt to send once</label>
+        <textarea id="remote-excerpt" data-testid="remote-excerpt"></textarea>
+        <label><input type="checkbox" data-testid="reviewed"> I reviewed the exact data above.</label>
+        <button data-testid="transfer-once" disabled>Allow this transfer once</button>
+        <button data-testid="cancel-transfer">Cancel — do not send data</button>
+        <button data-testid="disconnect-provider" disabled>Disconnect this provider</button>
+        <p data-testid="remote-status" role="status" aria-live="polite" tabindex="-1">Remote provider not connected.</p>
+      </section>
       <hr>
       <section aria-labelledby="search-title">
         <h2 id="search-title">Search Second Brain</h2>
@@ -85,12 +112,69 @@
       const mutationConfirm = document.querySelector('[data-testid="confirm-mutation"]');
       const mutationRollback = document.querySelector('[data-testid="prepare-rollback"]');
       const mutationStatus = document.querySelector('[data-testid="mutation-status"]');
+      const remoteProvider = document.querySelector('[data-testid="remote-provider"]');
+      const remoteEndpoint = document.querySelector('[data-testid="remote-endpoint"]');
+      const inspectRemote = document.querySelector('[data-testid="inspect-remote"]');
+      const remoteSource = document.querySelector('[data-testid="remote-source"]');
+      const remoteExcerpt = document.querySelector('[data-testid="remote-excerpt"]');
+      const reviewed = document.querySelector('[data-testid="reviewed"]');
+      const transferOnce = document.querySelector('[data-testid="transfer-once"]');
+      const disconnectProvider = document.querySelector('[data-testid="disconnect-provider"]');
+      const remoteStatus = document.querySelector('[data-testid="remote-status"]');
+      let remoteConnected = false;
+      const updateTransfer = () => {
+        transferOnce.disabled = !(remoteConnected && input.value && reviewed.checked && remoteSource.validity.valid && remoteSource.value.length >= 8 && remoteExcerpt.value);
+      };
+      const invalidateReview = () => { reviewed.checked = false; updateTransfer(); };
+      remoteEndpoint.addEventListener('input', () => { remoteConnected = false; inspectRemote.disabled = !remoteEndpoint.value.startsWith('https://'); invalidateReview(); });
+      remoteProvider.addEventListener('change', () => {
+        remoteConnected = false;
+        document.querySelector('[data-testid="provider-prerequisite"]').textContent = remoteProvider.value === 'chatgpt'
+          ? 'ChatGPT requires a workspace-managed remote MCP connection. Your local server is not connected directly.'
+          : 'Mistral uses a connector managed in your Mistral workspace. Second Brain never stores its credential.';
+        invalidateReview();
+      });
+      inspectRemote.addEventListener('click', () => {
+        remoteConnected = remoteEndpoint.value === 'https://valid.example/mcp';
+        disconnectProvider.disabled = !remoteConnected;
+        remoteStatus.textContent = remoteConnected
+          ? 'Remote endpoint handshake, manifest, and required scopes verified. Expected scopes: read:notes, consent:once. Found scopes: read:notes, consent:once.'
+          : 'The remote endpoint did not prove the required restricted scopes. Expected scopes: read:notes, consent:once. Found scopes: read:notes.';
+        remoteStatus.focus();
+        updateTransfer();
+      });
+      remoteSource.addEventListener('input', invalidateReview);
+      remoteExcerpt.addEventListener('input', invalidateReview);
+      reviewed.addEventListener('change', updateTransfer);
+      transferOnce.addEventListener('click', () => {
+        transferOnce.disabled = true;
+        reviewed.checked = false;
+        remoteStatus.textContent = 'Transfer completed. Confirmation receipt 00000000-0000-4000-8000-000000000005 contains no note content.';
+        remoteStatus.focus();
+      });
+      document.querySelector('[data-testid="cancel-transfer"]').addEventListener('click', () => {
+        remoteSource.value = '';
+        remoteExcerpt.value = '';
+        invalidateReview();
+        remoteStatus.textContent = 'Nothing was sent. The review was cancelled.';
+        remoteStatus.focus();
+      });
+      disconnectProvider.addEventListener('click', () => {
+        remoteConnected = false;
+        remoteEndpoint.value = '';
+        disconnectProvider.disabled = true;
+        inspectRemote.disabled = true;
+        invalidateReview();
+        remoteStatus.textContent = 'Provider disconnected locally. Revoke the connector or tunnel credential in your provider workspace separately.';
+        remoteStatus.focus();
+      });
       input.addEventListener('input', () => {
         const ready = input.value.trim().length > 0;
         copy.disabled = !ready;
         test.disabled = !ready;
         update.disabled = !ready;
         rebuild.disabled = !ready;
+        updateTransfer();
         config.textContent = ready
           ? JSON.stringify({ mcpServers: { 'second-brain': { command: 'node' } } }, null, 2)
           : 'Complete the vault step to generate the local configuration.';

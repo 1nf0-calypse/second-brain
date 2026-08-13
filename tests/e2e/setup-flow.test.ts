@@ -17,6 +17,8 @@ describe('setup flow', () => {
   it('meldet eine gültige read-only Verbindung', async () => {
     const transport: SetupTransport = {
       inspectProvider: () => Promise.resolve({}),
+      transferProviderOnce: () => Promise.resolve({}),
+      revokeProviderConsent: () => Promise.resolve({}),
       synchronizeIndex: () => Promise.resolve({}),
       rebuildIndex: () => Promise.resolve({}),
       testConnection: () =>
@@ -36,6 +38,8 @@ describe('setup flow', () => {
   it('propagiert Timeout und Offline-Fehler als sichere Fehlerzustände', async () => {
     const transport: SetupTransport = {
       inspectProvider: () => Promise.resolve({}),
+      transferProviderOnce: () => Promise.resolve({}),
+      revokeProviderConsent: () => Promise.resolve({}),
       synchronizeIndex: () => Promise.resolve({}),
       rebuildIndex: () => Promise.resolve({}),
       testConnection: () => Promise.reject(new Error('Claude Desktop did not respond in time.'))
@@ -54,14 +58,16 @@ describe('setup flow', () => {
         contractVersion: CONTRACT_VERSION,
         provider: 'chatgpt',
         endpoint: 'https://remote.example.invalid/mcp',
-        connected: false,
+        connected: true,
         configured: true,
         scopes: ['read:notes', 'consent:once'],
-        message: 'Remote endpoint is configured. Complete the provider-managed connection test before use.'
-      })
+        message: 'Remote endpoint handshake, manifest, and required scopes verified.'
+      }),
+      transferProviderOnce: () => Promise.resolve({}),
+      revokeProviderConsent: () => Promise.resolve({})
     };
     await expect(inspectRemoteProvider(transport, 'chatgpt', 'https://remote.example.invalid/mcp'))
-      .resolves.toMatchObject({ configured: true, connected: false });
+      .resolves.toMatchObject({ configured: true, connected: true });
   });
 
   it('zeigt keine zusätzlichen Clients oder API-Keys in der Vorschau', () => {

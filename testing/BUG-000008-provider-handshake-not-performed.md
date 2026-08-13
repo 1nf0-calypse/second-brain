@@ -2,7 +2,7 @@
 id: BUG-000008
 title: Bug — Remote-Endpoint-Test führt keinen Handshake aus
 version: 1.0
-status: OFFEN
+status: BEHOBEN
 author-agent: QA (QA Engineer)
 date: 2026-08-12
 project: second-brain
@@ -70,18 +70,24 @@ festen `REQUIRED_SCOPES`. Eine konkrete Netzwerkadapter-Implementierung existier
 
 ## Root-Cause
 
-**Direkte Ursache:** [Von BE vor jeder Codeänderung auszufüllen.]
+**Direkte Ursache:** Der CLI-Zweig ersetzte den Registry-Endpoint durch die Eingabe und
+verglich die Eingabe anschließend mit sich selbst. `inspectProviderConnection` führte weder
+einen HTTP-Aufruf noch eine Manifest- oder Scope-Prüfung aus.
 
-**Zugrundeliegende (systemische) Ursache:** [Von BE auszufüllen.]
+**Zugrundeliegende (systemische) Ursache:** Es gab keinen produktiven Remote-MCP-Adapter
+und die Handshake-Antwort war im Vertrag fälschlich auf `connected: false` festgeschrieben.
 
-**Andere Stellen mit demselben Muster:** [Von BE auszufüllen.]
+**Andere Stellen mit demselben Muster:** Der nicht angebundene Consent-Port aus BUG-000007
+verwendete ebenfalls eine Abstraktion ohne produktive Transportimplementierung.
 
 **Ausgeschlossene Ursachen:** DNS, Firewall und Provider-Verfügbarkeit sind nicht Ursache;
 es wird überhaupt kein Netzwerkzugriff versucht.
 
 ## Fix-Ansatz
 
-[Von BE nach Root-Cause-Analyse auszufüllen.]
+Der Sidecar führt einen zeitlich begrenzten HTTPS-MCP-Initialize- und Tool-Manifest-Aufruf
+aus, akzeptiert den Endpunkt nicht als Registry-Ersatz und meldet erst nach Scope-Nachweis
+`connected: true`. Netzwerk- und Scope-Fehler bleiben getrennt und inhaltsarm.
 
 ## Regressionsrisiko
 
@@ -91,13 +97,18 @@ Scope-Fehlersemantik betreffen die neue Trust Boundary.
 
 ## Verifikation
 
-*(Nach Fix durch QA: TC-000501, 502, 504, 505 sowie E2E-000501/502.)*
+**Implementierungsverifikation (2026-08-13):** `npm run lint`, `npm run build`,
+`npm test` (79 Tests), `npm run test:coverage` und der sichtbare Playwright-Lauf (16 Tests)
+sind grün. Unerreichbare Endpunkte, fehlende oder breitere Scopes und URL-Credentials werden
+abgewiesen. QA prüft TC-000501, 502, 504 und 505 zusätzlich gegen einen erreichbaren,
+authentifizierten Nutzerendpunkt.
 
 ## Status-Verlauf
 
 | Datum | Status | Kommentar |
 |---|---|---|
 | 2026-08-12 | OFFEN | Selbstvergleich statt Remote-Handshake festgestellt |
+| 2026-08-13 | BEHOBEN | Netzwerk-, Manifest- und exakter Scope-Handshake an QA übergeben |
 
 ## Übergabe: QA → BE
 
@@ -128,3 +139,14 @@ Keine automatische Tunnelbereitstellung und keine Credential-Speicherung.
 ---
 
 *Erstellt von: QA-Agent | Datum: 2026-08-12 | Version: 1.0*
+
+## Übergabe: BE → QA
+
+**Datum:** 2026-08-13
+**Von:** Backend-Agent (BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 5`
+
+`connected: true` folgt nur auf einen erfolgreichen HTTPS-MCP-Initialize-, Manifest- und
+exakten Scope-Nachweis. Öffentliche Fehler bleiben typisiert und enthalten keine Remote-
+oder Credentialdetails.

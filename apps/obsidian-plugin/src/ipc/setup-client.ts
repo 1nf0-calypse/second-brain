@@ -2,6 +2,7 @@
 // Artefakte:    US-000011; ADR-000001
 // Agent:        FE — 2026-07-30
 import {
+  ConsentReceiptSchema,
   IndexStatusSchema,
   ProviderHandshakeResponseSchema,
   type ProviderHandshakeResponse,
@@ -15,6 +16,8 @@ export interface SetupTransport {
   synchronizeIndex(vaultRoot: string): Promise<unknown>;
   rebuildIndex(vaultRoot: string): Promise<unknown>;
   inspectProvider(provider: 'chatgpt' | 'mistral', endpoint: string): Promise<unknown>;
+  transferProviderOnce(vaultRoot: string, endpoint: string, request: unknown): Promise<unknown>;
+  revokeProviderConsent(vaultRoot: string, receiptId: string): Promise<unknown>;
 }
 
 /** Validates a credential-free remote endpoint inspection result. */
@@ -24,6 +27,16 @@ export async function inspectRemoteProvider(
   endpoint: string
 ): Promise<ProviderHandshakeResponse> {
   return ProviderHandshakeResponseSchema.parse(await transport.inspectProvider(provider, endpoint));
+}
+
+/** Sends only a user-reviewed, one-time minimal payload through the local sidecar. */
+export async function transferRemoteProviderOnce(transport: SetupTransport, vaultRoot: string, endpoint: string, request: unknown) {
+  return ConsentReceiptSchema.parse(await transport.transferProviderOnce(vaultRoot, endpoint, request));
+}
+
+/** Revokes the locally retained, text-free receipt for a one-time transfer. */
+export async function revokeRemoteProviderConsent(transport: SetupTransport, vaultRoot: string, receiptId: string) {
+  return ConsentReceiptSchema.parse(await transport.revokeProviderConsent(vaultRoot, receiptId));
 }
 
 /**

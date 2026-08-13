@@ -45,9 +45,13 @@ export const SetupResponseSchema = z.object({
 
 export const ProviderIdSchema = z.enum(['chatgpt', 'mistral']);
 export const DataCategorySchema = z.enum(['text-excerpt', 'pseudonymous-source-id']);
+export const ProviderEndpointSchema = z.string().url().startsWith('https://').refine((value) => {
+  const endpoint = new URL(value);
+  return endpoint.username.length === 0 && endpoint.password.length === 0;
+}, 'Provider credentials must not be embedded in the endpoint URL.');
 export const ProviderConfigurationSchema = z.object({
   provider: ProviderIdSchema,
-  endpoint: z.string().url().startsWith('https://'),
+  endpoint: ProviderEndpointSchema,
   sourceUrl: z.string().url(),
   reviewedAt: z.string().datetime(),
   policyVersion: z.string().min(1),
@@ -56,22 +60,22 @@ export const ProviderConfigurationSchema = z.object({
 export const ProviderHandshakeRequestSchema = z.object({
   contractVersion: z.literal(CONTRACT_VERSION),
   provider: ProviderIdSchema,
-  endpoint: z.string().url().startsWith('https://'),
+  endpoint: ProviderEndpointSchema,
   expectedScope: z.array(z.enum(['read:notes', 'consent:once'])).min(1)
 }).strict();
 export const ProviderHandshakeResponseSchema = z.object({
   contractVersion: z.literal(CONTRACT_VERSION),
   provider: ProviderIdSchema,
-  endpoint: z.string().url().startsWith('https://'),
-  connected: z.literal(false),
+  endpoint: ProviderEndpointSchema,
+  connected: z.boolean(),
   configured: z.boolean(),
-  scopes: z.array(z.enum(['read:notes', 'consent:once'])),
+  scopes: z.array(z.string().trim().min(1).max(100).regex(/^[a-z0-9:_-]+$/)).max(50),
   message: z.string()
 }).strict();
 export const ConsentPrepareRequestSchema = z.object({
   provider: ProviderIdSchema,
   purpose: z.string().trim().min(1).max(200),
-  operation: z.string().trim().min(1).max(100),
+  operation: z.literal('read:notes'),
   policyVersion: z.string().min(1),
   excerpts: z.array(z.object({
     text: z.string().min(1).max(20_000),
@@ -85,10 +89,12 @@ export const ConsentPreviewSchema = z.object({
   categories: z.array(DataCategorySchema),
   payloadHash: z.string().length(64),
   policyVersion: z.string(),
+  excerpts: z.array(z.object({ text: z.string(), sourceId: z.string() }).strict()).min(1),
   confirmationToken: z.string().uuid(),
   expiresAt: z.string().datetime()
 }).strict();
 export const ConsentReceiptSchema = z.object({
+  receiptId: z.string().uuid(),
   provider: ProviderIdSchema,
   purpose: z.string(),
   operation: z.string(),

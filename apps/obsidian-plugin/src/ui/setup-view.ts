@@ -1,9 +1,11 @@
 // Beschreibung: Zugängliche native Setup-View für Claude Desktop und lokalen Indexstatus.
-// Artefakte:    US-000011; US-000005; UX-000001; UX-000002
-// Agent:        FE — 2026-07-30
+// Artefakte:    US-000001; US-000007; UX-000003; BUG-000007; BUG-000008
+// Agent:        FE — 2026-08-13
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import {
   inspectRemoteProvider,
+  revokeRemoteProviderConsent,
+  transferRemoteProviderOnce,
   rebuildIndex,
   synchronizeIndex,
   testLocalService,
@@ -94,6 +96,24 @@ export class SetupView extends ItemView {
     provider.createEl('option', { text: 'Mistral Connector', value: 'mistral' });
     providerLabel.htmlFor = 'second-brain-provider';
     provider.id = 'second-brain-provider';
+    const prerequisite = root.createEl('p');
+    const providerPolicy = root.createEl('p');
+    const providerSource = root.createEl('a', { text: 'Open current provider setup guidance' });
+    providerSource.target = '_blank';
+    providerSource.rel = 'noreferrer';
+    const updateProviderCopy = () => {
+      prerequisite.textContent = provider.value === 'chatgpt'
+        ? 'ChatGPT requires a workspace-managed remote MCP connection. Your local server is not connected directly.'
+        : 'Mistral uses a connector managed in your Mistral workspace. Second Brain never stores its credential.';
+      providerPolicy.textContent = provider.value === 'chatgpt'
+        ? 'Plan: Business, Enterprise, or Edu. Provider guidance reviewed 2026-08-12.'
+        : 'Plan: Mistral workspace with Connectors. Provider guidance reviewed 2026-08-12.';
+      providerSource.href = provider.value === 'chatgpt'
+        ? 'https://help.openai.com/en/articles/12584461-developer-mode-apps-and-full-mcp-connectors-in-chatgpt-beta'
+        : 'https://docs.mistral.ai/studio-api/connectors';
+      providerSource.ariaLabel = `Open ${provider.value === 'chatgpt' ? 'ChatGPT' : 'Mistral'} setup guidance outside Second Brain`;
+    };
+    updateProviderCopy();
     const endpointLabel = root.createEl('label', { text: 'User-managed HTTPS endpoint' });
     const endpoint = root.createEl('input', {
       attr: { id: 'second-brain-provider-endpoint', type: 'url', inputmode: 'url' }
@@ -101,11 +121,88 @@ export class SetupView extends ItemView {
     endpointLabel.htmlFor = endpoint.id;
     const inspectButton = root.createEl('button', { text: 'Inspect remote configuration' });
     inspectButton.disabled = true;
+    let connectionVerified = false;
+    let updateTransferState = (): void => undefined;
     endpoint.addEventListener('input', () => {
+      connectionVerified = false;
       inspectButton.disabled = !endpoint.value.startsWith('https://');
     });
     inspectButton.addEventListener('click', () => {
-      void this.runRemoteInspection(inspectButton, provider.value as 'chatgpt' | 'mistral', endpoint.value);
+      const inspectedProvider = provider.value as 'chatgpt' | 'mistral';
+      const inspectedEndpoint = endpoint.value;
+      void this.runRemoteInspection(inspectButton, inspectedProvider, inspectedEndpoint).then((connected) => {
+        connectionVerified = connected && provider.value === inspectedProvider && endpoint.value === inspectedEndpoint;
+        revokeButton.disabled = !connectionVerified;
+        updateTransferState();
+      });
+    });
+    provider.addEventListener('change', () => {
+      connectionVerified = false;
+      updateProviderCopy();
+      updateTransferState();
+    });
+    const reviewHeading = root.createEl('h2', { text: 'Review external data', attr: { tabindex: '-1' } });
+    root.createEl('p', { text: 'Purpose: User-requested remote answer' });
+    root.createEl('p', { text: 'Operation: read:notes' });
+    root.createEl('p', { text: 'Data categories: text excerpt and pseudonymous source ID' });
+    root.createEl('p', { text: 'Only the text and source IDs shown below can be sent. Your vault, index, attachments, file names, paths, secrets, audit log, and diagnostics are excluded.' });
+    root.createEl('p', { text: 'Do not send personal or sensitive information. Second Brain cannot classify your text reliably.' });
+    const sourceLabel = root.createEl('label', { text: 'Pseudonymous source ID' });
+    const sourceId = root.createEl('input', { attr: { id: 'second-brain-transfer-source', type: 'text', placeholder: 'At least 8 letters, numbers, _ or -' } });
+    sourceLabel.htmlFor = sourceId.id;
+    const excerptLabel = root.createEl('label', { text: 'Exact text excerpt to send once' });
+    const excerpt = root.createEl('textarea', { attr: { id: 'second-brain-transfer-excerpt', rows: '4' } });
+    excerptLabel.htmlFor = excerpt.id;
+    const reviewed = root.createEl('input', { attr: { type: 'checkbox', id: 'second-brain-transfer-reviewed' } });
+    const reviewedLabel = root.createEl('label', { text: 'I reviewed the exact data above.' });
+    reviewedLabel.htmlFor = reviewed.id;
+    const transferButton = root.createEl('button', { text: 'Allow this transfer once' });
+    const cancelButton = root.createEl('button', { text: 'Cancel — do not send data' });
+    const revokeButton = root.createEl('button', { text: 'Disconnect this provider' });
+    revokeButton.disabled = true;
+    let latestReceiptId = '';
+    transferButton.disabled = true;
+    updateTransferState = (): void => {
+      transferButton.disabled = !(reviewed.checked && connectionVerified && this.vaultRoot.length > 0 && sourceId.validity.valid && sourceId.value.length >= 8 && excerpt.value.length > 0);
+    };
+    const invalidateReview = () => {
+      reviewed.checked = false;
+      updateTransferState();
+    };
+    sourceId.pattern = '[a-zA-Z0-9_-]{8,128}';
+    reviewed.addEventListener('change', updateTransferState);
+    endpoint.addEventListener('input', invalidateReview);
+    provider.addEventListener('change', invalidateReview);
+    sourceId.addEventListener('input', invalidateReview);
+    excerpt.addEventListener('input', invalidateReview);
+    transferButton.addEventListener('click', () => {
+      void this.runOneTimeTransfer(transferButton, revokeButton, (receiptId) => { latestReceiptId = receiptId; }, provider.value as 'chatgpt' | 'mistral', endpoint.value, sourceId.value, excerpt.value).finally(() => {
+        reviewed.checked = false;
+        updateTransferState();
+      });
+    });
+    cancelButton.addEventListener('click', () => {
+      sourceId.value = '';
+      excerpt.value = '';
+      reviewed.checked = false;
+      updateTransferState();
+      this.setStatus('Nothing was sent. The review was cancelled.', true);
+      reviewHeading.focus();
+    });
+    revokeButton.addEventListener('click', () => {
+      const disconnect = latestReceiptId.length > 0
+        ? this.runConsentRevocation(revokeButton, latestReceiptId)
+        : Promise.resolve(true);
+      void disconnect.then((disconnected) => {
+        if (!disconnected) return;
+        endpoint.value = '';
+        connectionVerified = false;
+        inspectButton.disabled = true;
+        revokeButton.disabled = true;
+        latestReceiptId = '';
+        this.setStatus('Provider disconnected locally. Revoke the connector or tunnel credential in your provider workspace separately.', true);
+        updateTransferState();
+      });
     });
 
     input.addEventListener('change', () => {
@@ -116,6 +213,7 @@ export class SetupView extends ItemView {
       testButton.disabled = this.vaultRoot.length === 0;
       updateButton.disabled = this.vaultRoot.length === 0;
       rebuildButton.disabled = this.vaultRoot.length === 0;
+      updateTransferState();
       this.setStatus('Vault selected. Test the local service, then complete the Claude Desktop steps.');
     });
     copyButton.addEventListener('click', () => {
@@ -168,17 +266,46 @@ export class SetupView extends ItemView {
     button: HTMLButtonElement,
     provider: 'chatgpt' | 'mistral',
     endpoint: string
-  ): Promise<void> {
+  ): Promise<boolean> {
     button.disabled = true;
     this.setStatus('Inspecting remote configuration…');
     try {
       const result = await inspectRemoteProvider(this.transport, provider, endpoint);
-      this.setStatus(`${result.message} No vault content or credentials were transferred.`, true);
+      this.setStatus(`${result.message} Expected scopes: read:notes, consent:once. Found scopes: ${result.scopes.join(', ') || 'none'}. No vault content or credentials were transferred.`, true);
+      return result.connected;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'The remote configuration is invalid.';
       this.setStatus(`${message} No vault content or credentials were transferred.`, true);
+      return false;
     } finally {
       button.disabled = false;
+    }
+  }
+
+  /** Delivers the visible, exact minimal payload only after the user has checked the review control. */
+  private async runOneTimeTransfer(button: HTMLButtonElement, revokeButton: HTMLButtonElement, setPayloadHash: (hash: string) => void, provider: 'chatgpt' | 'mistral', endpoint: string, sourceId: string, text: string): Promise<void> {
+    button.disabled = true;
+    this.setStatus('Sending the reviewed one-time transfer…');
+    try {
+      const receipt = await transferRemoteProviderOnce(this.transport, this.vaultRoot, endpoint, { provider, purpose: 'User-requested remote answer', operation: 'read:notes', policyVersion: `${provider}-2026-08-12`, excerpts: [{ sourceId, text }] });
+      setPayloadHash(receipt.receiptId);
+      revokeButton.disabled = false;
+      this.setStatus(`Transfer completed. Confirmation receipt ${receipt.receiptId} contains no note content. Confirmed at ${receipt.confirmedAt}.`, true);
+    } catch (error: unknown) {
+      this.setStatus(`${error instanceof Error ? error.message : 'The one-time transfer failed.'} Nothing was sent. Check the provider setup or review the data again.`, true);
+    }
+  }
+
+  /** Revokes the selected text-free receipt and leaves all remote credentials outside the product. */
+  private async runConsentRevocation(button: HTMLButtonElement, payloadHash: string): Promise<boolean> {
+    button.disabled = true;
+    try {
+      await revokeRemoteProviderConsent(this.transport, this.vaultRoot, payloadHash);
+      return true;
+    } catch (error: unknown) {
+      this.setStatus(`${error instanceof Error ? error.message : 'The receipt could not be revoked.'} No remote data was sent.`, true);
+      button.disabled = false;
+      return false;
     }
   }
 

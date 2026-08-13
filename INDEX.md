@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-12 | Phase: REFINEMENT
+Letzte Aktualisierung: 2026-08-13 | Phase: TESTING
 
 ## Aktive Artefakte
 
@@ -52,8 +52,8 @@ Letzte Aktualisierung: 2026-08-12 | Phase: REFINEMENT
 | `testing/TR-000008-sprint-5.md` | TR-000008 | 1.0 | REJECTED | QA | Gate 7 wegen zwei offenen Sprint-5-BLOCKERN fehlgeschlagen |
 | `testing/BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.6 | VERIFIZIERT | QA | Pre-Write-Lock liefert stabilen Write-Fehler bei intaktem Original |
 | `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.3 | VERIFIZIERT | QA | Preview-Cleanup und feste Obergrenze unabhängig bestätigt |
-| `testing/BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | OFFEN | QA | Produktiver Consent-/Transferpfad fehlt |
-| `testing/BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | OFFEN | QA | Remote-Endpoint-Test führt keinen Handshake aus |
+| `testing/BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | BEHOBEN | FE+BE | Consent-/Transferpfad implementiert; QA-Retest offen |
+| `testing/BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | BEHOBEN | BE | Echter Remote-Handshake implementiert; QA-Retest offen |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `reviews/RV-000005-sprint-4.md` | RV-000005 | 1.0 | APPROVED | RV | Sprint-4-Mutationsslice in Nutzer- und Technikabnahme freigegeben |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
@@ -131,14 +131,14 @@ Letzte Aktualisierung: 2026-08-12 | Phase: REFINEMENT
 | 2026-08-12 | Gate 5.5 (Sprint 5 Implementierungs-Preflight) | PASS | 0 | 0 | 0 |
 | 2026-08-12 | Gate 6 (Sprint 5 Implementation → Testing) | PASS | 0 | 0 | 0 |
 | 2026-08-12 | Gate 7 (Sprint 5 Testing → Review) | FAIL | 2 | 0 | 0 |
+| 2026-08-13 | Gate 6 (Sprint 5 Bugfix → Testing) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
-Sprint 4 ist als `v0.4.0` veröffentlicht. Sprint 5 ist als SP-000006 für den
-nutzverwalteten ChatGPT-Remote-/Tunneladapter, den Mistral-Connector und den minimierten,
-einzeln bestätigten Datenfluss verfeinert. US-000001 und US-000007 werden im Projektboard
-auf `Ready` gesetzt. S-001 bleibt eine nicht blockierende UX-Verbesserung: Den Pfad der
-zuvor aktiven Notiz vorbelegen.
+Sprint 4 ist als `v0.4.0` veröffentlicht. Für Sprint 5 sind BUG-000007 und BUG-000008
+implementiert und an QA zurückgegeben. Der automatisierte Stand umfasst 79 Vitest- und 16
+sichtbare Playwright-Tests; die echte nutzerverwaltete Provider-Abnahme bleibt Aufgabe des
+Gate-7-Nachtests. S-001 bleibt eine nicht blockierende UX-Verbesserung.
 
 ## Übergabe: BE → QA — zweiter BUG-000005-Fix
 

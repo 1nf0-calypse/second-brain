@@ -63,6 +63,19 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
     }, CONNECTION_TIMEOUT_MS);
   }
 
+  /** Executes precisely one reviewed transfer; provider credentials never enter this process. */
+  public transferProviderOnce(vaultRoot: string, endpoint: string, request: unknown): Promise<unknown> {
+    return this.run('--provider-transfer', vaultRoot, {
+      SECOND_BRAIN_PROVIDER_ENDPOINT: endpoint,
+      SECOND_BRAIN_CONSENT_REQUEST: JSON.stringify(request)
+    }, MUTATION_TIMEOUT_MS);
+  }
+
+  /** Marks the text-free local receipt revoked; no remote credential or vault text is involved. */
+  public revokeProviderConsent(vaultRoot: string, receiptId: string): Promise<unknown> {
+    return this.run('--revoke-provider-consent', vaultRoot, { SECOND_BRAIN_CONSENT_RECEIPT_ID: receiptId }, MUTATION_TIMEOUT_MS);
+  }
+
   /**
    * Durchsucht den lokalen Index in einem abbrechbaren Prozess.
    * @param vaultRoot Freigegebener Vault-Root.

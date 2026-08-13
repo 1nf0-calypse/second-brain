@@ -55,6 +55,14 @@ describe('public sidecar errors', () => {
     });
   });
 
+  it('preserves safe provider recovery codes without leaking remote details', () => {
+    expect(toPublicErrorResponse(new Error('PROVIDER_SCOPE_MISMATCH: upstream secret'))).toEqual({
+      level: 'error',
+      code: 'PROVIDER_SCOPE_MISMATCH',
+      message: 'The remote endpoint did not prove the exact restricted scopes.'
+    });
+  });
+
   it('erhält einen sicheren Schreibfehler am öffentlichen Vertragsrand', () => {
     expect(toPublicErrorResponse(new MutationError(
       'MUTATION_WRITE_FAILED',

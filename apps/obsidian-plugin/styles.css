@@ -1,6 +1,6 @@
 /* Beschreibung: Responsive, barrierearme Styles für die native Setup-View.
- * Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; UX-000001; UX-000002
- * Agent:        FE — 2026-07-31
+ * Artefakte:    US-000001; US-000007; UX-000003; BUG-000007
+ * Agent:        FE — 2026-08-13
  */
 .second-brain-setup,
 .second-brain-search,
@@ -12,11 +12,30 @@
 }
 
 .second-brain-setup input,
+.second-brain-setup select,
+.second-brain-setup textarea,
 .second-brain-setup button,
 .second-brain-search input,
 .second-brain-search button {
   min-height: 2.75rem;
   width: 100%;
+}
+
+.second-brain-setup input[type='checkbox'] {
+  min-height: auto;
+  width: auto;
+}
+
+.second-brain-setup label,
+.second-brain-setup textarea,
+.second-brain-setup select,
+.second-brain-setup button {
+  display: block;
+  margin-block-start: var(--size-4-3);
+}
+
+.second-brain-setup textarea {
+  resize: vertical;
 }
 
 .second-brain-relationships button,

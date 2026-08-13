@@ -30,16 +30,11 @@ describe('NodeSetupTransport', () => {
     });
   }, 15_000);
 
-  it('inspiziert einen nutzerverwalteten Remote-Endpunkt ohne Credential', async () => {
+  it('rejects an unreachable user-managed remote endpoint instead of reporting it configured', async () => {
     const transport = new NodeSetupTransport(resolve('dist/sidecar/main.js'), process.execPath);
     await expect(
       transport.inspectProvider('chatgpt', 'https://remote.example.invalid/mcp')
-    ).resolves.toMatchObject({
-      provider: 'chatgpt',
-      configured: true,
-      connected: false,
-      scopes: ['read:notes', 'consent:once']
-    });
+    ).rejects.toThrow('local service');
   }, 15_000);
 
   it('durchsucht und liest den Vault über den realen Kindprozess', async () => {

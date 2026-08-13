@@ -1,9 +1,9 @@
 // Beschreibung: Sidecar-Startpunkt für MCP, Index-, Lese- und bestätigte Mutationsoperationen.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; ADR-000001
-// Agent:        BE — 2026-07-31
-import { mkdir } from 'node:fs/promises';
+// Artefakte:    US-000001; US-000007; ADR-000006; BUG-000007; BUG-000008
+// Agent:        BE — 2026-08-13
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { CONTRACT_VERSION } from '@second-brain/contracts';
+import { CONTRACT_VERSION, ConsentReceiptSchema, type ConsentReceipt } from '@second-brain/contracts';
 import { performSetupHandshake } from './setup-service.js';
 import { startMcpServer } from '../mcp-gateway/server.js';
 import { LocalIndex } from '../indexing/sqlite-index.js';
@@ -11,11 +11,39 @@ import { SearchService } from '../search/search-service.js';
 import { toPublicErrorResponse } from '../errors/public-error.js';
 import { MutationService } from '../mutations/mutation-service.js';
 import {
-  getApprovedProviderConfiguration,
-  inspectProviderConnection
+  inspectProviderConnection,
+  ConsentService,
+  RemoteMcpProviderAdapter
 } from '../providers/provider-service.js';
 
 const vaultRoot = process.env['SECOND_BRAIN_VAULT_ROOT'];
+
+async function loadConsentReceipts(file: string): Promise<ConsentReceipt[]> {
+  try {
+    return ConsentReceiptSchema.array().parse(JSON.parse(await readFile(file, 'utf8')));
+  } catch (error: unknown) {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT') return [];
+    throw error;
+  }
+}
+
+async function saveConsentReceipts(file: string, records: ConsentReceipt[]): Promise<void> {
+  const temporaryFile = `${file}.tmp`;
+  await writeFile(temporaryFile, JSON.stringify(records), { encoding: 'utf8', mode: 0o600 });
+  await rename(temporaryFile, file);
+}
+
+async function updateConsentReceipt(vault: string, receiptId: string): Promise<ConsentReceipt> {
+  const directory = join(vault, '.second-brain');
+  const file = join(directory, 'provider-consent-receipts.json');
+  const records = await loadConsentReceipts(file);
+  const index = records.findIndex((record) => record.receiptId === receiptId && record.revokedAt === null);
+  if (index < 0) throw new Error('CONSENT_REQUIRED: No active consent receipt exists.');
+  const revoked = ConsentReceiptSchema.parse({ ...records[index], revokedAt: new Date().toISOString() });
+  records[index] = revoked;
+  await saveConsentReceipts(file, records);
+  return revoked;
+}
 
 if (!vaultRoot) {
   process.stderr.write(
@@ -33,16 +61,35 @@ if (!vaultRoot) {
         throw new Error('PROVIDER_NOT_APPROVED: Select an approved provider.');
       }
       const endpoint = process.env['SECOND_BRAIN_PROVIDER_ENDPOINT'] ?? '';
-      const response = inspectProviderConnection({
+      const response = await inspectProviderConnection({
         contractVersion: CONTRACT_VERSION,
         provider,
         endpoint,
         expectedScope: ['read:notes', 'consent:once']
-      }, {
-        ...getApprovedProviderConfiguration(provider),
-        endpoint
-      });
+      }, new RemoteMcpProviderAdapter());
       process.stdout.write(`${JSON.stringify(response)}\n`);
+    } else if (process.argv.includes('--provider-transfer')) {
+      const endpoint = process.env['SECOND_BRAIN_PROVIDER_ENDPOINT'] ?? '';
+      const service = new ConsentService();
+      const preview = service.prepare(JSON.parse(process.env['SECOND_BRAIN_CONSENT_REQUEST'] ?? '{}'));
+      const adapter = new RemoteMcpProviderAdapter();
+      const connection = await inspectProviderConnection({
+        contractVersion: CONTRACT_VERSION,
+        provider: preview.provider,
+        endpoint,
+        expectedScope: ['read:notes', 'consent:once']
+      }, adapter);
+      if (!connection.connected) throw new Error('PROVIDER_SCOPE_MISMATCH: The endpoint did not prove the exact restricted scopes.');
+      const receipt = await service.confirm(preview.confirmationToken, adapter, endpoint);
+      const directory = join(vaultRoot, '.second-brain');
+      await mkdir(directory, { recursive: true });
+      const file = join(directory, 'provider-consent-receipts.json');
+      const records = await loadConsentReceipts(file);
+      records.push(receipt);
+      await saveConsentReceipts(file, records);
+      process.stdout.write(`${JSON.stringify(receipt)}\n`);
+    } else if (process.argv.includes('--revoke-provider-consent')) {
+      process.stdout.write(`${JSON.stringify(await updateConsentReceipt(vaultRoot, process.env['SECOND_BRAIN_CONSENT_RECEIPT_ID'] ?? ''))}\n`);
     } else if (process.argv.includes('--setup-handshake')) {
       const response = await performSetupHandshake({
         contractVersion: process.env['SECOND_BRAIN_CONTRACT_VERSION'] ?? CONTRACT_VERSION,
