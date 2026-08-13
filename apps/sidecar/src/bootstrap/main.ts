@@ -169,7 +169,7 @@ if (!vaultRoot) {
         } else if (process.argv.includes('--autonomy-status')) {
           response = mutations.autonomyStatus();
         } else if (process.argv.includes('--pause-autonomy')) {
-          response = mutations.pauseAutonomy();
+          response = await mutations.pauseAutonomy();
         } else if (process.argv.includes('--autonomous-mutation')) {
           response = await mutations.executeAutonomous(JSON.parse(process.env['SECOND_BRAIN_AUTONOMOUS_MUTATION'] ?? '{}'));
           await index.synchronize(vaultRoot);

@@ -68,7 +68,7 @@ describe('MutationService', () => {
     const clockFixture = await fixture(1_000);
     const { service } = clockFixture;
     service.activateAutonomy({ mode: 'human-on', reviewed: true });
-    expect(service.pauseAutonomy()).toMatchObject({ active: false, paused: true });
+    await expect(service.pauseAutonomy()).resolves.toMatchObject({ active: false, paused: true });
     await expect(service.executeAutonomous({ relativePath: 'Paused.md', content: 'x' }))
       .rejects.toMatchObject({ code: 'AUTONOMY_NOT_ACTIVE' });
     service.activateAutonomy({ mode: 'human-out', reviewed: true });
@@ -76,6 +76,47 @@ describe('MutationService', () => {
     await expect(service.executeAutonomous({ relativePath: 'Expired.md', content: 'x' }))
       .rejects.toMatchObject({ code: 'AUTONOMY_NOT_ACTIVE' });
     service.close();
+  });
+
+  it('does not resolve pause until an already claimed automatic write has finished', async () => {
+    const { root, service: initial } = await fixture();
+    initial.close();
+    let beginWrite!: () => void;
+    let finishWrite!: () => void;
+    const writeStarted = new Promise<void>((resolve) => { beginWrite = resolve; });
+    const releaseWrite = new Promise<void>((resolve) => { finishWrite = resolve; });
+    const writer = new MutationService(root, join(root, '.second-brain', 'index.sqlite'), Date.now, {
+      read: async (path) => readFile(path, 'utf8').catch((error: unknown) => {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
+        throw error;
+      }),
+      write: async (path, content) => {
+        beginWrite();
+        await releaseWrite;
+        await writeFile(path, content);
+      },
+      remove: (path) => rm(path),
+      restore: async (path, content) => content === null
+        ? rm(path, { force: true })
+        : writeFile(path, content)
+    });
+    const pauser = new MutationService(root, join(root, '.second-brain', 'index.sqlite'));
+    writer.activateAutonomy({ mode: 'human-out', reviewed: true });
+    const write = writer.executeAutonomous({ relativePath: 'In-flight.md', content: '# done' });
+    await writeStarted;
+    let pauseFinished = false;
+    const pause = pauser.pauseAutonomy().then(() => { pauseFinished = true; });
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    expect(pauseFinished).toBe(false);
+    finishWrite();
+    await write;
+    await pause;
+    expect(pauseFinished).toBe(true);
+    expect(await readFile(join(root, 'In-flight.md'), 'utf8')).toBe('# done');
+    await expect(pauser.executeAutonomous({ relativePath: 'After-pause.md', content: '# no' }))
+      .rejects.toMatchObject({ code: 'AUTONOMY_NOT_ACTIVE' });
+    writer.close();
+    pauser.close();
   });
 
   it('previews without changing and atomically confirms one update', async () => {

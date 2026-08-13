@@ -230,7 +230,7 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
         return { content: [{ type: 'text' as const, text: JSON.stringify(mutations.autonomyStatus()) }] };
       }
       if (request.params.name === 'second_brain_pause_autonomy') {
-        return { content: [{ type: 'text' as const, text: JSON.stringify(mutations.pauseAutonomy()) }] };
+        return { content: [{ type: 'text' as const, text: JSON.stringify(await mutations.pauseAutonomy()) }] };
       }
       if (request.params.name === 'second_brain_apply_autonomous_note_change') {
         const input = AutonomousMutationRequestSchema.parse(request.params.arguments ?? {});

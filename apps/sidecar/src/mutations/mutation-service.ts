@@ -126,9 +126,12 @@ export class MutationService {
     });
   }
 
-  /** Pauses an active automatic policy before another mutation can claim its budget. */
-  public pauseAutonomy(): AutonomyStatus {
+  /** Blocks new claims, then waits until every previously claimed write has completed. */
+  public async pauseAutonomy(): Promise<AutonomyStatus> {
     this.database.prepare('UPDATE autonomy_policy SET paused_at = ? WHERE paused_at IS NULL').run(new Date(this.clock()).toISOString());
+    while (this.inFlightMutations() > 0) {
+      await delay(10);
+    }
     return this.autonomyStatus();
   }
 
@@ -140,7 +143,7 @@ export class MutationService {
     this.database.exec('BEGIN IMMEDIATE');
     try {
       const claim = this.database.prepare(`
-        UPDATE autonomy_policy SET used_mutations = used_mutations + 1
+        UPDATE autonomy_policy SET used_mutations = used_mutations + 1, in_flight = in_flight + 1
         WHERE paused_at IS NULL AND expires_at > ? AND used_mutations < ?
       `).run(claimedAt, MAX_AUTONOMOUS_MUTATIONS);
       if (claim.changes !== 1) {
@@ -156,12 +159,11 @@ export class MutationService {
       throw error;
     }
     try {
-      return await this.commitAutomatic(request.relativePath, request.content, activationId);
+      const result = await this.commitAutomatic(request.relativePath, request.content, activationId);
+      this.releaseInFlight(activationId, false);
+      return result;
     } catch (error: unknown) {
-      this.database.prepare(`
-        UPDATE autonomy_policy SET used_mutations = MAX(used_mutations - 1, 0)
-        WHERE activated_at = ?
-      `).run(activationId);
+      this.releaseInFlight(activationId, true);
       throw error;
     }
   }
@@ -338,11 +340,16 @@ export class MutationService {
         activated_at TEXT NOT NULL,
         expires_at TEXT NOT NULL,
         used_mutations INTEGER NOT NULL CHECK(used_mutations >= 0 AND used_mutations <= 60),
+        in_flight INTEGER NOT NULL DEFAULT 0 CHECK(in_flight >= 0),
         paused_at TEXT
       );
       INSERT OR IGNORE INTO schema_migrations(version, applied_at)
       VALUES (5, datetime('now'));
     `);
+    const columns = this.database.prepare('PRAGMA table_info(autonomy_policy)').all();
+    if (!columns.some((column) => column['name'] === 'in_flight')) {
+      this.database.exec('ALTER TABLE autonomy_policy ADD COLUMN in_flight INTEGER NOT NULL DEFAULT 0');
+    }
   }
 
   /** Runs an automatic create/update through the same scope, hash, file and audit safeguards. */
@@ -359,22 +366,18 @@ export class MutationService {
       if (hashNullable(await this.readExisting(target.absolutePath)) !== preview.beforeHash) {
         throw new MutationError('MUTATION_CONFLICT', 'The note changed before the automatic mutation. Nothing was written.');
       }
-      this.database.exec('BEGIN IMMEDIATE');
       const allowed = this.database.prepare(`
         SELECT 1 FROM autonomy_policy
         WHERE activated_at = ? AND paused_at IS NULL AND expires_at > ?
-          AND used_mutations <= ?
+          AND used_mutations <= ? AND in_flight > 0
       `).get(activationId, new Date(this.clock()).toISOString(), MAX_AUTONOMOUS_MUTATIONS);
       if (!allowed) {
-        this.database.exec('ROLLBACK');
         throw new MutationError('AUTONOMY_NOT_ACTIVE', 'Automation was paused or expired before this change could be written.');
       }
-      // This commit is the write linearization point. A later successful pause is ordered
-      // after this write started; a prior pause makes the query above fail.
-      this.database.exec('COMMIT');
+      // pauseAutonomy() marks the policy paused before it waits for this in-flight write.
+      // Therefore a successful pause response is never followed by this write.
       await this.fileOperations.write(target.absolutePath, content);
     } catch (error: unknown) {
-      try { this.database.exec('ROLLBACK'); } catch { /* No active transaction. */ }
       if (error instanceof MutationError) throw error;
       throw new MutationError('MUTATION_WRITE_FAILED', 'The note could not be replaced. Your vault remains consistent.', error);
     }
@@ -529,6 +532,20 @@ export class MutationService {
   private async readExisting(path: string): Promise<string | null> {
     return this.fileOperations.read(path);
   }
+
+  private inFlightMutations(): number {
+    const row = this.database.prepare('SELECT in_flight FROM autonomy_policy LIMIT 1').get();
+    return Number(row?.['in_flight'] ?? 0);
+  }
+
+  private releaseInFlight(activationId: string, refundBudget: boolean): void {
+    this.database.prepare(`
+      UPDATE autonomy_policy
+      SET in_flight = MAX(in_flight - 1, 0),
+          used_mutations = CASE WHEN ? THEN MAX(used_mutations - 1, 0) ELSE used_mutations END
+      WHERE activated_at = ?
+    `).run(refundBudget ? 1 : 0, activationId);
+  }
 }
 
 async function readExistingFile(path: string): Promise<string | null> {
@@ -579,4 +596,8 @@ async function restoreFile(path: string, content: string | null): Promise<void> 
   } else {
     await atomicWrite(path, content);
   }
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }

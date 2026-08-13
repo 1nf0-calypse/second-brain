@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
+Letzte Aktualisierung: 2026-08-13 | Phase: TESTING
 
 ## Aktive Artefakte
 
@@ -151,6 +151,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 | 2026-08-13 | Gate 6 (Sprint 6 Review-Fix -> Testing) | PASS | 0 | 0 | 0 |
 | 2026-08-13 | Gate 7 (Sprint 6 Review-Fix-Nachtest -> Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
 | 2026-08-13 | Gate 8 (Sprint 6 Re-Review -> Implementation) | REQUEST_CHANGES | 0 | 1 | 0 |
+| 2026-08-13 | Gate 6 (Sprint 6 Pause-Race-Fix -> Testing) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
