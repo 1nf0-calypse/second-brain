@@ -2,9 +2,11 @@
 // Artefakte:    US-000001; US-000007; ADR-000006
 // Agent:        BE — 2026-08-12
 import { createHash, randomUUID } from 'node:crypto';
+import { DatabaseSync } from 'node:sqlite';
 import {
   CONTRACT_VERSION,
   ConsentPrepareRequestSchema,
+  ConsentConfirmRequestSchema,
   ConsentPreviewSchema,
   ConsentReceiptSchema,
   ProviderConfigurationSchema,
@@ -204,5 +206,61 @@ export class ConsentService {
     const revoked = ConsentReceiptSchema.parse({ ...receipt, revokedAt: this.now().toISOString() });
     this.receipts.set(payloadHash, revoked);
     return revoked;
+  }
+}
+
+/** Persists short-lived provider previews so confirmation survives the native child-process boundary. */
+export class ProviderConsentStore {
+  private readonly database: DatabaseSync;
+
+  public constructor(databasePath: string, private readonly now: () => Date = () => new Date()) {
+    this.database = new DatabaseSync(databasePath);
+    this.database.exec(`
+      PRAGMA journal_mode = WAL;
+      CREATE TABLE IF NOT EXISTS provider_consent_previews (
+        token TEXT PRIMARY KEY,
+        request_json TEXT NOT NULL,
+        endpoint TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        used_at TEXT
+      );
+    `);
+  }
+
+  /** Stores one exact visible payload and returns its short-lived review token. */
+  public prepare(input: unknown, endpoint: string): ConsentPreview {
+    const request = ConsentPrepareRequestSchema.parse(input);
+    ProviderHandshakeRequestSchema.shape.endpoint.parse(endpoint);
+    const preview = new ConsentService(this.now).prepare(request);
+    this.database.prepare('DELETE FROM provider_consent_previews WHERE expires_at <= ? OR used_at IS NOT NULL')
+      .run(this.now().toISOString());
+    this.database.prepare(`
+      INSERT INTO provider_consent_previews(token, request_json, endpoint, expires_at, used_at)
+      VALUES (?, ?, ?, ?, NULL)
+    `).run(preview.confirmationToken, JSON.stringify(request), endpoint, preview.expiresAt);
+    return preview;
+  }
+
+  /** Claims a prepared token atomically and returns only its server-bound transfer details. */
+  public claim(input: unknown): { request: ConsentPrepareRequest; endpoint: string } {
+    const { confirmationToken } = ConsentConfirmRequestSchema.parse(input);
+    const now = this.now().toISOString();
+    const row = this.database.prepare(`
+      SELECT request_json, endpoint FROM provider_consent_previews
+      WHERE token = ? AND used_at IS NULL AND expires_at > ?
+    `).get(confirmationToken, now) as { request_json: string; endpoint: string } | undefined;
+    const claim = this.database.prepare(`
+      UPDATE provider_consent_previews SET used_at = ?
+      WHERE token = ? AND used_at IS NULL AND expires_at > ?
+    `).run(now, confirmationToken, now);
+    if (!row || claim.changes !== 1) {
+      throw new Error('CONSENT_REQUIRED: Review and confirm one exact transfer before sending data.');
+    }
+    return { request: ConsentPrepareRequestSchema.parse(JSON.parse(row.request_json)), endpoint: row.endpoint };
+  }
+
+  /** Closes the local token store after a one-shot sidecar operation. */
+  public close(): void {
+    this.database.close();
   }
 }

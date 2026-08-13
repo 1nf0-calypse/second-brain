@@ -37,6 +37,36 @@ describe('NodeSetupTransport', () => {
     ).rejects.toThrow('local service');
   }, 15_000);
 
+  it('rejects a provider confirmation that has no persisted review token', async () => {
+    const vaultRoot = await mkdtemp(join(tmpdir(), 'second-brain-transport-consent-'));
+    await mkdir(join(vaultRoot, '.obsidian'));
+    const transport = new NodeSetupTransport(resolve('dist/sidecar/main.js'), process.execPath);
+
+    await expect(transport.confirmProviderTransfer(
+      vaultRoot,
+      '00000000-0000-4000-8000-000000000000'
+    )).rejects.toThrow('CONSENT_REQUIRED');
+  }, 15_000);
+
+  it('persists a prepared provider review and consumes its token before a failed remote call', async () => {
+    const vaultRoot = await mkdtemp(join(tmpdir(), 'second-brain-transport-provider-review-'));
+    await mkdir(join(vaultRoot, '.obsidian'));
+    const transport = new NodeSetupTransport(resolve('dist/sidecar/main.js'), process.execPath);
+    const preview = await transport.prepareProviderTransfer(vaultRoot, 'https://remote.example.invalid/mcp', {
+      provider: 'chatgpt',
+      purpose: 'Answer',
+      operation: 'read:notes',
+      policyVersion: 'chatgpt-2026-08-12',
+      excerpts: [{ sourceId: 'source_0009', text: 'Only this reviewed text may be sent.' }]
+    }) as { confirmationToken: string; excerpts: Array<{ text: string }> };
+
+    expect(preview.excerpts[0]?.text).toBe('Only this reviewed text may be sent.');
+    await expect(transport.confirmProviderTransfer(vaultRoot, preview.confirmationToken))
+      .rejects.toThrow('SIDECAR_OFFLINE');
+    await expect(transport.confirmProviderTransfer(vaultRoot, preview.confirmationToken))
+      .rejects.toThrow('CONSENT_REQUIRED');
+  }, 15_000);
+
   it('durchsucht und liest den Vault über den realen Kindprozess', async () => {
     const vaultRoot = await mkdtemp(join(tmpdir(), 'second-brain-transport-search-'));
     await mkdir(join(vaultRoot, '.obsidian'));

@@ -17,7 +17,8 @@ describe('setup flow', () => {
   it('meldet eine gültige read-only Verbindung', async () => {
     const transport: SetupTransport = {
       inspectProvider: () => Promise.resolve({}),
-      transferProviderOnce: () => Promise.resolve({}),
+      prepareProviderTransfer: () => Promise.resolve({}),
+      confirmProviderTransfer: () => Promise.resolve({}),
       revokeProviderConsent: () => Promise.resolve({}),
       synchronizeIndex: () => Promise.resolve({}),
       rebuildIndex: () => Promise.resolve({}),
@@ -38,7 +39,8 @@ describe('setup flow', () => {
   it('propagiert Timeout und Offline-Fehler als sichere Fehlerzustände', async () => {
     const transport: SetupTransport = {
       inspectProvider: () => Promise.resolve({}),
-      transferProviderOnce: () => Promise.resolve({}),
+      prepareProviderTransfer: () => Promise.resolve({}),
+      confirmProviderTransfer: () => Promise.resolve({}),
       revokeProviderConsent: () => Promise.resolve({}),
       synchronizeIndex: () => Promise.resolve({}),
       rebuildIndex: () => Promise.resolve({}),
@@ -63,7 +65,8 @@ describe('setup flow', () => {
         scopes: ['read:notes', 'consent:once'],
         message: 'Remote endpoint handshake, manifest, and required scopes verified.'
       }),
-      transferProviderOnce: () => Promise.resolve({}),
+      prepareProviderTransfer: () => Promise.resolve({}),
+      confirmProviderTransfer: () => Promise.resolve({}),
       revokeProviderConsent: () => Promise.resolve({})
     };
     await expect(inspectRemoteProvider(transport, 'chatgpt', 'https://remote.example.invalid/mcp'))

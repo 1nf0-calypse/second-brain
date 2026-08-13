@@ -54,7 +54,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 | `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.3 | VERIFIZIERT | QA | Preview-Cleanup und feste Obergrenze unabhängig bestätigt |
 | `testing/BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | VERIFIZIERT | QA | Consent-/Transferpfad unabhängig nachgetestet |
 | `testing/BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | VERIFIZIERT | QA | Handshake- und Scope-Negativpfade unabhängig nachgetestet |
-| `testing/BUG-000009-provider-consent-not-server-bound.md` | BUG-000009 | 1.0 | OFFEN | RV | Serverseitige Bindung des Einmal-Consent fehlt |
+| `testing/BUG-000009-provider-consent-not-server-bound.md` | BUG-000009 | 1.0 | BEHOBEN | BE | Persistierter Prepare-Token und atomarer Confirm implementiert |
 | `reviews/RV-000006-sprint-5.md` | RV-000006 | 1.0 | REJECTED | RV | Sprint-5-Review wegen fehlender serverseitiger Consent-Bindung abgelehnt |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `reviews/RV-000005-sprint-4.md` | RV-000005 | 1.0 | APPROVED | RV | Sprint-4-Mutationsslice in Nutzer- und Technikabnahme freigegeben |

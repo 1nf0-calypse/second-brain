@@ -93,6 +93,9 @@ export const ConsentPreviewSchema = z.object({
   confirmationToken: z.string().uuid(),
   expiresAt: z.string().datetime()
 }).strict();
+export const ConsentConfirmRequestSchema = z.object({
+  confirmationToken: z.string().uuid()
+}).strict();
 export const ConsentReceiptSchema = z.object({
   receiptId: z.string().uuid(),
   provider: ProviderIdSchema,
@@ -234,6 +237,7 @@ export type ProviderHandshakeRequest = z.infer<typeof ProviderHandshakeRequestSc
 export type ProviderHandshakeResponse = z.infer<typeof ProviderHandshakeResponseSchema>;
 export type ConsentPrepareRequest = z.infer<typeof ConsentPrepareRequestSchema>;
 export type ConsentPreview = z.infer<typeof ConsentPreviewSchema>;
+export type ConsentConfirmRequest = z.infer<typeof ConsentConfirmRequestSchema>;
 export type ConsentReceipt = z.infer<typeof ConsentReceiptSchema>;
 export type IndexStatus = z.infer<typeof IndexStatusSchema>;
 export type SearchRequest = z.infer<typeof SearchRequestSchema>;

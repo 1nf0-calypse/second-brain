@@ -3,6 +3,7 @@
 // Agent:        FE — 2026-07-30
 import {
   ConsentReceiptSchema,
+  ConsentPreviewSchema,
   IndexStatusSchema,
   ProviderHandshakeResponseSchema,
   type ProviderHandshakeResponse,
@@ -16,7 +17,8 @@ export interface SetupTransport {
   synchronizeIndex(vaultRoot: string): Promise<unknown>;
   rebuildIndex(vaultRoot: string): Promise<unknown>;
   inspectProvider(provider: 'chatgpt' | 'mistral', endpoint: string): Promise<unknown>;
-  transferProviderOnce(vaultRoot: string, endpoint: string, request: unknown): Promise<unknown>;
+  prepareProviderTransfer(vaultRoot: string, endpoint: string, request: unknown): Promise<unknown>;
+  confirmProviderTransfer(vaultRoot: string, confirmationToken: string): Promise<unknown>;
   revokeProviderConsent(vaultRoot: string, receiptId: string): Promise<unknown>;
 }
 
@@ -29,9 +31,14 @@ export async function inspectRemoteProvider(
   return ProviderHandshakeResponseSchema.parse(await transport.inspectProvider(provider, endpoint));
 }
 
-/** Sends only a user-reviewed, one-time minimal payload through the local sidecar. */
-export async function transferRemoteProviderOnce(transport: SetupTransport, vaultRoot: string, endpoint: string, request: unknown) {
-  return ConsentReceiptSchema.parse(await transport.transferProviderOnce(vaultRoot, endpoint, request));
+/** Stores the exact visible minimal payload before its separate user confirmation. */
+export async function prepareRemoteProviderTransfer(transport: SetupTransport, vaultRoot: string, endpoint: string, request: unknown) {
+  return ConsentPreviewSchema.parse(await transport.prepareProviderTransfer(vaultRoot, endpoint, request));
+}
+
+/** Confirms only a previously server-bound consent token. */
+export async function confirmRemoteProviderTransfer(transport: SetupTransport, vaultRoot: string, confirmationToken: string) {
+  return ConsentReceiptSchema.parse(await transport.confirmProviderTransfer(vaultRoot, confirmationToken));
 }
 
 /** Revokes the locally retained, text-free receipt for a one-time transfer. */

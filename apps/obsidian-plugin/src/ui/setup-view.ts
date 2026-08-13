@@ -5,7 +5,8 @@ import { ItemView, WorkspaceLeaf } from 'obsidian';
 import {
   inspectRemoteProvider,
   revokeRemoteProviderConsent,
-  transferRemoteProviderOnce,
+  prepareRemoteProviderTransfer,
+  confirmRemoteProviderTransfer,
   rebuildIndex,
   synchronizeIndex,
   testLocalService,
@@ -162,23 +163,40 @@ export class SetupView extends ItemView {
     const revokeButton = root.createEl('button', { text: 'Disconnect this provider' });
     revokeButton.disabled = true;
     let latestReceiptId = '';
+    let confirmationToken = '';
     transferButton.disabled = true;
     updateTransferState = (): void => {
-      transferButton.disabled = !(reviewed.checked && connectionVerified && this.vaultRoot.length > 0 && sourceId.validity.valid && sourceId.value.length >= 8 && excerpt.value.length > 0);
+      transferButton.disabled = !(reviewed.checked && confirmationToken.length > 0 && connectionVerified && this.vaultRoot.length > 0 && sourceId.validity.valid && sourceId.value.length >= 8 && excerpt.value.length > 0);
     };
     const invalidateReview = () => {
       reviewed.checked = false;
+      confirmationToken = '';
       updateTransferState();
     };
     sourceId.pattern = '[a-zA-Z0-9_-]{8,128}';
-    reviewed.addEventListener('change', updateTransferState);
+    reviewed.addEventListener('change', () => {
+      confirmationToken = '';
+      updateTransferState();
+      if (!reviewed.checked) return;
+      void this.prepareProviderReview(
+        provider.value as 'chatgpt' | 'mistral',
+        endpoint.value,
+        sourceId.value,
+        excerpt.value
+      ).then((token) => {
+        if (!reviewed.checked) return;
+        confirmationToken = token;
+        updateTransferState();
+      });
+    });
     endpoint.addEventListener('input', invalidateReview);
     provider.addEventListener('change', invalidateReview);
     sourceId.addEventListener('input', invalidateReview);
     excerpt.addEventListener('input', invalidateReview);
     transferButton.addEventListener('click', () => {
-      void this.runOneTimeTransfer(transferButton, revokeButton, (receiptId) => { latestReceiptId = receiptId; }, provider.value as 'chatgpt' | 'mistral', endpoint.value, sourceId.value, excerpt.value).finally(() => {
+      void this.runOneTimeTransfer(transferButton, revokeButton, (receiptId) => { latestReceiptId = receiptId; }, confirmationToken).finally(() => {
         reviewed.checked = false;
+        confirmationToken = '';
         updateTransferState();
       });
     });
@@ -186,6 +204,7 @@ export class SetupView extends ItemView {
       sourceId.value = '';
       excerpt.value = '';
       reviewed.checked = false;
+      confirmationToken = '';
       updateTransferState();
       this.setStatus('Nothing was sent. The review was cancelled.', true);
       reviewHeading.focus();
@@ -283,12 +302,25 @@ export class SetupView extends ItemView {
     }
   }
 
-  /** Delivers the visible, exact minimal payload only after the user has checked the review control. */
-  private async runOneTimeTransfer(button: HTMLButtonElement, revokeButton: HTMLButtonElement, setPayloadHash: (hash: string) => void, provider: 'chatgpt' | 'mistral', endpoint: string, sourceId: string, text: string): Promise<void> {
+  /** Stores the exact visible payload before the separate one-time confirmation. */
+  private async prepareProviderReview(provider: 'chatgpt' | 'mistral', endpoint: string, sourceId: string, text: string): Promise<string> {
+    this.setStatus('Preparing the exact data for one-time confirmation…');
+    try {
+      const preview = await prepareRemoteProviderTransfer(this.transport, this.vaultRoot, endpoint, { provider, purpose: 'User-requested remote answer', operation: 'read:notes', policyVersion: `${provider}-2026-08-12`, excerpts: [{ sourceId, text }] });
+      this.setStatus(`Review prepared. This exact data can be confirmed once until ${preview.expiresAt}.`, true);
+      return preview.confirmationToken;
+    } catch (error: unknown) {
+      this.setStatus(`${error instanceof Error ? error.message : 'The data could not be prepared for review.'} Nothing was sent.`, true);
+      return '';
+    }
+  }
+
+  /** Delivers only a previously server-bound review token after the user has checked the review control. */
+  private async runOneTimeTransfer(button: HTMLButtonElement, revokeButton: HTMLButtonElement, setPayloadHash: (hash: string) => void, confirmationToken: string): Promise<void> {
     button.disabled = true;
     this.setStatus('Sending the reviewed one-time transfer…');
     try {
-      const receipt = await transferRemoteProviderOnce(this.transport, this.vaultRoot, endpoint, { provider, purpose: 'User-requested remote answer', operation: 'read:notes', policyVersion: `${provider}-2026-08-12`, excerpts: [{ sourceId, text }] });
+      const receipt = await confirmRemoteProviderTransfer(this.transport, this.vaultRoot, confirmationToken);
       setPayloadHash(receipt.receiptId);
       revokeButton.disabled = false;
       this.setStatus(`Transfer completed. Confirmation receipt ${receipt.receiptId} contains no note content. Confirmed at ${receipt.confirmedAt}.`, true);

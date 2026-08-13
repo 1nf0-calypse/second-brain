@@ -13,6 +13,7 @@ import { MutationService } from '../mutations/mutation-service.js';
 import {
   inspectProviderConnection,
   ConsentService,
+  ProviderConsentStore,
   RemoteMcpProviderAdapter
 } from '../providers/provider-service.js';
 
@@ -68,10 +69,22 @@ if (!vaultRoot) {
         expectedScope: ['read:notes', 'consent:once']
       }, new RemoteMcpProviderAdapter());
       process.stdout.write(`${JSON.stringify(response)}\n`);
-    } else if (process.argv.includes('--provider-transfer')) {
+    } else if (process.argv.includes('--prepare-provider-transfer')) {
       const endpoint = process.env['SECOND_BRAIN_PROVIDER_ENDPOINT'] ?? '';
+      const directory = join(vaultRoot, '.second-brain');
+      await mkdir(directory, { recursive: true });
+      const store = new ProviderConsentStore(join(directory, 'provider-consent.sqlite'));
+      const preview = store.prepare(JSON.parse(process.env['SECOND_BRAIN_CONSENT_REQUEST'] ?? '{}'), endpoint);
+      store.close();
+      process.stdout.write(`${JSON.stringify(preview)}\n`);
+    } else if (process.argv.includes('--confirm-provider-transfer')) {
+      const directory = join(vaultRoot, '.second-brain');
+      await mkdir(directory, { recursive: true });
+      const store = new ProviderConsentStore(join(directory, 'provider-consent.sqlite'));
+      const { request, endpoint } = store.claim(JSON.parse(process.env['SECOND_BRAIN_CONSENT_CONFIRMATION'] ?? '{}'));
+      store.close();
       const service = new ConsentService();
-      const preview = service.prepare(JSON.parse(process.env['SECOND_BRAIN_CONSENT_REQUEST'] ?? '{}'));
+      const preview = service.prepare(request);
       const adapter = new RemoteMcpProviderAdapter();
       const connection = await inspectProviderConnection({
         contractVersion: CONTRACT_VERSION,
@@ -81,7 +94,6 @@ if (!vaultRoot) {
       }, adapter);
       if (!connection.connected) throw new Error('PROVIDER_SCOPE_MISMATCH: The endpoint did not prove the exact restricted scopes.');
       const receipt = await service.confirm(preview.confirmationToken, adapter, endpoint);
-      const directory = join(vaultRoot, '.second-brain');
       await mkdir(directory, { recursive: true });
       const file = join(directory, 'provider-consent-receipts.json');
       const records = await loadConsentReceipts(file);

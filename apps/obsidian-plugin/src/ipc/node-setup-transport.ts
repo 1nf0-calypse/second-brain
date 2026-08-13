@@ -63,11 +63,18 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
     }, CONNECTION_TIMEOUT_MS);
   }
 
-  /** Executes precisely one reviewed transfer; provider credentials never enter this process. */
-  public transferProviderOnce(vaultRoot: string, endpoint: string, request: unknown): Promise<unknown> {
-    return this.run('--provider-transfer', vaultRoot, {
+  /** Stores the exact visible transfer before confirmation; provider credentials never enter this process. */
+  public prepareProviderTransfer(vaultRoot: string, endpoint: string, request: unknown): Promise<unknown> {
+    return this.run('--prepare-provider-transfer', vaultRoot, {
       SECOND_BRAIN_PROVIDER_ENDPOINT: endpoint,
       SECOND_BRAIN_CONSENT_REQUEST: JSON.stringify(request)
+    }, MUTATION_TIMEOUT_MS);
+  }
+
+  /** Confirms only a persisted, server-bound consent token. */
+  public confirmProviderTransfer(vaultRoot: string, confirmationToken: string): Promise<unknown> {
+    return this.run('--confirm-provider-transfer', vaultRoot, {
+      SECOND_BRAIN_CONSENT_CONFIRMATION: JSON.stringify({ confirmationToken })
     }, MUTATION_TIMEOUT_MS);
   }
 
