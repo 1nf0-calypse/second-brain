@@ -1,14 +1,14 @@
 ---
 id: RV-000007
 title: Code Review Second Brain Sprint 6
-version: 1.0
+version: 1.1
 status: REQUEST_CHANGES
 author-agent: RV (Code Reviewer)
 date: 2026-08-13
 project: second-brain
 sprint: 6
 reviewed-stories: US-000003
-qa-report: TR-000009@1.0
+qa-report: TR-000009@1.1
 supersedes: —
 superseded-by: —
 ---
@@ -17,9 +17,9 @@ superseded-by: —
 
 ## Entscheidung
 
-**REQUEST_CHANGES.** Build, Lint und die vorhandenen Tests sind grün, aber drei MAJOR-
-Probleme verletzen die verbindliche Autonomie-Policy. Insbesondere sind "60 Mutationen je
-Aktivierung", "Pause sofort" und der native automatische Write-Flow nicht gewährleistet.
+**REQUEST_CHANGES.** Nachtest und Re-Review bestätigen R6-001 und R6-003. Ein MAJOR-
+Problem verletzt weiterhin die verbindliche Pause-Garantie: Zwischen der finalen Prüfung und
+dem tatsächlichen Dateischreiben kann eine Pause wirksam werden.
 
 ## Befunde
 
@@ -69,6 +69,21 @@ prüfen/claimen oder Pause und Write so serialisieren, dass eine nach der Pause 
 Dateioperation nicht mehr stattfinden kann. Ein deterministischer Pause-gegen-Write-Test ist
 erforderlich.
 
+### Nachtest zu R6-002: weiterhin offen
+
+**Stellen:** `apps/sidecar/src/mutations/mutation-service.ts:362-375`
+
+Die Korrektur ergänzt eine zweite Policy-Prüfung, committet deren SQLite-Transaktion in
+Zeile 374 aber **vor** `await this.fileOperations.write(...)` in Zeile 375. Genau in diesem
+Zwischenraum kann ein paralleler `pauseAutonomy()`-Aufruf Zeile 131 erfolgreich ausführen;
+der danach fortgesetzte automatische Aufruf schreibt dennoch. Der Kommentar behauptet einen
+"write linearization point", doch der Dateischreibvorgang wurde zu diesem Zeitpunkt noch
+nicht gestartet.
+
+Der angekündigte Race-Test fehlt; der vorhandene Test prüft nur eine Pause vor dem Claim
+(`tests/integration/mutation-service.test.ts:67-77`). Damit ist R6-002 nicht verifiziert
+und bleibt MAJOR.
+
 ### MAJOR R6-003: Die native Ansicht bietet keinen automatischen Schreibpfad
 
 **Stellen:** `apps/obsidian-plugin/src/ui/mutation-view.ts:44-81`, `:153-178`,
@@ -106,19 +121,25 @@ native Tastaturprüfung ergänzen.
   parallelen Anfragen auf 60 erfolgreiche Writes.
 - Automatische Pfade sind auf relative Markdown-Create/Update begrenzt und benutzen den
   vorhandenen Scope-, Symlink-, Hash-, Audit- und Einzelrollback-Schutz.
+- **R6-001 behoben:** Reaktivierung im laufenden Fenster bewahrt Zähler und Ablauf; die
+  Budget-Regressionssuite weist den 61. Write nach Reaktivierung ab.
+- **R6-003 behoben auf Code-Ebene:** Plugin-Ansicht, IPC-Client und Node-Transport reichen
+  den automatischen Create/Update-Pfad bis zum Sidecar durch. Die native Abnahme bleibt
+  gemäß TR-000009 offen.
 
 ## Zusammenfassung
 
 | Schweregrad | Offen |
 |---|---:|
 | BLOCKER | 0 |
-| MAJOR | 3 |
+| MAJOR | 1 |
 | MINOR | 0 |
 | SUGGESTION | 0 |
 
-Die Testphase darf nicht als uneingeschränkte Sprint-Freigabe interpretiert werden. Nach den
-drei Korrekturen ist ein Nachtest mit den genannten Race-/Budget-Regressionen und dem
-dedizierten headed Autonomie-Flow erforderlich.
+Die Testphase darf nicht als uneingeschränkte Sprint-Freigabe interpretiert werden. Nach der
+verbleibenden Pause-Race-Korrektur ist ein deterministischer Nachtest "Pause zwischen finalem
+Check und File-Write" erforderlich; der dedizierte headed Autonomie-Flow bleibt zusätzlich
+eine QA-Auflage.
 
 ## Übergabe: RV -> FE+BE
 
@@ -126,4 +147,13 @@ dedizierten headed Autonomie-Flow erforderlich.
 
 ---
 
-*Erstellt von: RV-Agent | Datum: 2026-08-13 | Version: 1.0*
+## Änderungshistorie
+
+| Version | Datum | Änderung | Agent |
+|---|---|---|---|
+| 1.1 | 2026-08-13 | R6-001 und R6-003 als behoben bestätigt; R6-002 wegen Commit-vor-Write weiterhin MAJOR | RV |
+| 1.0 | 2026-08-13 | Initialreview mit drei MAJOR-Befunden | RV |
+
+---
+
+*Erstellt von: RV-Agent | Datum: 2026-08-13 | Version: 1.1*

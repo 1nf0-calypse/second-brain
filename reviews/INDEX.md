@@ -16,4 +16,4 @@ Fachliche Nutzerabnahmen und technische Code-Reviews.
 | `RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Relationship-Exploration in Obsidian und Claude nativ abgenommen |
 | `RV-000005-sprint-4.md` | RV-000005 | 1.0 | APPROVED | RV | Kontrollierte Ein-Datei-Mutation in Nutzer- und Technikabnahme freigegeben |
 | `RV-000006-sprint-5.md` | RV-000006 | 1.1 | APPROVED | RV | Sprint-5-Re-Review: servergebundener Einmal-Consent und automatischer Vault-Pfad freigegeben |
-| `RV-000007-sprint-6.md` | RV-000007 | 1.0 | REQUEST_CHANGES | RV | Autonomie-Budget, Pause und nativer automatischer Write-Flow erfordern Korrekturen |
+| `RV-000007-sprint-6.md` | RV-000007 | 1.1 | REQUEST_CHANGES | RV | Reaktivierung und nativer Pfad behoben; Pause-gegen-Write-Race erfordert Korrektur |
