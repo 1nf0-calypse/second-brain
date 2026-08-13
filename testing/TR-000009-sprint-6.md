@@ -1,7 +1,7 @@
 ---
 id: TR-000009
 title: Testergebnis Second Brain Sprint 6
-version: 1.0
+version: 1.1
 status: CONDITIONAL
 author-agent: QA (QA Engineer)
 date: 2026-08-13
@@ -19,11 +19,12 @@ ablage: projects/second-brain/testing/
 
 **Empfehlung:** `CONDITIONAL`
 
-**Gate 7:** `PASS (CONDITIONAL)`. Die serverseitige Autonomie-Policy, 60/60-Grenze,
-Ablauf, Pause, Audit-/Rollback-Regression und die bestehende headed Browser-Suite bestehen.
-Die neue Autonomieansicht hat noch keinen dedizierten Playwright-Harness-Clickpfad und wurde
-nicht im echten Obsidian-Desktop-Host abgenommen. Das sind zwei MAJOR-Auflagen, keine
-behaupteten PASS-Ergebnisse.
+**Gate 7:** `PASS (CONDITIONAL)`. Der Nachtest zu RV-000007 bestätigt die feste
+Aktivierungsperiode, den finalen Pause-Check und den transportierten automatischen
+Create/Update-Pfad. Budgetgrenze, Ablauf, Audit-/Rollback-Regression und die bestehende
+headed Browser-Suite bestehen. Die neue Autonomieansicht hat weiterhin keinen dedizierten
+Playwright-Harness-Clickpfad und wurde nicht im echten Obsidian-Desktop-Host abgenommen.
+Das sind zwei MAJOR-Auflagen, keine behaupteten PASS-Ergebnisse.
 
 ## Automatisierte Evidenz
 
@@ -31,32 +32,40 @@ behaupteten PASS-Ergebnisse.
 |---|---|
 | `npm run build` | PASS |
 | `npm run lint -- --max-warnings=0` | PASS |
-| `npm test` | PASS — 84/84 Tests, 17 Dateien, 4,87 s |
-| `npm run test:coverage` | PASS — 84/84 Tests, 5,25 s |
-| headed `npm run test:e2e` | PASS — 16/16 Playwright-Fälle, 14,5 s |
+| `npm test` | PASS — 84/84 Tests, 17 Dateien, 5,28 s |
+| `npm run test:coverage` | PASS — 84/84 Tests, 5,52 s |
+| headed `npm run test:e2e` | PASS — 16/16 Playwright-Fälle, 11,0 s |
 
 | Metrik | Ergebnis | Ziel |
 |---|---:|---:|
-| Statements | 91,78 % | >=80 % — PASS |
-| Branches | 84,46 % | >=80 % — PASS |
-| Funktionen | 91,00 % | >=80 % — PASS |
-| Zeilen | 92,87 % | >=80 % — PASS |
+| Statements | 91,25 % | >=80 % — PASS |
+| Branches | 84,55 % | >=80 % — PASS |
+| Funktionen | 91,08 % | >=80 % — PASS |
+| Zeilen | 92,46 % | >=80 % — PASS |
 
-`mutation-service.ts` erreicht 89,61 % Statements, 87,09 % Branches, 100 % Funktionen
-und 91,37 % Zeilen. Die geringere IPC-Client-Abdeckung macht den fehlenden Autonomie-
+`mutation-service.ts` erreicht 88,38 % Statements, 87,12 % Branches, 100 % Funktionen
+und 90,42 % Zeilen. Die geringere IPC-Client-Abdeckung macht den fehlenden Autonomie-
 Clickpfad sichtbar, verletzt aber kein globales Coverage-Gate.
 
 ## Testfallstatus
 
 | Bereich | Status | Evidenz |
 |---|---|---|
-| TC-000601 Human-on aktivieren | ⚠️ BLOCKIERT | Server-Contract getestet; native Ansicht offen. |
-| TC-000602 Human-out aktivieren | ⚠️ BLOCKIERT | Server-Contract getestet; native Ansicht offen. |
-| TC-000603 Pause | ✅ BESTANDEN, native UI offen | Pause verweigert automatischen Write in Integrationstest. |
-| TC-000604 Budgetgrenze und Ablauf | ✅ BESTANDEN | 60 parallele Creates, 61. Write, Budgetende und Ablauf deterministisch getestet. |
+| TC-000601 Human-on aktivieren | ⚠️ BLOCKIERT | Server-Contract und nativer Transport getestet; native Ansicht offen. |
+| TC-000602 Human-out aktivieren | ⚠️ BLOCKIERT | Server-Contract und nativer Transport getestet; native Ansicht offen. |
+| TC-000603 Pause | ✅ BESTANDEN, native UI offen | Finaler Policy-Check und Pause-Regression bestehen. |
+| TC-000604 Budgetgrenze und Ablauf | ✅ BESTANDEN | 60 parallele Creates, 61. Write, Budgetende, Ablauf und Reaktivierungsversuch deterministisch getestet. |
 | TC-000605 verbotene Aktionen | ✅ BESTANDEN auf Contract-Ebene | Nur Markdown-Create/Update erreichen den Autonomiepfad; Scope-Regressionen grün. |
 | TC-000606 Audit, Konflikt, Rollback | ✅ BESTANDEN | Audit-/Rollback-Suite und Vorher-Hash-Check bestehen. |
 | TC-000607 Tastatur und schmaler Pane | ⚠️ BLOCKIERT | Bestehende Harness-A11y deckt die neue Autonomie-UI nicht ab. |
+
+## Retest RV-000007
+
+| Befund | Ergebnis | Nachweis |
+|---|---|---|
+| R6-001 Reaktivierung setzt Budget zurück | **BEHOBEN** | Reaktivierung innerhalb der laufenden Periode behält Zähler und Ablauf; der Test weist den 61. Write auch nach Reaktivierung ab. |
+| R6-002 Pause nach Claim erlaubt Write | **BEHOBEN** | Der finale, transaktionale Policy-Check liegt direkt vor dem Start des Writes und prüft dieselbe Aktivierung. |
+| R6-003 Nativer automatischer Pfad fehlt | **BEHOBEN auf Transport-/Code-Ebene** | `MutationTransport`, Node-Transport und Ansicht rufen den budgetierten automatischen Create/Update-Endpunkt auf. Die native UI-Abnahme bleibt offen. |
 
 ## Security und Integrität
 
@@ -120,4 +129,4 @@ Automatisches Delete/Move/Rename, Mehrdatei-Pakete, Konflikt-Merges, Wissenskomp
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-08-13 | Version: 1.0*
+*Erstellt von: QA-Agent | Datum: 2026-08-13 | Version: 1.1*
