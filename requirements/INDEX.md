@@ -1,6 +1,6 @@
 # Requirements — Index
 
-Letzte Aktualisierung: 2026-08-12
+Letzte Aktualisierung: 2026-08-13
 
 ## Zweck
 
@@ -11,10 +11,10 @@ Funktionale und nicht-funktionale Anforderungen, Story Map und entwicklungsfähi
 | Datei | ID | Version | Status | Agent | Kurzbeschreibung |
 |---|---|---|---|---|---|
 | `REQ-000001-product-requirements.md` | REQ-000001 | 1.0 | APPROVED | BA | Produktanforderungen, NFRs, Story Map und AR-Handoff |
-| `RM-000001-roadmap.md` | RM-000001 | 1.0 | APPROVED | BA | Gesamt-Roadmap für gelieferte Slices und Sprint 5–11 |
+| `RM-000001-roadmap.md` | RM-000001 | 1.1 | APPROVED | BA | Gesamt-Roadmap mit verbindlicher Sprint-6-Autonomie-Budget-Policy |
 | `US-000001-installation-and-mcp-setup.md` | US-000001 | 1.0 | APPROVED | BA | Installation, Vault-Auswahl und MCP-Clients |
 | `US-000002-read-search-and-citations.md` | US-000002 | 1.0 | APPROVED | BA | Lesen, Suche, Quellen und Anhänge |
-| `US-000003-controlled-mutations.md` | US-000003 | 1.0 | APPROVED | BA | Autonomiestufen, Audit, Backup und Rollback |
+| `US-000003-controlled-mutations.md` | US-000003 | 1.1 | APPROVED | BA | Autonomiestufen mit 60/60-Budget, Pause, Audit und Rollback |
 | `US-000004-knowledge-graph-exploration.md` | US-000004 | 1.0 | APPROVED | BA | Knowledge Graph und visuelle Exploration |
 | `US-000005-incremental-local-index.md` | US-000005 | 1.0 | APPROVED | BA | Lokale inkrementelle Indexierung |
 | `US-000006-knowledge-compilation.md` | US-000006 | 1.0 | APPROVED | BA | Wissenskompilierung, Prompts und Vorlagen |

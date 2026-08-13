@@ -1,6 +1,6 @@
 # Sprints — Index
 
-Letzte Aktualisierung: 2026-08-12
+Letzte Aktualisierung: 2026-08-13
 
 ## Zweck
 
@@ -16,3 +16,4 @@ Sprint-Ziele, Backlogs, Schätzungen, Voraussetzungen und Risiken.
 | `SP-000004-sprint-3-relationships.md` | SP-000004 | 1.0 | APPROVED | BA+FE+BE | Sprint-3-Backlog für lokale Relationship-Exploration |
 | `SP-000005-sprint-4-controlled-mutations.md` | SP-000005 | 1.0 | APPROVED | BA+FE+BE | Sprint-4-Backlog für kontrollierte Ein-Datei-Mutationen |
 | `SP-000006-sprint-5-remote-clients-and-consent.md` | SP-000006 | 1.0 | APPROVED | BA+FE+BE | Sprint-5-Backlog für Remote-Clients und minimierten Einmal-Consent |
+| `SP-000007-sprint-6-autonomie-budgets.md` | SP-000007 | 1.0 | APPROVED | BA+FE+BE | Sprint-6-Backlog für Human-on/out, 60/60-Budgets, Pause und Audit-Rollback |

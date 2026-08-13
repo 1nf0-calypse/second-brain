@@ -1,7 +1,7 @@
 ---
 id: RM-000001
 title: Roadmap / Release-Plan — Second Brain
-version: 1.0
+version: 1.1
 status: APPROVED
 author-agent: BA (Business Analyst)
 date: 2026-08-12
@@ -45,7 +45,7 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
 | BUG-000006 | begrenzte Vorschauablage | Must | 2 | S | 4 | 2026-08-12 | 2026-08-12 | Verifiziert |
 | US-000001 | Einstieg: ChatGPT- und Mistral-MCP-Slices | Must | 13 | L | 5 | 2026-08-12 | 2026-08-26 | US-000011 geliefert; verbindliche Client-Matrix |
 | US-000007 | Trust Boundary: Provider-Consent und Datenfluss | Must | 8 | L | 5 | 2026-08-12 | 2026-08-26 | US-000001; ADR-000004 |
-| US-000003 | kontrollierte Mutationen: Restumfang | Must | 13 | L | 6 | 2026-08-26 | 2026-09-09 | US-000014; Budgetentscheidung für höhere Autonomie |
+| US-000003 | kontrollierte Mutationen: Restumfang | Must | 26 | XL | 6 | 2026-08-26 | 2026-09-09 | US-000014; verbindliche 60/60-Budget-Policy für höhere Autonomie |
 | US-000006 | Wissenskompilierung und Vorlagen | Must | 13 | L | 7 | 2026-09-09 | 2026-09-23 | US-000003, US-000005 |
 | US-000002 | Suche: semantisch und Anhänge | Must | 13 | L | 8 | 2026-09-23 | 2026-10-07 | US-000012; Windows-Vector-/Extraktionsentscheidung |
 | US-000004 | Exploration: visuelle Graphansicht | Must | 8 | L | 8 | 2026-09-23 | 2026-10-07 | US-000013, US-000005 |
@@ -64,6 +64,7 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
 | Sprint | Betroffene ID | Ursprünglich geplant | Tatsächlich | Grund |
 |---:|---|---|---|---|
 | 5 | US-000001, US-000007 | 21 SP | 26 SP | Threat-Model, Negativmatrix sowie Consent- und Accessibility-Abnahme sind zusätzlich verbindlich. |
+| 6 | US-000003 | 13 SP | 26 SP | Die entschiedene Human-on/out-Policy verlangt serverseitige Budgetdurchsetzung, Pause, Audit/Rollback und vollständige Sicherheits- sowie UI-Abnahme. |
 | 1–4 | RM-000001 | Keine Roadmap vorhanden | Historische Liefer-Slices nachträglich eingeordnet | Roadmap-Pflicht wurde vor Sprint 5 nachgezogen. |
 
 ## Offene Annahmen
@@ -73,8 +74,12 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
 - Mistral wird ausschließlich über einen nutzerverwalteten Connector geplant; das Produkt
   speichert keine Provider-Credentials. Provider-Hinweise werden versioniert mit Quelle und
   Prüfdatum gepflegt; ohne gültige Consent-Quittung bleibt jede Übertragung gesperrt.
-- Höhere Autonomiestufen und die Windows-Vector-/Anhangsextraktionsentscheidung bleiben
-  separate, vor ihren jeweiligen Sprints zu klärende Risiken; sie blockieren Sprint 5 nicht.
+- Für Sprint 6 gelten je Autonomiestufe maximal 60 Markdown-Erstellungen/-Aktualisierungen
+  in 60 Minuten. Beide Modi laufen höchstens eine Stunde; Löschungen, Verschiebungen und
+  Umbenennungen sind automatisch ausgeschlossen. Budgetende, Ablauf oder Pause sperren neue
+  automatische Mutationen sofort.
+- Die Windows-Vector-/Anhangsextraktionsentscheidung bleibt ein separates, vor Sprint 8 zu
+  klärendes Risiko.
 
 ## Definition of Done
 
@@ -120,4 +125,11 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
 
 ---
 
-*Erstellt von: BA-Agent | Datum: 2026-08-12 | Version: 1.0*
+*Erstellt von: BA-Agent | Datum: 2026-08-13 | Version: 1.1*
+
+## Änderungshistorie
+
+| Version | Datum | Änderung | Agent |
+|---|---|---|---|
+| 1.1 | 2026-08-13 | Sprint-6-Aufwand und verbindliche Autonomie-Budget-Policy präzisiert | BA+FE+BE |
+| 1.0 | 2026-08-12 | Initiale Vorausplanung für Sprint 5–11 | BA |

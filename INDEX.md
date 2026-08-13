@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-13 | Phase: DONE
+Letzte Aktualisierung: 2026-08-13 | Phase: REFINEMENT
 
 ## Aktive Artefakte
 
@@ -10,10 +10,10 @@ Letzte Aktualisierung: 2026-08-13 | Phase: DONE
 | `discovery/CON-000001-second-brain.md` | CON-000001 | 1.0 | APPROVED | PM | Bindende Projekt-Constitution |
 | `discovery/DECISIONS.md` | DECISIONS | 1.5 | ACTIVE | PM+MW | Entscheidungsprotokoll einschließlich Remote-Provider- und Consent-Terminologie |
 | `requirements/REQ-000001-product-requirements.md` | REQ-000001 | 1.0 | APPROVED | BA | Produktanforderungen, NFRs und Story Map |
-| `requirements/RM-000001-roadmap.md` | RM-000001 | 1.0 | APPROVED | BA | Gesamt-Roadmap mit Vorausplanung für Sprint 5–11 |
+| `requirements/RM-000001-roadmap.md` | RM-000001 | 1.1 | APPROVED | BA | Gesamt-Roadmap mit verbindlicher Sprint-6-Autonomie-Budget-Policy |
 | `requirements/US-000001-installation-and-mcp-setup.md` | US-000001 | 1.0 | APPROVED | BA | Installation, Vault-Auswahl und MCP-Einrichtung |
 | `requirements/US-000002-read-search-and-citations.md` | US-000002 | 1.0 | APPROVED | BA | Lesen, Suche, Quellen und Anhänge |
-| `requirements/US-000003-controlled-mutations.md` | US-000003 | 1.0 | APPROVED | BA | Kontrollierte Mutationen und Rollback |
+| `requirements/US-000003-controlled-mutations.md` | US-000003 | 1.1 | APPROVED | BA | Kontrollierte Mutationen mit 60/60-Autonomie-Budgets und Rollback |
 | `requirements/US-000004-knowledge-graph-exploration.md` | US-000004 | 1.0 | APPROVED | BA | Knowledge Graph und Exploration |
 | `requirements/US-000005-incremental-local-index.md` | US-000005 | 1.0 | APPROVED | BA | Lokale inkrementelle Indexierung |
 | `requirements/US-000006-knowledge-compilation.md` | US-000006 | 1.0 | APPROVED | BA | Wissenskompilierung und Vorlagen |
@@ -40,6 +40,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: DONE
 | `sprints/SP-000004-sprint-3-relationships.md` | SP-000004 | 1.0 | APPROVED | BA+FE+BE | Sprint-3-Backlog für lokale Relationship-Exploration |
 | `sprints/SP-000005-sprint-4-controlled-mutations.md` | SP-000005 | 1.0 | APPROVED | BA+FE+BE | Sprint-4-Backlog für kontrollierte Ein-Datei-Mutationen |
 | `sprints/SP-000006-sprint-5-remote-clients-and-consent.md` | SP-000006 | 1.0 | APPROVED | BA+FE+BE | Sprint-5-Backlog für Remote-Clients und minimierten Einmal-Consent |
+| `sprints/SP-000007-sprint-6-autonomie-budgets.md` | SP-000007 | 1.0 | APPROVED | BA+FE+BE | Sprint-6-Backlog für aktivierbare Autonomiestufen und 60/60-Mutationsbudget |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
@@ -144,9 +145,9 @@ Letzte Aktualisierung: 2026-08-13 | Phase: DONE
 
 ## In Bearbeitung
 
-Sprint 4 ist als `v0.4.0` veröffentlicht. Sprint 5 ist dokumentiert und abgeschlossen:
-Der Providertransfer ist an einen serverseitig persistierten, einmalig verbrauchten Review
-gebunden. Der aktive Obsidian-Vault wird im Setup automatisch übernommen.
+Sprint 5 ist dokumentiert und abgeschlossen. Sprint 6 ist verfeinert: Human-on und
+Human-out sind bewusst aktivierbar und auf 60 Markdown-Erstellungen/-Aktualisierungen in
+60 Minuten begrenzt. Löschungen bleiben automatisch ausgeschlossen.
 
 ## Übergabe: BE → QA — zweiter BUG-000005-Fix
 

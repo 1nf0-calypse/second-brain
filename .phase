@@ -3,14 +3,14 @@
 # Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
 
 project: second-brain
-current-phase: DONE
-previous-phase: DOCUMENTATION
+current-phase: REFINEMENT
+previous-phase: DONE
 phase-started: 2026-08-13
-sprint: 5
-last-agent: MW
-last-artifact: RN-000005
+sprint: 6
+last-agent: BA+FE+BE
+last-artifact: SP-000007
 approval-source: transition-command
-approval-command: /manual second-brain 5
+approval-command: /refine second-brain 6
 approved-artifacts: [RM-000001@1.0, ADR-000006@1.0, UX-000003@1.0, SP-000006@1.0, TP-000006@1.1]
 worktree-path: projects/second-brain/.worktrees/sprint-5
 worktree-branch: feature/sprint-5
@@ -299,3 +299,7 @@ history:
     started: 2026-08-13
     completed: 2026-08-13
     artifacts: [DOC-000006, RN-000005]
+  - phase: REFINEMENT
+    started: 2026-08-13
+    completed: 2026-08-13
+    artifacts: [US-000003@1.1, RM-000001@1.1, SP-000007]
