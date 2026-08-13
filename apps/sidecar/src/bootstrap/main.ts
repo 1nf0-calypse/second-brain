@@ -1,5 +1,5 @@
-// Beschreibung: Sidecar-Startpunkt für MCP, Index-, Lese- und bestätigte Mutationsoperationen.
-// Artefakte:    US-000001; US-000007; ADR-000006; BUG-000007; BUG-000008
+// Beschreibung: Sidecar-Startpunkt für MCP, Index-, Lese-, Mutations- und Autonomieoperationen.
+// Artefakte:    US-000001; US-000003; US-000007; ADR-000004; ADR-000006
 // Agent:        BE — 2026-08-13
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -118,7 +118,11 @@ if (!vaultRoot) {
       process.argv.includes('--node-detail') ||
       process.argv.includes('--prepare-mutation') ||
       process.argv.includes('--confirm-mutation') ||
-      process.argv.includes('--prepare-rollback')
+      process.argv.includes('--prepare-rollback') ||
+      process.argv.includes('--activate-autonomy') ||
+      process.argv.includes('--autonomy-status') ||
+      process.argv.includes('--pause-autonomy') ||
+      process.argv.includes('--autonomous-mutation')
     ) {
       await mkdir(dirname(indexPath), { recursive: true });
       const index = new LocalIndex(indexPath);
@@ -160,6 +164,15 @@ if (!vaultRoot) {
           response = await mutations.prepareRollback(
             process.env['SECOND_BRAIN_AUDIT_ID'] ?? ''
           );
+        } else if (process.argv.includes('--activate-autonomy')) {
+          response = mutations.activateAutonomy(JSON.parse(process.env['SECOND_BRAIN_AUTONOMY_REQUEST'] ?? '{}'));
+        } else if (process.argv.includes('--autonomy-status')) {
+          response = mutations.autonomyStatus();
+        } else if (process.argv.includes('--pause-autonomy')) {
+          response = mutations.pauseAutonomy();
+        } else if (process.argv.includes('--autonomous-mutation')) {
+          response = await mutations.executeAutonomous(JSON.parse(process.env['SECOND_BRAIN_AUTONOMOUS_MUTATION'] ?? '{}'));
+          await index.synchronize(vaultRoot);
         } else {
           response = await mutations.confirm(
             process.env['SECOND_BRAIN_CONFIRMATION_TOKEN'] ?? ''

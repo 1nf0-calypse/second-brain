@@ -34,6 +34,45 @@ async function fixture(now = Date.now()): Promise<{
 }
 
 describe('MutationService', () => {
+  it('activates both autonomy modes only with the fixed one-hour, sixty-mutation server budget', async () => {
+    const { service } = await fixture();
+    expect(() => service.activateAutonomy({ mode: 'human-on', reviewed: false })).toThrow();
+    expect(service.activateAutonomy({ mode: 'human-on', reviewed: true })).toMatchObject({
+      mode: 'human-on', active: true, remainingMutations: 60
+    });
+    expect(service.activateAutonomy({ mode: 'human-out', reviewed: true })).toMatchObject({
+      mode: 'human-out', active: true, remainingMutations: 60
+    });
+    service.close();
+  });
+
+  it('claims at most sixty automatic Markdown writes and pauses once the budget is exhausted', async () => {
+    const { root, service } = await fixture();
+    service.activateAutonomy({ mode: 'human-out', reviewed: true });
+    await Promise.all(Array.from({ length: 60 }, (_, index) =>
+      service.executeAutonomous({ relativePath: `Auto-${index}.md`, content: `# ${index}` })
+    ));
+    expect(service.autonomyStatus()).toMatchObject({ active: false, paused: true, usedMutations: 60, remainingMutations: 0 });
+    await expect(service.executeAutonomous({ relativePath: 'Overflow.md', content: '# no' }))
+      .rejects.toMatchObject({ code: 'AUTONOMY_BUDGET_EXHAUSTED' });
+    await expect(readFile(join(root, 'Overflow.md'), 'utf8')).rejects.toMatchObject({ code: 'ENOENT' });
+    service.close();
+  });
+
+  it('blocks automatic writes after pause or expiry without trusting a client mode', async () => {
+    const clockFixture = await fixture(1_000);
+    const { service } = clockFixture;
+    service.activateAutonomy({ mode: 'human-on', reviewed: true });
+    expect(service.pauseAutonomy()).toMatchObject({ active: false, paused: true });
+    await expect(service.executeAutonomous({ relativePath: 'Paused.md', content: 'x' }))
+      .rejects.toMatchObject({ code: 'AUTONOMY_NOT_ACTIVE' });
+    service.activateAutonomy({ mode: 'human-out', reviewed: true });
+    clockFixture.advance(60 * 60 * 1_000 + 1);
+    await expect(service.executeAutonomous({ relativePath: 'Expired.md', content: 'x' }))
+      .rejects.toMatchObject({ code: 'AUTONOMY_NOT_ACTIVE' });
+    service.close();
+  });
+
   it('previews without changing and atomically confirms one update', async () => {
     const { root, service } = await fixture();
     await writeFile(join(root, 'Note.md'), 'before\n');

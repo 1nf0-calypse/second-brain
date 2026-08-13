@@ -1,6 +1,6 @@
-// Beschreibung: Capability-basiertes MCP-Gateway für Lesen und bestätigte Mutationen.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; ADR-000001; ADR-000004
-// Agent:        BE — 2026-07-31
+// Beschreibung: Capability-basiertes MCP-Gateway für Lesen, Mutationen und serverseitige Autonomie.
+// Artefakte:    US-000003; US-000011; US-000014; ADR-000001; ADR-000004
+// Agent:        BE — 2026-08-13
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
@@ -11,6 +11,8 @@ import {
   CONTRACT_VERSION,
   MutationConfirmRequestSchema,
   MutationPrepareRequestSchema,
+  AutonomyActivationRequestSchema,
+  AutonomousMutationRequestSchema,
   NodeDetailRequestSchema,
   RelationshipQueryRequestSchema,
   RollbackPrepareRequestSchema
@@ -159,6 +161,26 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
           additionalProperties: false
         }
       }
+      ,{
+        name: 'second_brain_activate_autonomy',
+        description: 'Activates a reviewed Human-on or Human-out policy for at most 60 Markdown creates or updates in one hour. Deletes are excluded.',
+        inputSchema: { type: 'object', properties: { mode: { type: 'string', enum: ['human-on', 'human-out'] }, reviewed: { type: 'boolean', const: true } }, required: ['mode', 'reviewed'], additionalProperties: false }
+      },
+      {
+        name: 'second_brain_autonomy_status',
+        description: 'Returns the server-owned autonomy mode, remaining budget, expiry and pause state.',
+        inputSchema: { type: 'object', properties: {}, additionalProperties: false }
+      },
+      {
+        name: 'second_brain_pause_autonomy',
+        description: 'Immediately blocks new automatic mutations and returns to human-in-the-loop confirmation.',
+        inputSchema: { type: 'object', properties: {}, additionalProperties: false }
+      },
+      {
+        name: 'second_brain_apply_autonomous_note_change',
+        description: 'Applies one allowed Markdown create or update only while the server-owned autonomy policy has remaining budget. Deletes, moves and renames are blocked.',
+        inputSchema: { type: 'object', properties: { relativePath: { type: 'string', minLength: 1 }, content: { type: 'string', maxLength: 2000000 } }, required: ['relativePath', 'content'], additionalProperties: false }
+      }
     ]
   }));
 
@@ -197,6 +219,23 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
       if (request.params.name === 'second_brain_prepare_note_change') {
         const input = MutationPrepareRequestSchema.parse(request.params.arguments ?? {});
         const result = await mutations.prepare(input.relativePath, input.content);
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_activate_autonomy') {
+        const input = AutonomyActivationRequestSchema.parse(request.params.arguments ?? {});
+        const result = mutations.activateAutonomy(input);
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_autonomy_status') {
+        return { content: [{ type: 'text' as const, text: JSON.stringify(mutations.autonomyStatus()) }] };
+      }
+      if (request.params.name === 'second_brain_pause_autonomy') {
+        return { content: [{ type: 'text' as const, text: JSON.stringify(mutations.pauseAutonomy()) }] };
+      }
+      if (request.params.name === 'second_brain_apply_autonomous_note_change') {
+        const input = AutonomousMutationRequestSchema.parse(request.params.arguments ?? {});
+        const result = await mutations.executeAutonomous(input);
+        await index.synchronize(canonicalVault);
         return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
       }
       if (

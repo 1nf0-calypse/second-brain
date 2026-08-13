@@ -1,9 +1,12 @@
-// Beschreibung: Laufzeitvalidierte Plugin-Schnittstelle für bestätigungspflichtige Notizänderungen.
-// Artefakte:    US-000014; ADR-000003; ADR-000004
-// Agent:        FE — 2026-07-31
+// Beschreibung: Laufzeitvalidierte Plugin-Schnittstelle für kontrollierte Notizänderungen und Autonomie.
+// Artefakte:    US-000003; US-000014; ADR-000003; ADR-000004
+// Agent:        FE — 2026-08-13
 import {
   MutationPreviewSchema,
   MutationResultSchema,
+  AutonomyStatusSchema,
+  type AutonomyMode,
+  type AutonomyStatus,
   type MutationPreview,
   type MutationResult
 } from '@second-brain/contracts';
@@ -12,6 +15,24 @@ export interface MutationTransport {
   prepareMutation(vaultRoot: string, relativePath: string, content: string): Promise<unknown>;
   confirmMutation(vaultRoot: string, token: string): Promise<unknown>;
   prepareRollback(vaultRoot: string, auditId: string): Promise<unknown>;
+  activateAutonomy(vaultRoot: string, mode: AutonomyMode): Promise<unknown>;
+  autonomyStatus(vaultRoot: string): Promise<unknown>;
+  pauseAutonomy(vaultRoot: string): Promise<unknown>;
+}
+
+/** Activates a reviewed server-owned autonomy policy. */
+export async function activateAutonomy(transport: MutationTransport, vaultRoot: string, mode: Extract<AutonomyMode, 'human-on' | 'human-out'>): Promise<AutonomyStatus> {
+  return AutonomyStatusSchema.parse(await transport.activateAutonomy(vaultRoot, mode));
+}
+
+/** Reads the authoritative local autonomy state. */
+export async function getAutonomyStatus(transport: MutationTransport, vaultRoot: string): Promise<AutonomyStatus> {
+  return AutonomyStatusSchema.parse(await transport.autonomyStatus(vaultRoot));
+}
+
+/** Pauses automatic mutations immediately. */
+export async function pauseAutonomy(transport: MutationTransport, vaultRoot: string): Promise<AutonomyStatus> {
+  return AutonomyStatusSchema.parse(await transport.pauseAutonomy(vaultRoot));
 }
 
 export async function prepareNoteChange(

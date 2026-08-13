@@ -29,7 +29,10 @@ describe('mutation client', () => {
         action: 'update', relativePath: 'Note.md',
         beforeHash: 'a'.repeat(64), afterHash: 'b'.repeat(64), changed: true
       }),
-      prepareRollback: vi.fn().mockResolvedValue({ ...preview, action: 'rollback' })
+      prepareRollback: vi.fn().mockResolvedValue({ ...preview, action: 'rollback' }),
+      activateAutonomy: vi.fn(),
+      autonomyStatus: vi.fn(),
+      pauseAutonomy: vi.fn()
     };
     await expect(prepareNoteChange(transport, 'C:\\vault', 'Note.md', 'after'))
       .resolves.toMatchObject({ readOnly: true, action: 'update' });
@@ -44,7 +47,10 @@ describe('mutation client', () => {
     const transport: MutationTransport = {
       prepareMutation: () => Promise.resolve({ ...preview, readOnly: false }),
       confirmMutation: () => Promise.resolve({}),
-      prepareRollback: () => Promise.resolve({})
+      prepareRollback: () => Promise.resolve({}),
+      activateAutonomy: () => Promise.resolve({}),
+      autonomyStatus: () => Promise.resolve({}),
+      pauseAutonomy: () => Promise.resolve({})
     };
     await expect(prepareNoteChange(transport, 'C:\\vault', 'Note.md', 'x')).rejects.toThrow();
     await expect(confirmNoteChange(transport, 'C:\\vault', preview.token)).rejects.toThrow();

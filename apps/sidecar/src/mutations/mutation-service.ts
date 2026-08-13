@@ -1,6 +1,6 @@
-// Beschreibung: Human-in-the-Loop-Vorschau, atomare Ein-Datei-Mutation, Audit und Rollback.
-// Artefakte:    US-000014; ADR-000003; ADR-000004
-// Agent:        BE — 2026-07-31
+// Beschreibung: Kontrollierte Mutationen mit Human-in/out-Policy, Audit und Rollback.
+// Artefakte:    US-000003; US-000014; ADR-000003; ADR-000004
+// Agent:        BE — 2026-08-13
 import { createHash, randomUUID } from 'node:crypto';
 import { lstat, mkdir, readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, extname, isAbsolute, relative, resolve } from 'node:path';
@@ -8,6 +8,10 @@ import { DatabaseSync } from 'node:sqlite';
 import {
   MutationPreviewSchema,
   MutationResultSchema,
+  AutonomyActivationRequestSchema,
+  AutonomyStatusSchema,
+  AutonomousMutationRequestSchema,
+  type AutonomyStatus,
   type ErrorCode,
   type MutationPreview,
   type MutationResult
@@ -16,6 +20,8 @@ import { VaultScopeError } from '../policy/vault-root.js';
 
 const TOKEN_TTL_MS = 10 * 60 * 1_000;
 const MAX_PENDING_PREVIEWS = 20;
+const MAX_AUTONOMOUS_MUTATIONS = 60;
+const AUTONOMY_DURATION_MS = 60 * 60 * 1_000;
 type Clock = () => number;
 type MutationFileOperations = {
   read(path: string): Promise<string | null>;
@@ -36,6 +42,7 @@ export class MutationError extends Error {
     public readonly code: Extract<
       ErrorCode,
       'MUTATION_CONFLICT' | 'MUTATION_WRITE_FAILED' | 'CONFIRMATION_INVALID'
+      | 'AUTONOMY_NOT_ACTIVE' | 'AUTONOMY_BUDGET_EXHAUSTED'
     >,
     message: string,
     cause?: unknown
@@ -72,6 +79,78 @@ export class MutationService {
   /** @returns Nichts. @throws SQLite-Fehler. @sideEffect Schließt den Audit-Speicher. */
   public close(): void {
     this.database.close();
+  }
+
+  /** Activates one explicitly reviewed automatic mutation policy for at most one hour. */
+  public activateAutonomy(input: unknown): AutonomyStatus {
+    const request = AutonomyActivationRequestSchema.parse(input);
+    const activatedAt = new Date(this.clock()).toISOString();
+    const expiresAt = new Date(this.clock() + AUTONOMY_DURATION_MS).toISOString();
+    this.database.exec('BEGIN IMMEDIATE');
+    try {
+      this.database.prepare('DELETE FROM autonomy_policy').run();
+      this.database.prepare(`
+        INSERT INTO autonomy_policy(mode, activated_at, expires_at, used_mutations, paused_at)
+        VALUES (?, ?, ?, 0, NULL)
+      `).run(request.mode, activatedAt, expiresAt);
+      this.database.exec('COMMIT');
+    } catch (error: unknown) {
+      this.database.exec('ROLLBACK');
+      throw error;
+    }
+    return this.autonomyStatus();
+  }
+
+  /** Returns the server-owned policy state; client supplied mode or budget is never trusted. */
+  public autonomyStatus(): AutonomyStatus {
+    const row = this.database.prepare('SELECT * FROM autonomy_policy LIMIT 1').get();
+    if (!row) return AutonomyStatusSchema.parse({ mode: 'human-in', active: false, paused: false, usedMutations: 0, remainingMutations: 60, activatedAt: null, expiresAt: null, message: 'Human-in-the-loop is active. Each change needs confirmation.' });
+    const used = Number(row['used_mutations']);
+    const expiresAt = String(row['expires_at']);
+    const paused = row['paused_at'] !== null;
+    const expired = Date.parse(expiresAt) <= this.clock();
+    const exhausted = used >= MAX_AUTONOMOUS_MUTATIONS;
+    const active = !paused && !expired && !exhausted;
+    return AutonomyStatusSchema.parse({
+      mode: String(row['mode']), active, paused: paused || expired || exhausted, usedMutations: used,
+      remainingMutations: Math.max(0, MAX_AUTONOMOUS_MUTATIONS - used),
+      activatedAt: String(row['activated_at']), expiresAt,
+      message: active ? `${MAX_AUTONOMOUS_MUTATIONS - used} automatic mutations remain until ${expiresAt}.` : paused ? 'Automation is paused. Each change needs confirmation.' : expired ? 'Automation expired after one hour. Each change needs confirmation.' : 'Automation paused because the mutation budget is exhausted.'
+    });
+  }
+
+  /** Pauses an active automatic policy before another mutation can claim its budget. */
+  public pauseAutonomy(): AutonomyStatus {
+    this.database.prepare('UPDATE autonomy_policy SET paused_at = ? WHERE paused_at IS NULL').run(new Date(this.clock()).toISOString());
+    return this.autonomyStatus();
+  }
+
+  /** Claims one server-side budget slot, then executes only the existing Markdown create/update path. */
+  public async executeAutonomous(input: unknown): Promise<MutationResult> {
+    const request = AutonomousMutationRequestSchema.parse(input);
+    const claimedAt = new Date(this.clock()).toISOString();
+    this.database.exec('BEGIN IMMEDIATE');
+    try {
+      const claim = this.database.prepare(`
+        UPDATE autonomy_policy SET used_mutations = used_mutations + 1
+        WHERE paused_at IS NULL AND expires_at > ? AND used_mutations < ?
+      `).run(claimedAt, MAX_AUTONOMOUS_MUTATIONS);
+      if (claim.changes !== 1) {
+        this.database.exec('ROLLBACK');
+        const status = this.autonomyStatus();
+        throw new MutationError(status.usedMutations >= MAX_AUTONOMOUS_MUTATIONS ? 'AUTONOMY_BUDGET_EXHAUSTED' : 'AUTONOMY_NOT_ACTIVE', status.message);
+      }
+      this.database.exec('COMMIT');
+    } catch (error: unknown) {
+      try { this.database.exec('ROLLBACK'); } catch { /* Transaction was already closed. */ }
+      throw error;
+    }
+    try {
+      return await this.commitAutomatic(request.relativePath, request.content);
+    } catch (error: unknown) {
+      this.database.prepare('UPDATE autonomy_policy SET used_mutations = MAX(used_mutations - 1, 0)').run();
+      throw error;
+    }
   }
 
   /**
@@ -241,9 +320,47 @@ export class MutationService {
         source_audit_id TEXT,
         created_at TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS autonomy_policy (
+        mode TEXT NOT NULL CHECK(mode IN ('human-on', 'human-out')),
+        activated_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        used_mutations INTEGER NOT NULL CHECK(used_mutations >= 0 AND used_mutations <= 60),
+        paused_at TEXT
+      );
       INSERT OR IGNORE INTO schema_migrations(version, applied_at)
       VALUES (5, datetime('now'));
     `);
+  }
+
+  /** Runs an automatic create/update through the same scope, hash, file and audit safeguards. */
+  private async commitAutomatic(relativePath: string, content: string): Promise<MutationResult> {
+    const target = await this.resolveMarkdownTarget(relativePath);
+    const before = await this.readExisting(target.absolutePath);
+    if (before === content) throw new MutationError('MUTATION_CONFLICT', 'The proposed content is unchanged.');
+    const preview = { action: before === null ? 'create' as const : 'update' as const, relativePath: target.relativePath, beforeHash: hashNullable(before), beforeContent: before, afterContent: content, sourceAuditId: null };
+    try {
+      // Re-read directly before the write so automation preserves the Human-in TOCTOU boundary.
+      if (hashNullable(await this.readExisting(target.absolutePath)) !== preview.beforeHash) {
+        throw new MutationError('MUTATION_CONFLICT', 'The note changed before the automatic mutation. Nothing was written.');
+      }
+      await this.fileOperations.write(target.absolutePath, content);
+    } catch (error: unknown) {
+      if (error instanceof MutationError) throw error;
+      throw new MutationError('MUTATION_WRITE_FAILED', 'The note could not be replaced. Your vault remains consistent.', error);
+    }
+    const auditId = randomUUID();
+    const afterHash = hashOf(content);
+    this.database.exec('BEGIN IMMEDIATE');
+    try {
+      this.database.prepare(`INSERT INTO mutation_audit(audit_id, action, relative_path, before_hash, after_hash, before_content, after_content, source_audit_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+        .run(auditId, preview.action, preview.relativePath, preview.beforeHash, afterHash, preview.beforeContent, preview.afterContent, null, new Date(this.clock()).toISOString());
+      this.database.exec('COMMIT');
+    } catch (error: unknown) {
+      this.database.exec('ROLLBACK');
+      await this.fileOperations.restore(target.absolutePath, before);
+      throw error;
+    }
+    return MutationResultSchema.parse({ auditId, action: preview.action, relativePath: preview.relativePath, beforeHash: preview.beforeHash, afterHash, changed: true });
   }
 
   private storePreview(input: {

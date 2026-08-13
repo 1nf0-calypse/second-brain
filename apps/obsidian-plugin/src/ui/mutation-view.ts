@@ -1,9 +1,12 @@
-// Beschreibung: Native Human-in-the-Loop-Ansicht für Vorschau, Bestätigung und Rollback.
-// Artefakte:    US-000014; UX-000001; ADR-000003
-// Agent:        FE — 2026-07-31
+// Beschreibung: Native Mutationsansicht für Human-in/out, Vorschau, Budget und Rollback.
+// Artefakte:    US-000003; US-000014; UX-000001; ADR-000003; ADR-000004
+// Agent:        FE — 2026-08-13
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import {
   confirmNoteChange,
+  activateAutonomy,
+  getAutonomyStatus,
+  pauseAutonomy,
   prepareNoteChange,
   prepareNoteRollback,
   type MutationTransport
@@ -37,6 +40,45 @@ export class MutationView extends ItemView {
     root.createEl('p', {
       text: 'Nothing is written until you inspect the preview and confirm it.'
     });
+
+    root.createEl('h2', { text: 'Automation mode' });
+    root.createEl('p', { text: 'Human-on and Human-out can create or update Markdown notes automatically: at most 60 changes in one hour. Deletes, moves, and renames are never automatic.' });
+    const modeLabel = root.createEl('label', { text: 'Automation mode' });
+    const mode = root.createEl('select', { attr: { id: 'second-brain-autonomy-mode', 'aria-label': 'Automation mode' } });
+    mode.createEl('option', { value: 'human-on', text: 'Human-on-the-loop' });
+    mode.createEl('option', { value: 'human-out', text: 'Human-out-of-the-loop' });
+    modeLabel.htmlFor = mode.id;
+    const reviewed = root.createEl('input', { attr: { id: 'second-brain-autonomy-reviewed', type: 'checkbox' } });
+    const reviewedLabel = root.createEl('label', { text: 'I understand this mode can change my vault without asking for every operation.' });
+    reviewedLabel.htmlFor = reviewed.id;
+    const activate = root.createEl('button', { text: 'Activate automation' });
+    activate.disabled = true;
+    const pause = root.createEl('button', { text: 'Pause automation' });
+    pause.disabled = true;
+    const autonomyStatus = root.createEl('p', { attr: { role: 'status', 'aria-live': 'polite', tabindex: '-1' } });
+
+    const renderAutonomy = (value: Awaited<ReturnType<typeof getAutonomyStatus>>): void => {
+      autonomyStatus.textContent = value.message;
+      pause.disabled = !value.active;
+      activate.disabled = !reviewed.checked;
+    };
+    const refreshAutonomy = async (): Promise<void> => renderAutonomy(await getAutonomyStatus(this.transport, this.vaultRoot));
+    reviewed.addEventListener('change', () => { activate.disabled = !reviewed.checked; });
+    activate.addEventListener('click', () => void (async () => {
+      activate.disabled = true;
+      try {
+        renderAutonomy(await activateAutonomy(this.transport, this.vaultRoot, mode.value as 'human-on' | 'human-out'));
+        reviewed.checked = false;
+      } catch (error: unknown) {
+        autonomyStatus.textContent = error instanceof Error ? error.message : 'Automation could not be activated.';
+      }
+      autonomyStatus.focus();
+    })());
+    pause.addEventListener('click', () => void (async () => {
+      try { renderAutonomy(await pauseAutonomy(this.transport, this.vaultRoot)); } catch (error: unknown) { autonomyStatus.textContent = error instanceof Error ? error.message : 'Automation could not be paused.'; }
+      autonomyStatus.focus();
+    })());
+    void refreshAutonomy().catch(() => { autonomyStatus.textContent = 'Automation status is unavailable. Each change still needs confirmation.'; });
 
     const pathLabel = root.createEl('label', { text: 'Vault-relative Markdown path' });
     const pathInput = root.createEl('input', {

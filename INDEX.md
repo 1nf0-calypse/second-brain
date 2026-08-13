@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-13 | Phase: REFINEMENT
+Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 
 ## Aktive Artefakte
 
@@ -142,12 +142,17 @@ Letzte Aktualisierung: 2026-08-13 | Phase: REFINEMENT
 | 2026-08-13 | Gate 7 (Sprint 5 Consent-Bugfix → Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
 | 2026-08-13 | Gate 8 (Sprint 5 Re-Review → Documentation) | PASS | 0 | 0 | 0 |
 | 2026-08-13 | Gate 9 (Sprint 5 Documentation → Done) | PASS | 0 | 0 | 0 |
+| 2026-08-13 | Gate 5.5 (Sprint 6 Implementierungs-Preflight) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
 Sprint 5 ist dokumentiert und abgeschlossen. Sprint 6 ist verfeinert: Human-on und
 Human-out sind bewusst aktivierbar und auf 60 Markdown-Erstellungen/-Aktualisierungen in
 60 Minuten begrenzt. Löschungen bleiben automatisch ausgeschlossen.
+
+Sprint 6 implementiert diese Policy serverseitig: Budget, Ablauf und Pause werden lokal
+persistiert und vor einem automatischen Write atomar beansprucht. Die native Ansicht zeigt
+Warnung, Aktivierung, Restbudget und Pause; QA prüft anschließend die vollständige Matrix.
 
 ## Übergabe: BE → QA — zweiter BUG-000005-Fix
 

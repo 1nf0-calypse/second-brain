@@ -17,6 +17,8 @@ export const ErrorCodeSchema = z.enum([
   'MUTATION_CONFLICT',
   'MUTATION_WRITE_FAILED',
   'CONFIRMATION_INVALID',
+  'AUTONOMY_NOT_ACTIVE',
+  'AUTONOMY_BUDGET_EXHAUSTED',
   'PROVIDER_NOT_APPROVED',
   'PROVIDER_SCOPE_MISMATCH',
   'CONSENT_REQUIRED',
@@ -229,6 +231,26 @@ export const RollbackPrepareRequestSchema = z.object({
   auditId: z.string().uuid()
 }).strict();
 
+export const AutonomyModeSchema = z.enum(['human-in', 'human-on', 'human-out']);
+export const AutonomyActivationRequestSchema = z.object({
+  mode: z.enum(['human-on', 'human-out']),
+  reviewed: z.literal(true)
+}).strict();
+export const AutonomyStatusSchema = z.object({
+  mode: AutonomyModeSchema,
+  active: z.boolean(),
+  paused: z.boolean(),
+  usedMutations: z.number().int().min(0).max(60),
+  remainingMutations: z.number().int().min(0).max(60),
+  activatedAt: z.string().datetime().nullable(),
+  expiresAt: z.string().datetime().nullable(),
+  message: z.string()
+}).strict();
+export const AutonomousMutationRequestSchema = z.object({
+  relativePath: z.string().trim().min(1),
+  content: z.string().max(2_000_000)
+}).strict();
+
 export type SetupRequest = z.infer<typeof SetupRequestSchema>;
 export type SetupResponse = z.infer<typeof SetupResponseSchema>;
 export type ProviderId = z.infer<typeof ProviderIdSchema>;
@@ -255,5 +277,9 @@ export type MutationPreview = z.infer<typeof MutationPreviewSchema>;
 export type MutationConfirmRequest = z.infer<typeof MutationConfirmRequestSchema>;
 export type MutationResult = z.infer<typeof MutationResultSchema>;
 export type RollbackPrepareRequest = z.infer<typeof RollbackPrepareRequestSchema>;
+export type AutonomyMode = z.infer<typeof AutonomyModeSchema>;
+export type AutonomyActivationRequest = z.infer<typeof AutonomyActivationRequestSchema>;
+export type AutonomyStatus = z.infer<typeof AutonomyStatusSchema>;
+export type AutonomousMutationRequest = z.infer<typeof AutonomousMutationRequestSchema>;
 export type ErrorCode = z.infer<typeof ErrorCodeSchema>;
 export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;

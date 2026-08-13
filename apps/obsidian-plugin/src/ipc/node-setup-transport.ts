@@ -1,6 +1,6 @@
 // Beschreibung: Lokaler Kindprozess-Transport mit operationsspezifischen Zeitlimits.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; BUG-000003; ADR-000001
-// Agent:        BE — 2026-07-31
+// Artefakte:    US-000003; US-000011; US-000014; BUG-000003; ADR-000001; ADR-000004
+// Agent:        BE — 2026-08-13
 import { execFile } from 'node:child_process';
 import {
   CONTRACT_VERSION,
@@ -178,6 +178,18 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
     return this.run('--prepare-rollback', vaultRoot, {
       SECOND_BRAIN_AUDIT_ID: auditId
     }, MUTATION_TIMEOUT_MS);
+  }
+
+  public activateAutonomy(vaultRoot: string, mode: 'human-on' | 'human-out'): Promise<unknown> {
+    return this.run('--activate-autonomy', vaultRoot, { SECOND_BRAIN_AUTONOMY_REQUEST: JSON.stringify({ mode, reviewed: true }) }, MUTATION_TIMEOUT_MS);
+  }
+
+  public autonomyStatus(vaultRoot: string): Promise<unknown> {
+    return this.run('--autonomy-status', vaultRoot, {}, MUTATION_TIMEOUT_MS);
+  }
+
+  public pauseAutonomy(vaultRoot: string): Promise<unknown> {
+    return this.run('--pause-autonomy', vaultRoot, {}, MUTATION_TIMEOUT_MS);
   }
 
   /**
