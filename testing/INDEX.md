@@ -1,6 +1,6 @@
 # Testing — Index
 
-Letzte Aktualisierung: 2026-08-12
+Letzte Aktualisierung: 2026-08-13
 
 ## Zweck
 
@@ -15,7 +15,7 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 | `TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
 | `TP-000004-sprint-3.md` | TP-000004 | 1.0 | APPROVED | QA | Sprint-3-Testplan für explizite lokale Beziehungen |
 | `TP-000005-sprint-4.md` | TP-000005 | 1.0 | APPROVED | QA | Sprint-4-Testplan für bestätigte Ein-Datei-Mutationen |
-| `TP-000006-sprint-5.md` | TP-000006 | 1.0 | APPROVED | QA | Sprint-5-Testplan für Remote-Clients und Einmal-Consent |
+| `TP-000006-sprint-5.md` | TP-000006 | 1.1 | REVIEW | QA | Nachtestplan für Remote-Clients, Einmal-Consent und Prozessgrenzen |
 | `TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Testlauf: automatisiert grün, Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |
@@ -30,5 +30,5 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 | `BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Altindex-Migration nativ nach vollständigem Obsidian-Neustart bestätigt |
 | `BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.6 | VERIFIZIERT | QA | Reale Windows-Sperre liefert stabil MUTATION_WRITE_FAILED |
 | `BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.3 | VERIFIZIERT | QA | Preview-Speichergrenze und Cleanup unabhängig bestätigt |
-| `BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | OFFEN | QA | Produktiver Consent-/Transferpfad fehlt |
-| `BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | OFFEN | QA | Remote-Endpoint-Test führt keinen Handshake aus |
+| `BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | BEHOBEN | FE+BE | Produktiver Consent-/Transferpfad an QA übergeben |
+| `BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | BEHOBEN | BE | Echter Remote-Handshake an QA übergeben |

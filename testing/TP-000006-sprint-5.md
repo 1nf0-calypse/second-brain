@@ -1,13 +1,13 @@
 ---
 id: TP-000006
 title: Testplan Second Brain Sprint 5
-version: 1.0
-status: APPROVED
+version: 1.1
+status: REVIEW
 author-agent: QA (QA Engineer)
-date: 2026-08-12
+date: 2026-08-13
 project: second-brain
 sprint: 5
-based-on: US-000001, US-000007, UX-000003, SP-000006, ADR-000006, CON-000001
+based-on: US-000001, US-000007, UX-000003, SP-000006, ADR-000006, CON-000001, BUG-000007, BUG-000008
 supersedes: —
 superseded-by: —
 ---
@@ -70,13 +70,15 @@ Fake-Adapter-Tests nicht, blockiert aber die endgültige reale Client-Kompatibil
 | `tests/integration/node-setup-transport.test.ts` | echter Sidecar-Prozess und Remote-Endpoint-Inspektion | vorhanden; Remote-Fall ergänzt |
 | `tests/e2e/setup-flow.test.ts` | typisierter Plugin-/Setup-Vertrag | vorhanden |
 | `tests/e2e/setup.spec.ts` | bestehende Setup-Regression | vorhanden |
-| `tests/e2e/remote-consent.spec.ts` | Provider-Setup, Consent, stale/error, A11y | vor `/test-run` zu erstellen |
-| `tests/e2e/pages/remote-consent.page.ts` | stabiler Page-Object-Clickpfad | vor `/test-run` zu erstellen |
+| `tests/e2e/remote-consent.spec.ts` | Provider-Setup, Consent, Payload-Invalidierung, Cancel, Disconnect und A11y | vorhanden; Browser-Harness-Evidenz |
+| `tests/e2e/pages/remote-consent.page.ts` | stabiler Page-Object-Clickpfad | vorhanden; `data-testid`-basiert |
 
-Der Codegraph zeigt `ConsentService.confirm` ohne produktiven Aufrufer außerhalb seiner
-Klasse. Der Testlauf muss deshalb unterscheiden zwischen isoliert bestandener Service-Logik
-und vollständig erreichbarem Nutzerpfad. Ein fehlender öffentlicher Prepare-/Confirm-Pfad
-ist mindestens MAJOR; fehlt dadurch die vorgeschriebene bewusste Bestätigung, ist er BLOCKER.
+`ConsentService.confirm` wird im produktiven CLI-Branch `--provider-transfer` aufgerufen.
+Da der Graph Top-Level-CLI-Verzweigungen nicht zuverlässig als Call-Kanten modelliert, ersetzt
+dies keine Prozessgrenzenprüfung: Der Testlauf trennt Service-Unit-Test, Node-Transport,
+Browser-Harness und echte Obsidian-/Provider-Abnahme. Ein fehlender öffentlicher
+Prepare-/Confirm-Pfad ist mindestens MAJOR; fehlt dadurch die bewusste Bestätigung, ist er
+BLOCKER.
 
 ### 3.3 Playwright-Fälle
 
@@ -86,7 +88,7 @@ ist mindestens MAJOR; fehlt dadurch die vorgeschriebene bewusste Bestätigung, i
 | E2E-000502 | ungültiger Endpoint/Scope bleibt deaktiviert und liefert sichere Recovery | Error | P0 |
 | E2E-000503 | Review zeigt Provider, Zweck, Operation, Exzerpt, Quellen-ID und Ausschlüsse | Happy Path | P0 |
 | E2E-000504 | `Allow this transfer once` bleibt bis zur Review-Checkbox deaktiviert | Security/A11y | P0 |
-| E2E-000505 | Payload-/Policy-Änderung erzeugt `Consent stale`, Replay sendet nichts | Error | P0 |
+| E2E-000505 | Payload-Änderung invalidiert die Checkbox; Policy-Drift erzeugt `CONSENT_EXPIRED`; Replay sendet nichts | Error | P0 |
 | E2E-000506 | Fokusfolge, zugängliche Namen und `aria-live` bestehen bei 320 px/200 % | Accessibility | P1 |
 
 Der HTML-Report wird gemäß `playwright.config.ts` unter `testing/playwright-report/`
@@ -103,7 +105,7 @@ versioniert. Der Browserlauf ist bereits `headless: false`; kein doppelter Headl
 | TC-000505 | P0 | Handshake mit breiteren oder fehlenden Scopes simulieren. | Erwartete/gefundene Scopes getrennt; Verbindung bleibt deaktiviert. |
 | TC-000506 | P0 | Exzerpt enthält Anweisungen für Shell, Prozess, Codeausführung und Scope-Erweiterung → Transfer vorbereiten. | Text bleibt sichtbarer Payload; keine Fähigkeit, Toolliste oder Berechtigung ändert sich. |
 | TC-000507 | P0 | Transfer mit einem synthetischen Exzerpt vorbereiten → Review ohne Checkbox prüfen → Checkbox aktivieren → einmal erlauben. | Exakter Payload und Ausschlüsse sichtbar; Button vorher deaktiviert; genau ein Adapteraufruf danach. |
-| TC-000508 | P0 | Nach Preview Text, Provider oder Policy-Version ändern; alten Token bestätigen. | `Consent stale`; kein Netzwerkaufruf; nur Neuprüfung oder Abbruch möglich. |
+| TC-000508 | P0 | Nach Review Text oder Provider ändern; Policy-Version im Sidecar auf veraltet setzen und den alten Transfer auslösen. | Checkbox/alter Token sind ungültig; `CONSENT_EXPIRED` wird ohne entfernte Details gezeigt; kein Netzwerkaufruf; nur Neuprüfung oder Abbruch möglich. |
 | TC-000509 | P0 | Erfolgreichen Token erneut verwenden; abgelaufenen Token verwenden; Vorschau abbrechen. | Replay, Ablauf und Abbruch senden nichts; sichere Meldung ohne Inhalt/Secret. |
 | TC-000510 | P1 | Erfolgreiche Quittung und Disconnect prüfen. | Quittung enthält Metadaten/Quellen-IDs, aber keinen Notiztext; Widerruf wird angezeigt und gespeichert. |
 | TC-000511 | P0 | Über MCP Shell-, Prozess-, Code- und Pfadaußerhalb-Anfragen senden. | Werkzeug fehlt oder verweigert; keine fremden Daten; sichere inhaltsarme Diagnose. |
@@ -119,11 +121,11 @@ Statuswerte werden erst in TR-000008 befüllt: ⬜ nicht getestet, ✅ bestanden
 | SEC-000501 | Prompt-Injection im Exzerpt | bleibt inert; keine Scope-/Tooländerung |
 | SEC-000502 | Shell/Prozess/Code als MCP-Tool | nicht angeboten bzw. stabil verweigert |
 | SEC-000503 | Vollvault, Index, Pfad, Dateiname, Anhang, Secret, Audit/Diagnose im Request | striktes Schema verwirft Request vor Adapteraufruf |
-| SEC-000504 | HTTP statt HTTPS oder Provider-/Endpoint-Mismatch | Handshake abgelehnt, `connected: false` |
+| SEC-000504 | HTTP, URL mit eingebettetem Credential, fehlender/zusätzlicher Scope | Handshake abgelehnt beziehungsweise `connected: false`; keine Secret-Offenlegung |
 | SEC-000505 | Token-Replay, Ablauf, unbekannter Token | kein Adapteraufruf; `CONSENT_REQUIRED/EXPIRED` |
 | SEC-000506 | Payload-/Policy-Drift nach Review | Hash/Version ungültig; frische Review erforderlich |
 | SEC-000507 | Adapterfehler nach Confirm | keine falsche Erfolgsquittung, keine Doppelübermittlung |
-| SEC-000508 | Receipt-/Log-Inspektion | kein Exzerpt, Credential, Pfad, Dateiname oder Diagnosedatum |
+| SEC-000508 | Receipt-/Log-Inspektion | kein Exzerpt, Credential, Pfad, Dateiname oder Diagnosedaten; erlaubt sind nur Receipt-Metadaten und pseudonyme Quellen-IDs |
 
 ## 6. Performance und Stabilität
 
@@ -141,7 +143,7 @@ reproduzierbare Ausgangsmessungen statt erfundener Grenzwerte.
 
 | Risiko | Schwere | Behandlung |
 |---|---|---|
-| Consent-Service besitzt laut Graph keinen produktiven Aufrufer | BLOCKER-Kandidat | E2E-000503–505 und TC-000507 verpflichtend; bei Nichterreichbarkeit BUG anlegen |
+| CLI-Top-Level-Branch ist im Codegraph nicht als Call-Kante sichtbar | MAJOR | `--provider-transfer` über echten Node-Kindprozess mit Fake-HTTPS-MCP abnehmen; Browser-Harness nicht als Ersatz werten |
 | Browser-Harness ist nicht Obsidian | MAJOR | TC-000501–512 im echten Desktop-Host |
 | Reale Provider-Workspaces/Tunnel sind nutzerverwaltet | MAJOR | bei Fehlen CONDITIONAL statt fiktivem PASS; Contract-/Fake-Adapter-Evidenz getrennt |
 | Providerquelle kann veralten | MAJOR | URL, Prüfdatum und Policy-Version vor Abnahme prüfen |
@@ -160,6 +162,8 @@ als klar begründete externe Auflage in `CONDITIONAL` dokumentiert ist.
 - [x] Performance-Baselines haben konkrete Methoden; fehlendes Budget ist dokumentiert.
 - [x] Codegraph-Lücke und externe Client-Voraussetzungen sind als Risiken sichtbar.
 - [x] Automatisierte Boundary-Tests für Ablauf, Replay, Schema und Endpoint ergänzt.
+- [x] Nach BUG-000007/000008 auf vorhandene Remote-Consent-Spec, POM und Prozessgrenze aktualisiert.
+- [x] Policy-Stale und zusätzlicher Scope als eigenständige P0-Nachtests präzisiert.
 - [x] Keine offene Testplanungsfrage blockiert `/test-run`.
 - [x] Constitution, ADR-000006 und Sprint-Nicht-Ziele bleiben eingehalten.
 
@@ -167,7 +171,7 @@ als klar begründete externe Auflage in `CONDITIONAL` dokumentiert ist.
 
 ## Übergabe: QA-Testplanung → QA-Testausführung
 
-**Datum:** 2026-08-12  
+**Datum:** 2026-08-13
 **Von:** QA Engineer (QA)  
 **An:** QA Engineer (QA)  
 **Nächster Befehl:** `/test-run second-brain 5`
@@ -176,14 +180,14 @@ als klar begründete externe Auflage in `CONDITIONAL` dokumentiert ist.
 
 | Artefakt-ID | Status | Pfad | Hinweise |
 |---|---|---|---|
-| TP-000006 | APPROVED | `testing/TP-000006-sprint-5.md` | 12 manuelle, 8 Security-, 6 E2E- und 4 Performance-Fälle |
-| Automatisierte Tests | erweitert | `tests/` | Ablauf, Schema, Endpoint-Mismatch und Sidecar-Remote-Inspektion |
-| Implementierung | committed | `apps/`, `packages/` | Branch `feature/sprint-5`, Commit `42a3236` |
+| TP-000006 | REVIEW | `testing/TP-000006-sprint-5.md` | Version 1.1; 12 manuelle, 8 Security-, 6 E2E- und 4 Performance-Fälle |
+| Automatisierte Tests | vorhanden | `tests/` | 79 Vitest-Tests, 16 sichtbare Playwright-Tests; Prozessgrenzen-Nachtest verbleibt |
+| Implementierung | committed | `apps/`, `packages/` | Branch `feature/sprint-5`, Commit `43586d5` |
 
 ### Kritische Informationen für Empfänger
 
-- `ConsentService.confirm` hat laut Codegraph noch keinen produktiven Aufrufer; der echte
-  Consent-Clickpfad ist deshalb P0 und darf nicht durch isolierte Unit-Tests ersetzt werden.
+- Der echte CLI-Branch ruft `ConsentService.confirm` auf; der Graph erfasst Top-Level-CLI-Logik
+  jedoch nicht als Call-Kante. P0 bleibt deshalb ein echter Node-Kindprozess statt Unit-Test.
 - Reale Provider-Abnahme benötigt nutzerverwalteten Workspace, Tunnel bzw. Connector.
 - Kein Test darf persönliche Vault-Daten oder Provider-Credentials verwenden.
 
@@ -199,9 +203,16 @@ Vollvault-Synchronisation und höhere Autonomiestufen.
 
 ### Empfehlung
 
-Zuerst Build/Vitest/Coverage, dann die neue Consent-E2E-Spec, anschließend Security- und
+Zuerst Build/Vitest/Coverage, dann die vorhandene Consent-E2E-Spec, anschließend Security- und
 Performance-Matrix sowie echte Obsidian-/Provider-P0-Pfade.
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-08-12 | Version: 1.0*
+## Änderungshistorie
+
+| Version | Datum | Änderung | Agent |
+|---|---|---|---|
+| 1.0 | 2026-08-12 | Erster Sprint-5-Testplan | QA |
+| 1.1 | 2026-08-13 | BUG-000007/000008-Fixstand, vorhandene E2E-Specs und Prozessgrenzen-Nachtest eingearbeitet | QA |
+
+*Erstellt von: QA-Agent | Datum: 2026-08-13 | Version: 1.1*
