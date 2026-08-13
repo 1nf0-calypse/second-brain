@@ -18,12 +18,12 @@ export const SETUP_VIEW_TYPE = 'second-brain-setup';
 
 export class SetupView extends ItemView {
   private statusElement: HTMLElement | undefined;
-  private vaultRoot = '';
 
   public constructor(
     leaf: WorkspaceLeaf,
     private readonly transport: SetupTransport,
-    private readonly sidecarEntry: string
+    private readonly sidecarEntry: string,
+    private readonly vaultRoot: string
   ) {
     super(leaf);
   }
@@ -51,19 +51,19 @@ export class SetupView extends ItemView {
     root.createEl('h1', { text: 'Set up Second Brain' });
     root.createEl('p', { text: 'Your vault and index stay on this device.' });
 
-    const label = root.createEl('label', { text: 'Obsidian vault folder' });
+    const label = root.createEl('label', { text: 'Current Obsidian vault folder' });
     const input = root.createEl('input', {
-      attr: { type: 'text', 'aria-describedby': 'second-brain-vault-help' }
+      attr: { type: 'text', value: this.vaultRoot, readonly: 'true', 'aria-describedby': 'second-brain-vault-help' }
     });
     label.htmlFor = 'second-brain-vault';
     input.id = 'second-brain-vault';
     root.createEl('p', {
-      text: 'Choose an existing readable vault. No files will be moved or changed.',
+      text: 'Second Brain uses the vault currently open in Obsidian. No files will be moved or changed.',
       attr: { id: 'second-brain-vault-help' }
     });
 
     const configuration = root.createEl('pre', {
-      text: 'Complete the vault step to generate the local configuration.'
+      text: JSON.stringify(createConfigurationPreview(this.vaultRoot, this.sidecarEntry), null, 2)
     });
     root.createEl('p', {
       text: 'Claude Desktop: open Settings → Developer → Edit Config. Merge the shown mcpServers entry into the existing top-level JSON object. Do not paste it as a second JSON object.'
@@ -75,13 +75,13 @@ export class SetupView extends ItemView {
     });
     const updateButton = actions.createEl('button', { text: 'Update local index' });
     const rebuildButton = actions.createEl('button', { text: 'Rebuild local index' });
-    copyButton.disabled = true;
-    testButton.disabled = true;
-    updateButton.disabled = true;
-    rebuildButton.disabled = true;
+    copyButton.disabled = false;
+    testButton.disabled = false;
+    updateButton.disabled = false;
+    rebuildButton.disabled = false;
 
     this.statusElement = root.createEl('p', {
-      text: 'Setup not started.',
+      text: 'Current vault selected. Test the local service when ready.',
       attr: { role: 'status', 'aria-live': 'polite', tabindex: '-1' }
     });
     root.createEl('p', {
@@ -225,17 +225,7 @@ export class SetupView extends ItemView {
       });
     });
 
-    input.addEventListener('change', () => {
-      this.vaultRoot = input.value.trim();
-      const config = createConfigurationPreview(this.vaultRoot, this.sidecarEntry);
-      configuration.textContent = JSON.stringify(config, null, 2);
-      copyButton.disabled = this.vaultRoot.length === 0;
-      testButton.disabled = this.vaultRoot.length === 0;
-      updateButton.disabled = this.vaultRoot.length === 0;
-      rebuildButton.disabled = this.vaultRoot.length === 0;
-      updateTransferState();
-      this.setStatus('Vault selected. Test the local service, then complete the Claude Desktop steps.');
-    });
+    updateTransferState();
     copyButton.addEventListener('click', () => {
       void navigator.clipboard.writeText(configuration.textContent ?? '').then(() => {
         this.setStatus('Configuration copied. Claude Desktop is not connected yet.');

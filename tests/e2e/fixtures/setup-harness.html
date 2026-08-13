@@ -16,18 +16,24 @@
     <main>
       <h1>Set up Second Brain</h1>
       <p>Your vault and index stay on this device.</p>
-      <label for="vault">Obsidian vault folder</label>
-      <input id="vault" data-testid="vault-root" aria-describedby="help">
-      <p id="help">Choose an existing readable vault. No files will be moved or changed.</p>
-      <pre data-testid="configuration">Complete the vault step to generate the local configuration.</pre>
+      <label for="vault">Current Obsidian vault folder</label>
+      <input id="vault" data-testid="vault-root" value="C:\synthetic-vault" readonly aria-describedby="help">
+      <p id="help">Second Brain uses the vault currently open in Obsidian. No files will be moved or changed.</p>
+      <pre data-testid="configuration">{
+  "mcpServers": {
+    "second-brain": {
+      "command": "node"
+    }
+  }
+}</pre>
       <p>Claude Desktop: open Settings → Developer → Edit Config. Merge the shown mcpServers entry into the existing top-level JSON object. Do not paste it as a second JSON object.</p>
       <div class="actions">
-        <button data-testid="copy" disabled>Copy configuration</button>
-        <button data-testid="test" disabled>Test local service</button>
-        <button data-testid="update" disabled>Update local index</button>
-        <button data-testid="rebuild" disabled>Rebuild local index</button>
+        <button data-testid="copy">Copy configuration</button>
+        <button data-testid="test">Test local service</button>
+        <button data-testid="update">Update local index</button>
+        <button data-testid="rebuild">Rebuild local index</button>
       </div>
-      <p data-testid="setup-status" role="status" aria-live="polite" tabindex="-1">Setup not started.</p>
+      <p data-testid="setup-status" role="status" aria-live="polite" tabindex="-1">Current vault selected. Test the local service when ready.</p>
       <p>Second Brain does not require an additional LLM API key for this connection.</p>
       <section aria-labelledby="remote-title">
         <h2 id="remote-title">Remote client connection</h2>
@@ -168,24 +174,11 @@
         remoteStatus.textContent = 'Provider disconnected locally. Revoke the connector or tunnel credential in your provider workspace separately.';
         remoteStatus.focus();
       });
-      input.addEventListener('input', () => {
-        const ready = input.value.trim().length > 0;
-        copy.disabled = !ready;
-        test.disabled = !ready;
-        update.disabled = !ready;
-        rebuild.disabled = !ready;
-        updateTransfer();
-        config.textContent = ready
-          ? JSON.stringify({ mcpServers: { 'second-brain': { command: 'node' } } }, null, 2)
-          : 'Complete the vault step to generate the local configuration.';
-      });
       copy.addEventListener('click', () => {
         status.textContent = 'Configuration copied. Claude Desktop is not connected yet.';
       });
       test.addEventListener('click', () => {
-        status.textContent = input.value === 'invalid'
-          ? 'This folder is not a readable Obsidian vault. Choose another folder. No files were changed.'
-          : 'Local service ready. Verify the connector separately in Claude Desktop.';
+        status.textContent = 'Local service ready. Verify the connector separately in Claude Desktop.';
         status.focus();
       });
       update.addEventListener('click', () => {

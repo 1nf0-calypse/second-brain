@@ -39,12 +39,12 @@ export default class SecondBrainPlugin extends Plugin {
     );
     await mkdir(sidecarDirectory, { recursive: true });
     await writeFile(sidecarEntry, __SECOND_BRAIN_SIDECAR_SOURCE__, 'utf8');
-    this.registerView(
-      SETUP_VIEW_TYPE,
-      (leaf) => new SetupView(leaf, new NodeSetupTransport(sidecarEntry), sidecarEntry)
-    );
     const transport = new NodeSetupTransport(sidecarEntry);
     const vaultRoot = this.app.vault.adapter.getBasePath();
+    this.registerView(
+      SETUP_VIEW_TYPE,
+      (leaf) => new SetupView(leaf, transport, sidecarEntry, vaultRoot)
+    );
     this.registerView(
       SEARCH_VIEW_TYPE,
       (leaf) => new SearchView(leaf, transport, vaultRoot)

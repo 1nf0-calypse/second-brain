@@ -7,24 +7,24 @@ import { SetupPage } from './pages/setup.page.js';
 test('local service setup happy path', async ({ page }) => {
   const setup = new SetupPage(page);
   await setup.goto();
-  await setup.testConnection('C:\\synthetic-vault');
+  await setup.testConnection();
   await expect(page.getByTestId('setup-status')).toHaveText(
     'Local service ready. Verify the connector separately in Claude Desktop.'
   );
   await expect(page.getByTestId('setup-status')).toBeFocused();
 });
 
-test('invalid vault has a concrete recovery message', async ({ page }) => {
+test('current vault is visible but cannot be changed', async ({ page }) => {
   const setup = new SetupPage(page);
   await setup.goto();
-  await setup.testConnection('invalid');
-  await expect(page.getByTestId('setup-status')).toContainText('No files were changed.');
+  await expect(page.getByTestId('vault-root')).toHaveValue('C:\\synthetic-vault');
+  await expect(page.getByTestId('vault-root')).toHaveAttribute('readonly', '');
 });
 
 test('setup controls have accessible names and a live status', async ({ page }) => {
   const setup = new SetupPage(page);
   await setup.goto();
-  await expect(page.getByTestId('vault-root')).toHaveAccessibleName('Obsidian vault folder');
+  await expect(page.getByTestId('vault-root')).toHaveAccessibleName('Current Obsidian vault folder');
   await expect(page.getByTestId('copy')).toHaveAccessibleName('Copy configuration');
   await expect(page.getByTestId('test')).toHaveAccessibleName(
     'Test local service'
@@ -38,8 +38,6 @@ test('setup explains safe JSON merge and exposes index actions', async ({ page }
   const setup = new SetupPage(page);
   await setup.goto();
   await expect(page.getByText(/Do not paste it as a second JSON object/)).toBeVisible();
-  await page.getByTestId('vault-root').fill('C:\\synthetic-vault');
-
   await page.getByTestId('update').click();
   await expect(page.getByTestId('setup-status')).toContainText('0 changed');
   await page.getByTestId('rebuild').click();
@@ -51,7 +49,6 @@ test('320 px pane keeps both recovery actions visible', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   const setup = new SetupPage(page);
   await setup.goto();
-  await page.getByTestId('vault-root').fill('C:\\synthetic-vault');
   await expect(page.getByTestId('copy')).toBeVisible();
   await expect(page.getByTestId('test')).toBeVisible();
   await expect(page.getByTestId('update')).toBeVisible();

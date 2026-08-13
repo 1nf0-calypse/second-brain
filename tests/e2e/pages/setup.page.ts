@@ -20,13 +20,11 @@ export class SetupPage {
   }
 
   /**
-   * Wählt einen synthetischen Vault und startet den Verbindungstest.
-   * @param vaultRoot Synthetischer Eingabewert.
+   * Startet den Verbindungstest für den automatisch erkannten Vault.
    * @returns Promise nach Klick.
    * @throws Playwright-Interaktionsfehler.
    */
-  public async testConnection(vaultRoot: string): Promise<void> {
-    await this.page.getByTestId('vault-root').fill(vaultRoot);
+  public async testConnection(): Promise<void> {
     await this.page.getByRole('button', { name: 'Test local service' }).click();
   }
 }

@@ -17,7 +17,6 @@ export class RemoteConsentPage {
   }
 
   public async fillReview(): Promise<void> {
-    await this.page.getByTestId('vault-root').fill('C:\\synthetic-vault');
     await this.page.getByTestId('remote-source').fill('source_0001');
     await this.page.getByTestId('remote-excerpt').fill('Only this synthetic excerpt may leave the device.');
   }
