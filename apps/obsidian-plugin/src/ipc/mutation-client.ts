@@ -15,6 +15,7 @@ export interface MutationTransport {
   prepareMutation(vaultRoot: string, relativePath: string, content: string): Promise<unknown>;
   confirmMutation(vaultRoot: string, token: string): Promise<unknown>;
   prepareRollback(vaultRoot: string, auditId: string): Promise<unknown>;
+  executeAutonomousMutation(vaultRoot: string, relativePath: string, content: string): Promise<unknown>;
   activateAutonomy(vaultRoot: string, mode: AutonomyMode): Promise<unknown>;
   autonomyStatus(vaultRoot: string): Promise<unknown>;
   pauseAutonomy(vaultRoot: string): Promise<unknown>;
@@ -33,6 +34,18 @@ export async function getAutonomyStatus(transport: MutationTransport, vaultRoot:
 /** Pauses automatic mutations immediately. */
 export async function pauseAutonomy(transport: MutationTransport, vaultRoot: string): Promise<AutonomyStatus> {
   return AutonomyStatusSchema.parse(await transport.pauseAutonomy(vaultRoot));
+}
+
+/** Applies one server-authorized Markdown create or update without a second confirmation. */
+export async function executeAutonomousMutation(
+  transport: MutationTransport,
+  vaultRoot: string,
+  relativePath: string,
+  content: string
+): Promise<MutationResult> {
+  return MutationResultSchema.parse(
+    await transport.executeAutonomousMutation(vaultRoot, relativePath, content)
+  );
 }
 
 export async function prepareNoteChange(

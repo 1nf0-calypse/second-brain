@@ -5,6 +5,7 @@ import { ItemView, WorkspaceLeaf } from 'obsidian';
 import {
   confirmNoteChange,
   activateAutonomy,
+  executeAutonomousMutation,
   getAutonomyStatus,
   pauseAutonomy,
   prepareNoteChange,
@@ -55,11 +56,15 @@ export class MutationView extends ItemView {
     activate.disabled = true;
     const pause = root.createEl('button', { text: 'Pause automation' });
     pause.disabled = true;
+    const automatic = root.createEl('button', { text: 'Apply automatic create or update' });
+    automatic.hidden = true;
     const autonomyStatus = root.createEl('p', { attr: { role: 'status', 'aria-live': 'polite', tabindex: '-1' } });
 
     const renderAutonomy = (value: Awaited<ReturnType<typeof getAutonomyStatus>>): void => {
       autonomyStatus.textContent = value.message;
       pause.disabled = !value.active;
+      automatic.hidden = !value.active;
+      automatic.disabled = !value.active;
       activate.disabled = !reviewed.checked;
     };
     const refreshAutonomy = async (): Promise<void> => renderAutonomy(await getAutonomyStatus(this.transport, this.vaultRoot));
@@ -161,6 +166,19 @@ export class MutationView extends ItemView {
         pathInput.value.trim(),
         contentInput.value
       ));
+    }));
+
+    automatic.addEventListener('click', () => void run(async () => {
+      const result = await executeAutonomousMutation(
+        this.transport,
+        this.vaultRoot,
+        pathInput.value.trim(),
+        contentInput.value
+      );
+      const autonomy = await getAutonomyStatus(this.transport, this.vaultRoot);
+      renderAutonomy(autonomy);
+      status.textContent = `Automatic ${result.action} completed for ${result.relativePath}. ${autonomy.message}`;
+      status.focus();
     }));
 
     confirm.addEventListener('click', () => void run(async () => {

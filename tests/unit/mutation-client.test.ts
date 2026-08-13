@@ -4,6 +4,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   confirmNoteChange,
+  executeAutonomousMutation,
   prepareNoteChange,
   prepareNoteRollback,
   type MutationTransport
@@ -30,6 +31,11 @@ describe('mutation client', () => {
         beforeHash: 'a'.repeat(64), afterHash: 'b'.repeat(64), changed: true
       }),
       prepareRollback: vi.fn().mockResolvedValue({ ...preview, action: 'rollback' }),
+      executeAutonomousMutation: vi.fn().mockResolvedValue({
+        auditId: '22222222-2222-4222-8222-222222222222',
+        action: 'update', relativePath: 'Note.md',
+        beforeHash: 'a'.repeat(64), afterHash: 'b'.repeat(64), changed: true
+      }),
       activateAutonomy: vi.fn(),
       autonomyStatus: vi.fn(),
       pauseAutonomy: vi.fn()
@@ -41,6 +47,8 @@ describe('mutation client', () => {
     await expect(prepareNoteRollback(
       transport, 'C:\\vault', '22222222-2222-4222-8222-222222222222'
     )).resolves.toMatchObject({ action: 'rollback' });
+    await expect(executeAutonomousMutation(transport, 'C:\\vault', 'Note.md', 'after'))
+      .resolves.toMatchObject({ changed: true });
   });
 
   it('rejects malformed or non-read-only transport responses', async () => {
@@ -48,6 +56,7 @@ describe('mutation client', () => {
       prepareMutation: () => Promise.resolve({ ...preview, readOnly: false }),
       confirmMutation: () => Promise.resolve({}),
       prepareRollback: () => Promise.resolve({}),
+      executeAutonomousMutation: () => Promise.resolve({}),
       activateAutonomy: () => Promise.resolve({}),
       autonomyStatus: () => Promise.resolve({}),
       pauseAutonomy: () => Promise.resolve({})

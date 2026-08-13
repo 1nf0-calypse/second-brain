@@ -180,6 +180,16 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
     }, MUTATION_TIMEOUT_MS);
   }
 
+  public executeAutonomousMutation(
+    vaultRoot: string,
+    relativePath: string,
+    content: string
+  ): Promise<unknown> {
+    return this.run('--autonomous-mutation', vaultRoot, {
+      SECOND_BRAIN_AUTONOMOUS_MUTATION: JSON.stringify({ relativePath, content })
+    }, MUTATION_TIMEOUT_MS);
+  }
+
   public activateAutonomy(vaultRoot: string, mode: 'human-on' | 'human-out'): Promise<unknown> {
     return this.run('--activate-autonomy', vaultRoot, { SECOND_BRAIN_AUTONOMY_REQUEST: JSON.stringify({ mode, reviewed: true }) }, MUTATION_TIMEOUT_MS);
   }

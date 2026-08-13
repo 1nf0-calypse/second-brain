@@ -55,6 +55,11 @@ describe('MutationService', () => {
     expect(service.autonomyStatus()).toMatchObject({ active: false, paused: true, usedMutations: 60, remainingMutations: 0 });
     await expect(service.executeAutonomous({ relativePath: 'Overflow.md', content: '# no' }))
       .rejects.toMatchObject({ code: 'AUTONOMY_BUDGET_EXHAUSTED' });
+    expect(service.activateAutonomy({ mode: 'human-on', reviewed: true })).toMatchObject({
+      active: false, paused: true, usedMutations: 60, remainingMutations: 0
+    });
+    await expect(service.executeAutonomous({ relativePath: 'Reset-attempt.md', content: '# no' }))
+      .rejects.toMatchObject({ code: 'AUTONOMY_BUDGET_EXHAUSTED' });
     await expect(readFile(join(root, 'Overflow.md'), 'utf8')).rejects.toMatchObject({ code: 'ENOENT' });
     service.close();
   });

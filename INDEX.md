@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
+Letzte Aktualisierung: 2026-08-13 | Phase: TESTING
 
 ## Aktive Artefakte
 
@@ -148,6 +148,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: IMPLEMENTATION
 | 2026-08-13 | Gate 5.5 (Sprint 6 Implementierungs-Preflight) | PASS | 0 | 0 | 0 |
 | 2026-08-13 | Gate 7 (Sprint 6 Testing -> Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
 | 2026-08-13 | Gate 8 (Sprint 6 Review -> Implementation) | REQUEST_CHANGES | 0 | 3 | 0 |
+| 2026-08-13 | Gate 6 (Sprint 6 Review-Fix -> Testing) | PASS | 0 | 0 | 0 |
 
 ## In Bearbeitung
 
@@ -155,10 +156,10 @@ Sprint 5 ist dokumentiert und abgeschlossen. Sprint 6 ist verfeinert: Human-on u
 Human-out sind bewusst aktivierbar und auf 60 Markdown-Erstellungen/-Aktualisierungen in
 60 Minuten begrenzt. Löschungen bleiben automatisch ausgeschlossen.
 
-Sprint 6 ist nach dem Review zurück in der Implementierung: Reaktivierung muss das 60/60-
-Fenster respektieren, eine Pause auch bereits reservierte Writes sperren und die native
-Ansicht den automatischen Create-/Update-Pfad tatsächlich anbieten. Danach folgen Race-,
-Budget- und headed UI-Nachtests.
+Sprint 6 korrigiert die drei Review-Befunde: Reaktivierung bewahrt das laufende 60/60-
+Fenster, der finale Policy-Check linearisiert den Start eines automatischen Writes und die
+native Ansicht führt serverautorisierte Markdown-Create/Updates nun tatsächlich aus. Lint,
+84 Vitest- und 16 headed Playwright-Regressionen sind grün; QA prüft den Fix-Nachlauf.
 
 ## Übergabe: BE → QA — zweiter BUG-000005-Fix
 
