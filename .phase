@@ -7,10 +7,10 @@ current-phase: REVIEW
 previous-phase: TESTING
 phase-started: 2026-08-13
 sprint: 6
-last-agent: QA
-last-artifact: TR-000009
+last-agent: RV
+last-artifact: RV-000007
 approval-source: transition-command
-approval-command: /test-run second-brain 6
+approval-command: /review second-brain 6
 approved-artifacts: [RM-000001@1.1, ADR-000004@1.0, UX-000001@1.0, US-000003@1.1, SP-000007@1.0, TP-000007@1.0]
 worktree-path: projects/second-brain/.worktrees/sprint-6
 worktree-branch: feature/sprint-6

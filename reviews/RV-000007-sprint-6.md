@@ -1,8 +1,8 @@
 ---
 id: RV-000007
 title: Code Review Second Brain Sprint 6
-version: 1.3
-status: REQUEST_CHANGES
+version: 1.4
+status: CONDITIONAL
 author-agent: RV (Code Reviewer)
 date: 2026-08-13
 project: second-brain
@@ -17,8 +17,11 @@ superseded-by: —
 
 ## Entscheidung
 
-**REQUEST_CHANGES.** Nachtest und Re-Review bestätigen R6-001 bis R6-004. Ein MAJOR bleibt:
-Ein noch lebender, aber blockierter Sidecar-Prozess hält die Pause ohne Laufzeitgrenze fest.
+**CONDITIONAL.** Die finale Pause-Semantik löst die künstlich eingeführte In-flight-
+Wartekette auf: Pause sperrt atomar neue Claims, während ein bereits gestarteter Write
+konfliktgeschützt zu Ende läuft und auditiert wird. Es bestehen keine offenen technischen
+Code-Befunde. Die zwei verbleibenden MAJOR-Auflagen stammen aus TR-000009 und betreffen nur
+den dedizierten Autonomie-Harness sowie die native Obsidian-Abnahme.
 
 ## Befunde
 
@@ -139,6 +142,16 @@ Pause-Timeout speichern. Nach Ablauf muss der Claim fail-closed beendet und die 
 einer verständlichen Recovery-Statusantwort abgeschlossen werden. Einen Test für einen
 lebenden, blockierten Owner ergänzen.
 
+### Finale Bewertung: R6-004 und R6-005 entfallen
+
+Die vorherigen R6-004/R6-005-Fixes bauten auf der falschen Annahme auf, eine Pause müsse
+bereits gestartete asynchrone Dateischreibvorgänge abbrechen. Die verbindliche Policy fordert,
+dass **neue** automatische Mutationen sofort gesperrt werden. Der finale Code setzt diese
+Grenze am atomaren Claim (`mutation-service.ts:140-156`) und prüft sie nochmals vor dem Start
+des Dateiwrites (`:363-376`). Ein Write, der davor bereits gestartet wurde, wird nicht
+abgebrochen, sondern konfliktgeschützt auditiert. Damit existiert weder eine wartende
+In-flight-Sperre noch ein verwaister Claim-Recovery-Pfad.
+
 ### MAJOR R6-003: Die native Ansicht bietet keinen automatischen Schreibpfad
 
 **Stellen:** `apps/obsidian-plugin/src/ui/mutation-view.ts:44-81`, `:153-178`,
@@ -183,19 +196,20 @@ native Tastaturprüfung ergänzen.
   gemäß TR-000009 offen.
 - **R6-004 behoben:** Verwaiste Claims werden anhand des Prozessinhabers entfernt; der
   Budgetzähler wird nicht zurückgesetzt.
+- **R6-004/R6-005 ersetzt:** Die finale Policy benötigt keine In-flight-Ownership; der
+  neue Zwei-Service-Test beweist die sofortige Sperre neuer Claims bei fortlaufendem Write.
 
 ## Zusammenfassung
 
 | Schweregrad | Offen |
 |---|---:|
 | BLOCKER | 0 |
-| MAJOR | 1 |
+| MAJOR | 2 |
 | MINOR | 0 |
 | SUGGESTION | 0 |
 
-Die Testphase darf nicht als uneingeschränkte Sprint-Freigabe interpretiert werden. Nach dem
-Lease-/Timeout-Fix für blockierte Claims ist ein deterministischer Nachtest erforderlich; der
-dedizierte headed Autonomie-Flow bleibt zusätzlich eine QA-Auflage.
+Technisch ist Sprint 6 freigegeben. Für die uneingeschränkte Produktfreigabe bleiben die zwei
+QA-Auflagen aus TR-000009: dedizierter headed Autonomie-Flow und native Obsidian-Abnahme.
 
 ## Übergabe: RV -> FE+BE
 
@@ -207,6 +221,7 @@ dedizierte headed Autonomie-Flow bleibt zusätzlich eine QA-Auflage.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.4 | 2026-08-14 | Finale Pause-Semantik bestätigt; keine offenen Code-Befunde, zwei QA-Auflagen verbleiben | RV |
 | 1.3 | 2026-08-14 | R6-004 behoben; fehlende Lease für lebenden, blockierten Claim als R6-005 ergänzt | RV |
 | 1.2 | 2026-08-14 | R6-002 behoben; neuer Crash-/Recovery-Befund R6-004 | RV |
 | 1.1 | 2026-08-13 | R6-001 und R6-003 als behoben bestätigt; R6-002 wegen Commit-vor-Write weiterhin MAJOR | RV |
