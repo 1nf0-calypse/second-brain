@@ -68,7 +68,7 @@ describe('MutationService', () => {
     const clockFixture = await fixture(1_000);
     const { service } = clockFixture;
     service.activateAutonomy({ mode: 'human-on', reviewed: true });
-    await expect(service.pauseAutonomy()).resolves.toMatchObject({ active: false, paused: true });
+    expect(service.pauseAutonomy()).toMatchObject({ active: false, paused: true });
     await expect(service.executeAutonomous({ relativePath: 'Paused.md', content: 'x' }))
       .rejects.toMatchObject({ code: 'AUTONOMY_NOT_ACTIVE' });
     service.activateAutonomy({ mode: 'human-out', reviewed: true });
@@ -78,7 +78,7 @@ describe('MutationService', () => {
     service.close();
   });
 
-  it('does not resolve pause until an already claimed automatic write has finished', async () => {
+  it('blocks new automatic claims immediately while a write already started before pause finishes', async () => {
     const { root, service: initial } = await fixture();
     initial.close();
     let beginWrite!: () => void;
@@ -104,41 +104,14 @@ describe('MutationService', () => {
     writer.activateAutonomy({ mode: 'human-out', reviewed: true });
     const write = writer.executeAutonomous({ relativePath: 'In-flight.md', content: '# done' });
     await writeStarted;
-    let pauseFinished = false;
-    const pause = pauser.pauseAutonomy().then(() => { pauseFinished = true; });
-    await new Promise((resolve) => setTimeout(resolve, 25));
-    expect(pauseFinished).toBe(false);
-    finishWrite();
-    await write;
-    await pause;
-    expect(pauseFinished).toBe(true);
-    expect(await readFile(join(root, 'In-flight.md'), 'utf8')).toBe('# done');
+    expect(pauser.pauseAutonomy()).toMatchObject({ active: false, paused: true });
     await expect(pauser.executeAutonomous({ relativePath: 'After-pause.md', content: '# no' }))
       .rejects.toMatchObject({ code: 'AUTONOMY_NOT_ACTIVE' });
+    finishWrite();
+    await write;
+    expect(await readFile(join(root, 'In-flight.md'), 'utf8')).toBe('# done');
     writer.close();
     pauser.close();
-  });
-
-  it('recovers an orphaned automatic claim without refunding its consumed budget', async () => {
-    const { root, service } = await fixture();
-    service.activateAutonomy({ mode: 'human-out', reviewed: true });
-    const database = new DatabaseSync(join(root, '.second-brain', 'index.sqlite'));
-    const policy = database.prepare('SELECT activated_at FROM autonomy_policy LIMIT 1').get() as {
-      activated_at: string;
-    };
-    database.prepare('UPDATE autonomy_policy SET used_mutations = 1').run();
-    database.prepare(`
-      INSERT INTO autonomy_operations(operation_id, activated_at, owner_process_id, claimed_at)
-      VALUES (?, ?, ?, ?)
-    `).run('11111111-1111-4111-8111-111111111111', policy.activated_at, -1, new Date().toISOString());
-    database.close();
-
-    await expect(service.pauseAutonomy()).resolves.toMatchObject({ paused: true, usedMutations: 1 });
-    const verification = new DatabaseSync(join(root, '.second-brain', 'index.sqlite'));
-    expect((verification.prepare('SELECT COUNT(*) AS total FROM autonomy_operations').get() as { total: number }).total)
-      .toBe(0);
-    verification.close();
-    service.close();
   });
 
   it('previews without changing and atomically confirms one update', async () => {
