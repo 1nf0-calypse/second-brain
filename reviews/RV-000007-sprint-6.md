@@ -1,7 +1,7 @@
 ---
 id: RV-000007
 title: Code Review Second Brain Sprint 6
-version: 1.2
+version: 1.3
 status: REQUEST_CHANGES
 author-agent: RV (Code Reviewer)
 date: 2026-08-13
@@ -17,9 +17,8 @@ superseded-by: —
 
 ## Entscheidung
 
-**REQUEST_CHANGES.** Nachtest und Re-Review bestätigen R6-001, R6-002 und R6-003. Die
-Pause-Serialisierung führt jedoch einen neuen MAJOR-Ausfallpfad ein: Ein abgestürzter Sidecar-
-Prozess hinterlässt einen permanenten In-flight-Zähler, auf den jede spätere Pause endlos wartet.
+**REQUEST_CHANGES.** Nachtest und Re-Review bestätigen R6-001 bis R6-004. Ein MAJOR bleibt:
+Ein noch lebender, aber blockierter Sidecar-Prozess hält die Pause ohne Laufzeitgrenze fest.
 
 ## Befunde
 
@@ -113,6 +112,33 @@ Recovery beim Service-Start persistieren, oder mindestens verwaiste Claims vor e
 deterministisch als fehlgeschlagen zurückbuchen. Die Pause benötigt außerdem eine begrenzte,
 verständliche Recovery-Antwort. Einen Prozess-Abbruch-Test zwischen Claim und Cleanup ergänzen.
 
+### Nachtest zu R6-004: behoben durch `6718f0e`
+
+`autonomy_operations` speichert nun Claim-ID und Prozessinhaber. Die Pause entfernt Claims
+eines nicht mehr existierenden Prozesses, ohne dessen Budget zurückzugeben. Der Test
+`tests/integration/mutation-service.test.ts:122-143` bestätigt den Recovery-Pfad. R6-004 ist
+damit behoben.
+
+### MAJOR R6-005: Ein lebender, blockierter Sidecar hält Pause unbegrenzt fest
+
+**Stellen:** `apps/sidecar/src/mutations/mutation-service.ts:129-137`, `:559-570`,
+`apps/obsidian-plugin/src/ipc/node-setup-transport.ts:17,201-202`
+
+`pauseAutonomy()` pollt alle zehn Millisekunden, bis keine Operation mehr existiert. Recovery
+entfernt aber ausschließlich Claims, deren Prozess-ID nicht mehr lebt. Hängt ein Sidecar
+beispielsweise in einer Dateisystemoperation oder wird nicht sauber beendet, bleibt seine PID
+gültig und die Schleife endet nie. Der Plugin-Transport beendet den Aufruf erst nach 60
+Sekunden als generischen Timeout, während die pausierte Policy mit dem Claim weiterbesteht.
+
+**Reproduktion:** Einen automatischen Write in `fileOperations.write()` auf eine nie erfüllte
+Promise warten lassen. `pauseAutonomy()` markieren lassen und abwarten: Sie liefert selbst
+nach der Transport-Laufzeit kein Ergebnis, obwohl neue Claims bereits gesperrt sind.
+
+**Erwartete Korrektur:** Pro Claim eine feste Lease/Deadline oder einen expliziten begrenzten
+Pause-Timeout speichern. Nach Ablauf muss der Claim fail-closed beendet und die Pause mit
+einer verständlichen Recovery-Statusantwort abgeschlossen werden. Einen Test für einen
+lebenden, blockierten Owner ergänzen.
+
 ### MAJOR R6-003: Die native Ansicht bietet keinen automatischen Schreibpfad
 
 **Stellen:** `apps/obsidian-plugin/src/ui/mutation-view.ts:44-81`, `:153-178`,
@@ -155,6 +181,8 @@ native Tastaturprüfung ergänzen.
 - **R6-003 behoben auf Code-Ebene:** Plugin-Ansicht, IPC-Client und Node-Transport reichen
   den automatischen Create/Update-Pfad bis zum Sidecar durch. Die native Abnahme bleibt
   gemäß TR-000009 offen.
+- **R6-004 behoben:** Verwaiste Claims werden anhand des Prozessinhabers entfernt; der
+  Budgetzähler wird nicht zurückgesetzt.
 
 ## Zusammenfassung
 
@@ -166,8 +194,8 @@ native Tastaturprüfung ergänzen.
 | SUGGESTION | 0 |
 
 Die Testphase darf nicht als uneingeschränkte Sprint-Freigabe interpretiert werden. Nach dem
-Recovery-Fix für verwaiste Claims ist ein Prozess-Abbruch-Nachtest erforderlich; der dedizierte
-headed Autonomie-Flow bleibt zusätzlich eine QA-Auflage.
+Lease-/Timeout-Fix für blockierte Claims ist ein deterministischer Nachtest erforderlich; der
+dedizierte headed Autonomie-Flow bleibt zusätzlich eine QA-Auflage.
 
 ## Übergabe: RV -> FE+BE
 
@@ -179,6 +207,7 @@ headed Autonomie-Flow bleibt zusätzlich eine QA-Auflage.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.3 | 2026-08-14 | R6-004 behoben; fehlende Lease für lebenden, blockierten Claim als R6-005 ergänzt | RV |
 | 1.2 | 2026-08-14 | R6-002 behoben; neuer Crash-/Recovery-Befund R6-004 | RV |
 | 1.1 | 2026-08-13 | R6-001 und R6-003 als behoben bestätigt; R6-002 wegen Commit-vor-Write weiterhin MAJOR | RV |
 | 1.0 | 2026-08-13 | Initialreview mit drei MAJOR-Befunden | RV |
