@@ -1,7 +1,7 @@
 ---
 id: RV-000007
 title: Code Review Second Brain Sprint 6
-version: 1.1
+version: 1.2
 status: REQUEST_CHANGES
 author-agent: RV (Code Reviewer)
 date: 2026-08-13
@@ -17,9 +17,9 @@ superseded-by: —
 
 ## Entscheidung
 
-**REQUEST_CHANGES.** Nachtest und Re-Review bestätigen R6-001 und R6-003. Ein MAJOR-
-Problem verletzt weiterhin die verbindliche Pause-Garantie: Zwischen der finalen Prüfung und
-dem tatsächlichen Dateischreiben kann eine Pause wirksam werden.
+**REQUEST_CHANGES.** Nachtest und Re-Review bestätigen R6-001, R6-002 und R6-003. Die
+Pause-Serialisierung führt jedoch einen neuen MAJOR-Ausfallpfad ein: Ein abgestürzter Sidecar-
+Prozess hinterlässt einen permanenten In-flight-Zähler, auf den jede spätere Pause endlos wartet.
 
 ## Befunde
 
@@ -84,6 +84,35 @@ Der angekündigte Race-Test fehlt; der vorhandene Test prüft nur eine Pause vor
 (`tests/integration/mutation-service.test.ts:67-77`). Damit ist R6-002 nicht verifiziert
 und bleibt MAJOR.
 
+### Nachtest zu R6-002: behoben durch `e7338d7`
+
+Die Pause setzt nun zuerst `paused_at` und wartet dann auf alle bereits beanspruchten Writes.
+Der Zwei-Service-Test in `tests/integration/mutation-service.test.ts:81-119` beweist: Die
+Pause antwortet nicht vor dem Abschluss eines laufenden Writes; ein danach gestarteter
+automatischer Request wird abgewiesen. R6-002 ist damit behoben.
+
+### MAJOR R6-004: Ein abgestürzter automatischer Write blockiert Pause dauerhaft
+
+**Stellen:** `apps/sidecar/src/mutations/mutation-service.ts:129-135`, `:145-167`,
+`:536-547`
+
+Der Claim erhöht `in_flight` persistent in SQLite. Die einzige Verringerung erfolgt in
+`releaseInFlight()` nach Rückkehr aus `commitAutomatic()`. Wird der Sidecar-Prozess nach
+dem Commit des Claims beendet, beispielsweise durch einen Timeout, Kill oder Stromausfall,
+läuft dieser Cleanup nie. Beim nächsten Start bleibt `in_flight > 0` erhalten.
+`pauseAutonomy()` pollt dann ohne Timeout, Lease, Operations-ID oder Startup-Recovery
+endlos. Über den Plugin-Transport läuft die Pause nach 60 Sekunden nur in dessen generisches
+Timeout; der persistierte Zustand bleibt trotzdem hängen.
+
+**Reproduktion:** Eine automatische Mutation nach Zeile 156 gezielt beenden, bevor Zeile 163
+oder 166 ausgeführt wird. Danach `pauseAutonomy()` aufrufen: die Promise erfüllt sich nie,
+weil `inFlightMutations()` dauerhaft positiv bleibt.
+
+**Erwartete Korrektur:** Statt eines nackten Zählers eine operation-ID mit Lease/Ablauf und
+Recovery beim Service-Start persistieren, oder mindestens verwaiste Claims vor einer Pause
+deterministisch als fehlgeschlagen zurückbuchen. Die Pause benötigt außerdem eine begrenzte,
+verständliche Recovery-Antwort. Einen Prozess-Abbruch-Test zwischen Claim und Cleanup ergänzen.
+
 ### MAJOR R6-003: Die native Ansicht bietet keinen automatischen Schreibpfad
 
 **Stellen:** `apps/obsidian-plugin/src/ui/mutation-view.ts:44-81`, `:153-178`,
@@ -136,10 +165,9 @@ native Tastaturprüfung ergänzen.
 | MINOR | 0 |
 | SUGGESTION | 0 |
 
-Die Testphase darf nicht als uneingeschränkte Sprint-Freigabe interpretiert werden. Nach der
-verbleibenden Pause-Race-Korrektur ist ein deterministischer Nachtest "Pause zwischen finalem
-Check und File-Write" erforderlich; der dedizierte headed Autonomie-Flow bleibt zusätzlich
-eine QA-Auflage.
+Die Testphase darf nicht als uneingeschränkte Sprint-Freigabe interpretiert werden. Nach dem
+Recovery-Fix für verwaiste Claims ist ein Prozess-Abbruch-Nachtest erforderlich; der dedizierte
+headed Autonomie-Flow bleibt zusätzlich eine QA-Auflage.
 
 ## Übergabe: RV -> FE+BE
 
@@ -151,6 +179,7 @@ eine QA-Auflage.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.2 | 2026-08-14 | R6-002 behoben; neuer Crash-/Recovery-Befund R6-004 | RV |
 | 1.1 | 2026-08-13 | R6-001 und R6-003 als behoben bestätigt; R6-002 wegen Commit-vor-Write weiterhin MAJOR | RV |
 | 1.0 | 2026-08-13 | Initialreview mit drei MAJOR-Befunden | RV |
 

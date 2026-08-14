@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-13 | Phase: REVIEW
+Letzte Aktualisierung: 2026-08-14 | Phase: IMPLEMENTATION
 
 ## Aktive Artefakte
 
@@ -59,7 +59,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: REVIEW
 | `testing/BUG-000008-provider-handshake-not-performed.md` | BUG-000008 | 1.0 | VERIFIZIERT | QA | Handshake- und Scope-Negativpfade unabhängig nachgetestet |
 | `testing/BUG-000009-provider-consent-not-server-bound.md` | BUG-000009 | 1.0 | VERIFIZIERT | QA | Serverseitige Prepare→Confirm-Bindung unabhängig nachgetestet |
 | `reviews/RV-000006-sprint-5.md` | RV-000006 | 1.1 | APPROVED | RV | Sprint-5-Re-Review nach servergebundenem Einmal-Consent und automatischem Vault-Pfad freigegeben |
-| `reviews/RV-000007-sprint-6.md` | RV-000007 | 1.1 | REQUEST_CHANGES | RV | Reaktivierung und nativer Pfad korrigiert; Pause-gegen-Write-Race bleibt offen |
+| `reviews/RV-000007-sprint-6.md` | RV-000007 | 1.2 | REQUEST_CHANGES | RV | Pause-Race behoben; verwaister In-flight-Claim benötigt Recovery |
 | `reviews/RV-000004-sprint-3.md` | RV-000004 | 1.0 | APPROVED | RV | Sprint-3-Nutzerabnahme und technischer Review freigegeben |
 | `reviews/RV-000005-sprint-4.md` | RV-000005 | 1.0 | APPROVED | RV | Sprint-4-Mutationsslice in Nutzer- und Technikabnahme freigegeben |
 | `testing/TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Sprint-1-Testlauf; Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
@@ -153,6 +153,7 @@ Letzte Aktualisierung: 2026-08-13 | Phase: REVIEW
 | 2026-08-13 | Gate 8 (Sprint 6 Re-Review -> Implementation) | REQUEST_CHANGES | 0 | 1 | 0 |
 | 2026-08-13 | Gate 6 (Sprint 6 Pause-Race-Fix -> Testing) | PASS | 0 | 0 | 0 |
 | 2026-08-13 | Gate 7 (Sprint 6 Pause-Race-Nachtest -> Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
+| 2026-08-14 | Gate 8 (Sprint 6 Re-Review -> Implementation) | REQUEST_CHANGES | 0 | 1 | 0 |
 
 ## In Bearbeitung
 
