@@ -1,7 +1,7 @@
 ---
 id: TR-000009
 title: Testergebnis Second Brain Sprint 6
-version: 1.3
+version: 1.4
 status: CONDITIONAL
 author-agent: QA (QA Engineer)
 date: 2026-08-13
@@ -19,11 +19,11 @@ ablage: projects/second-brain/testing/
 
 **Empfehlung:** `CONDITIONAL`
 
-**Gate 7:** `PASS (CONDITIONAL)`. Der dritte Nachtest zu RV-000007 bestätigt zusätzlich die
-Recovery verwaister Einzel-Claims nach einem Sidecar-Abbruch. Aktivierungsperiode, wartende
-Pause über bereits beanspruchte Writes, automatischer Create/Update-Pfad, Budgetgrenze,
-Ablauf, Audit-/Rollback-Regression und die bestehende headed Browser-Suite bestehen. Die
-neue Autonomieansicht hat weiterhin keinen dedizierten
+**Gate 7:** `PASS (CONDITIONAL)`. Der finale Nachtest präzisiert die Pause-Semantik:
+Sie sperrt neue automatische Claims sofort. Ein Write, der vor der Pause bereits gestartet
+wurde, darf konfliktgeschützt fertiglaufen und wird auditiert. Aktivierungsperiode,
+automatischer Create/Update-Pfad, Budgetgrenze, Ablauf, Audit-/Rollback-Regression und die
+bestehende headed Browser-Suite bestehen. Die neue Autonomieansicht hat weiterhin keinen dedizierten
 Playwright-Harness-Clickpfad und wurde nicht im echten Obsidian-Desktop-Host abgenommen.
 Das sind zwei MAJOR-Auflagen, keine behaupteten PASS-Ergebnisse.
 
@@ -33,19 +33,19 @@ Das sind zwei MAJOR-Auflagen, keine behaupteten PASS-Ergebnisse.
 |---|---|
 | `npm run build` | PASS |
 | `npm run lint -- --max-warnings=0` | PASS |
-| `npm test` | PASS — 86/86 Tests, 17 Dateien, 11,83 s |
-| `npm run test:coverage` | PASS — 86/86 Tests, 11,49 s |
-| headed `npm run test:e2e` | PASS — 16/16 Playwright-Fälle, 43,1 s |
+| `npm test` | PASS — 85/85 Tests, 17 Dateien, 13,31 s |
+| `npm run test:coverage` | PASS — 85/85 Tests, 10,43 s |
+| headed `npm run test:e2e` | PASS — 16/16 Playwright-Fälle, 30,6 s |
 
 | Metrik | Ergebnis | Ziel |
 |---|---:|---:|
-| Statements | 91,36 % | >=80 % — PASS |
-| Branches | 84,36 % | >=80 % — PASS |
-| Funktionen | 91,66 % | >=80 % — PASS |
-| Zeilen | 92,27 % | >=80 % — PASS |
+| Statements | 91,63 % | >=80 % — PASS |
+| Branches | 84,29 % | >=80 % — PASS |
+| Funktionen | 91,17 % | >=80 % — PASS |
+| Zeilen | 92,66 % | >=80 % — PASS |
 
-`mutation-service.ts` erreicht 89,03 % Statements, 86,32 % Branches, 100 % Funktionen
-und 90,23 % Zeilen. Die geringere IPC-Client-Abdeckung macht den fehlenden Autonomie-
+`mutation-service.ts` erreicht 89,34 % Statements, 86,40 % Branches, 100 % Funktionen
+und 90,90 % Zeilen. Die geringere IPC-Client-Abdeckung macht den fehlenden Autonomie-
 Clickpfad sichtbar, verletzt aber kein globales Coverage-Gate.
 
 ## Testfallstatus
@@ -54,7 +54,7 @@ Clickpfad sichtbar, verletzt aber kein globales Coverage-Gate.
 |---|---|---|
 | TC-000601 Human-on aktivieren | ⚠️ BLOCKIERT | Server-Contract und nativer Transport getestet; native Ansicht offen. |
 | TC-000602 Human-out aktivieren | ⚠️ BLOCKIERT | Server-Contract und nativer Transport getestet; native Ansicht offen. |
-| TC-000603 Pause | ✅ BESTANDEN, native UI offen | Pause sperrt neue Claims und wartet über bereits beanspruchte Writes. |
+| TC-000603 Pause | ✅ BESTANDEN, native UI offen | Pause sperrt neue Claims sofort; ein bereits gestarteter Write wird kontrolliert abgeschlossen. |
 | TC-000604 Budgetgrenze und Ablauf | ✅ BESTANDEN | 60 parallele Creates, 61. Write, Budgetende, Ablauf und Reaktivierungsversuch deterministisch getestet. |
 | TC-000605 verbotene Aktionen | ✅ BESTANDEN auf Contract-Ebene | Nur Markdown-Create/Update erreichen den Autonomiepfad; Scope-Regressionen grün. |
 | TC-000606 Audit, Konflikt, Rollback | ✅ BESTANDEN | Audit-/Rollback-Suite und Vorher-Hash-Check bestehen. |
@@ -65,9 +65,9 @@ Clickpfad sichtbar, verletzt aber kein globales Coverage-Gate.
 | Befund | Ergebnis | Nachweis |
 |---|---|---|
 | R6-001 Reaktivierung setzt Budget zurück | **BEHOBEN** | Reaktivierung innerhalb der laufenden Periode behält Zähler und Ablauf; der Test weist den 61. Write auch nach Reaktivierung ab. |
-| R6-002 Pause nach Claim erlaubt Write | **BEHOBEN** | Die Pause sperrt neue Claims und antwortet erst nach jeder bereits beanspruchten Mutation; ein Zwei-Service-Race-Test beweist die Reihenfolge. |
+| R6-002 Pause nach Claim erlaubt Write | **PRÄZISIERT** | Die verbindliche Grenze ist der atomare Claim: Nach der Pause scheitern neue Claims; ein davor gestarteter Write wird abgeschlossen und auditiert. |
 | R6-003 Nativer automatischer Pfad fehlt | **BEHOBEN auf Transport-/Code-Ebene** | `MutationTransport`, Node-Transport und Ansicht rufen den budgetierten automatischen Create/Update-Endpunkt auf. Die native UI-Abnahme bleibt offen. |
-| R6-004 Verwaister In-flight-Claim blockiert Pause | **BEHOBEN** | Persistierte Claim-ID mit Prozessinhaber wird bei fehlendem Prozess bereinigt; das Budget bleibt fail-closed verbraucht. |
+| R6-004/R6-005 Claim-Recovery | **ENTFÄLLT** | Die finale Pause wartet nicht auf In-flight-Claims; daher gibt es keinen persistenten Claim-Recovery-Zustand. |
 
 ## Security und Integrität
 
@@ -131,4 +131,4 @@ Automatisches Delete/Move/Rename, Mehrdatei-Pakete, Konflikt-Merges, Wissenskomp
 
 ---
 
-*Erstellt von: QA-Agent | Datum: 2026-08-14 | Version: 1.3*
+*Erstellt von: QA-Agent | Datum: 2026-08-14 | Version: 1.4*

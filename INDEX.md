@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-14 | Phase: TESTING
+Letzte Aktualisierung: 2026-08-14 | Phase: REVIEW
 
 ## Aktive Artefakte
 
@@ -52,7 +52,7 @@ Letzte Aktualisierung: 2026-08-14 | Phase: TESTING
 | `testing/BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Schema-4-Migration nativ im aktiven Vault bestätigt |
 | `testing/TR-000007-sprint-4.md` | TR-000007 | 1.2 | CONDITIONAL | QA | Gate 7 funktional bestanden; native Nutzerabnahme als Review-Auflage erfüllt |
 | `testing/TR-000008-sprint-5.md` | TR-000008 | 1.2 | CONDITIONAL | QA | Alle Sprint-5-BLOCKER verifiziert; native und reale Provider-Abnahme als MAJOR-Auflage offen |
-| `testing/TR-000009-sprint-6.md` | TR-000009 | 1.3 | CONDITIONAL | QA | RV-000007-Claim-Recovery-Nachtest verifiziert; native UI- und gezielte Harness-Abnahme als MAJOR-Auflage offen |
+| `testing/TR-000009-sprint-6.md` | TR-000009 | 1.4 | CONDITIONAL | QA | Finale Pause-Semantik verifiziert; native UI- und gezielte Harness-Abnahme als MAJOR-Auflage offen |
 | `testing/BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.6 | VERIFIZIERT | QA | Pre-Write-Lock liefert stabilen Write-Fehler bei intaktem Original |
 | `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.3 | VERIFIZIERT | QA | Preview-Cleanup und feste Obergrenze unabhängig bestätigt |
 | `testing/BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | VERIFIZIERT | QA | Consent-/Transferpfad unabhängig nachgetestet |
@@ -155,6 +155,7 @@ Letzte Aktualisierung: 2026-08-14 | Phase: TESTING
 | 2026-08-13 | Gate 7 (Sprint 6 Pause-Race-Nachtest -> Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
 | 2026-08-14 | Gate 8 (Sprint 6 Re-Review -> Implementation) | REQUEST_CHANGES | 0 | 1 | 0 |
 | 2026-08-14 | Gate 6 (Sprint 6 Pausen-Semantik-Fix -> Testing) | PASS | 0 | 0 | 0 |
+| 2026-08-14 | Gate 7 (Sprint 6 finaler Pausen-Nachtest -> Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
 | 2026-08-14 | Gate 6 (Sprint 6 Claim-Recovery-Fix -> Testing) | PASS | 0 | 0 | 0 |
 | 2026-08-14 | Gate 7 (Sprint 6 Claim-Recovery-Nachtest -> Review) | PASS (CONDITIONAL) | 0 | 2 | 0 |
 | 2026-08-14 | Gate 8 (Sprint 6 Re-Review -> Implementation) | REQUEST_CHANGES | 0 | 1 | 0 |
