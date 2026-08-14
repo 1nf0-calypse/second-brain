@@ -119,6 +119,28 @@ describe('MutationService', () => {
     pauser.close();
   });
 
+  it('recovers an orphaned automatic claim without refunding its consumed budget', async () => {
+    const { root, service } = await fixture();
+    service.activateAutonomy({ mode: 'human-out', reviewed: true });
+    const database = new DatabaseSync(join(root, '.second-brain', 'index.sqlite'));
+    const policy = database.prepare('SELECT activated_at FROM autonomy_policy LIMIT 1').get() as {
+      activated_at: string;
+    };
+    database.prepare('UPDATE autonomy_policy SET used_mutations = 1').run();
+    database.prepare(`
+      INSERT INTO autonomy_operations(operation_id, activated_at, owner_process_id, claimed_at)
+      VALUES (?, ?, ?, ?)
+    `).run('11111111-1111-4111-8111-111111111111', policy.activated_at, -1, new Date().toISOString());
+    database.close();
+
+    await expect(service.pauseAutonomy()).resolves.toMatchObject({ paused: true, usedMutations: 1 });
+    const verification = new DatabaseSync(join(root, '.second-brain', 'index.sqlite'));
+    expect((verification.prepare('SELECT COUNT(*) AS total FROM autonomy_operations').get() as { total: number }).total)
+      .toBe(0);
+    verification.close();
+    service.close();
+  });
+
   it('previews without changing and atomically confirms one update', async () => {
     const { root, service } = await fixture();
     await writeFile(join(root, 'Note.md'), 'before\n');

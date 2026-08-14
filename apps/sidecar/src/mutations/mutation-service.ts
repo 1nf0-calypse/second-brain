@@ -129,7 +129,9 @@ export class MutationService {
   /** Blocks new claims, then waits until every previously claimed write has completed. */
   public async pauseAutonomy(): Promise<AutonomyStatus> {
     this.database.prepare('UPDATE autonomy_policy SET paused_at = ? WHERE paused_at IS NULL').run(new Date(this.clock()).toISOString());
-    while (this.inFlightMutations() > 0) {
+    while (this.activeAutonomyOperations() > 0) {
+      this.recoverOrphanedAutonomyOperations();
+      if (this.activeAutonomyOperations() === 0) break;
       await delay(10);
     }
     return this.autonomyStatus();
@@ -139,11 +141,12 @@ export class MutationService {
   public async executeAutonomous(input: unknown): Promise<MutationResult> {
     const request = AutonomousMutationRequestSchema.parse(input);
     const claimedAt = new Date(this.clock()).toISOString();
+    const operationId = randomUUID();
     let activationId: string;
     this.database.exec('BEGIN IMMEDIATE');
     try {
       const claim = this.database.prepare(`
-        UPDATE autonomy_policy SET used_mutations = used_mutations + 1, in_flight = in_flight + 1
+        UPDATE autonomy_policy SET used_mutations = used_mutations + 1
         WHERE paused_at IS NULL AND expires_at > ? AND used_mutations < ?
       `).run(claimedAt, MAX_AUTONOMOUS_MUTATIONS);
       if (claim.changes !== 1) {
@@ -153,17 +156,21 @@ export class MutationService {
       }
       const row = this.database.prepare('SELECT activated_at FROM autonomy_policy LIMIT 1').get();
       activationId = String(row?.['activated_at']);
+      this.database.prepare(`
+        INSERT INTO autonomy_operations(operation_id, activated_at, owner_process_id, claimed_at)
+        VALUES (?, ?, ?, ?)
+      `).run(operationId, activationId, process.pid, claimedAt);
       this.database.exec('COMMIT');
     } catch (error: unknown) {
       try { this.database.exec('ROLLBACK'); } catch { /* Transaction was already closed. */ }
       throw error;
     }
     try {
-      const result = await this.commitAutomatic(request.relativePath, request.content, activationId);
-      this.releaseInFlight(activationId, false);
+      const result = await this.commitAutomatic(request.relativePath, request.content, activationId, operationId);
+      this.releaseAutonomyOperation(operationId, activationId, false);
       return result;
     } catch (error: unknown) {
-      this.releaseInFlight(activationId, true);
+      this.releaseAutonomyOperation(operationId, activationId, true);
       throw error;
     }
   }
@@ -343,6 +350,12 @@ export class MutationService {
         in_flight INTEGER NOT NULL DEFAULT 0 CHECK(in_flight >= 0),
         paused_at TEXT
       );
+      CREATE TABLE IF NOT EXISTS autonomy_operations (
+        operation_id TEXT PRIMARY KEY,
+        activated_at TEXT NOT NULL,
+        owner_process_id INTEGER NOT NULL,
+        claimed_at TEXT NOT NULL
+      );
       INSERT OR IGNORE INTO schema_migrations(version, applied_at)
       VALUES (5, datetime('now'));
     `);
@@ -356,7 +369,8 @@ export class MutationService {
   private async commitAutomatic(
     relativePath: string,
     content: string,
-    activationId: string
+    activationId: string,
+    operationId: string
   ): Promise<MutationResult> {
     const target = await this.resolveMarkdownTarget(relativePath);
     const before = await this.readExisting(target.absolutePath);
@@ -369,12 +383,16 @@ export class MutationService {
       const allowed = this.database.prepare(`
         SELECT 1 FROM autonomy_policy
         WHERE activated_at = ? AND paused_at IS NULL AND expires_at > ?
-          AND used_mutations <= ? AND in_flight > 0
-      `).get(activationId, new Date(this.clock()).toISOString(), MAX_AUTONOMOUS_MUTATIONS);
+          AND used_mutations <= ?
+          AND EXISTS (
+            SELECT 1 FROM autonomy_operations
+            WHERE operation_id = ? AND activated_at = ?
+          )
+      `).get(activationId, new Date(this.clock()).toISOString(), MAX_AUTONOMOUS_MUTATIONS, operationId, activationId);
       if (!allowed) {
         throw new MutationError('AUTONOMY_NOT_ACTIVE', 'Automation was paused or expired before this change could be written.');
       }
-      // pauseAutonomy() marks the policy paused before it waits for this in-flight write.
+      // pauseAutonomy() marks the policy paused before it waits for this owned write.
       // Therefore a successful pause response is never followed by this write.
       await this.fileOperations.write(target.absolutePath, content);
     } catch (error: unknown) {
@@ -533,18 +551,45 @@ export class MutationService {
     return this.fileOperations.read(path);
   }
 
-  private inFlightMutations(): number {
-    const row = this.database.prepare('SELECT in_flight FROM autonomy_policy LIMIT 1').get();
-    return Number(row?.['in_flight'] ?? 0);
+  private activeAutonomyOperations(): number {
+    const row = this.database.prepare('SELECT COUNT(*) AS total FROM autonomy_operations').get();
+    return Number(row?.['total'] ?? 0);
   }
 
-  private releaseInFlight(activationId: string, refundBudget: boolean): void {
-    this.database.prepare(`
-      UPDATE autonomy_policy
-      SET in_flight = MAX(in_flight - 1, 0),
-          used_mutations = CASE WHEN ? THEN MAX(used_mutations - 1, 0) ELSE used_mutations END
-      WHERE activated_at = ?
-    `).run(refundBudget ? 1 : 0, activationId);
+  private recoverOrphanedAutonomyOperations(): void {
+    const operations = this.database.prepare(
+      'SELECT operation_id, owner_process_id FROM autonomy_operations'
+    ).all();
+    for (const operation of operations) {
+      if (!isProcessAlive(Number(operation['owner_process_id']))) {
+        // The consumed slot stays consumed: crash recovery must fail closed for the budget.
+        this.database.prepare('DELETE FROM autonomy_operations WHERE operation_id = ?')
+          .run(String(operation['operation_id']));
+      }
+    }
+  }
+
+  private releaseAutonomyOperation(
+    operationId: string,
+    activationId: string,
+    refundBudget: boolean
+  ): void {
+    this.database.exec('BEGIN IMMEDIATE');
+    try {
+      const released = this.database.prepare(`
+        DELETE FROM autonomy_operations WHERE operation_id = ? AND activated_at = ?
+      `).run(operationId, activationId);
+      if (released.changes === 1 && refundBudget) {
+        this.database.prepare(`
+          UPDATE autonomy_policy SET used_mutations = MAX(used_mutations - 1, 0)
+          WHERE activated_at = ?
+        `).run(activationId);
+      }
+      this.database.exec('COMMIT');
+    } catch (error: unknown) {
+      this.database.exec('ROLLBACK');
+      throw error;
+    }
   }
 }
 
@@ -600,4 +645,14 @@ async function restoreFile(path: string, content: string | null): Promise<void> 
 
 function delay(milliseconds: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function isProcessAlive(processId: number): boolean {
+  if (!Number.isInteger(processId) || processId <= 0) return false;
+  try {
+    process.kill(processId, 0);
+    return true;
+  } catch (error: unknown) {
+    return (error as NodeJS.ErrnoException).code === 'EPERM';
+  }
 }
