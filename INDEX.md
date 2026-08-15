@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-15 | Phase: DONE
+Letzte Aktualisierung: 2026-08-15 | Phase: REFINEMENT
 
 ## Aktive Artefakte
 
@@ -10,21 +10,23 @@ Letzte Aktualisierung: 2026-08-15 | Phase: DONE
 | `discovery/CON-000001-second-brain.md` | CON-000001 | 1.0 | APPROVED | PM | Bindende Projekt-Constitution |
 | `discovery/DECISIONS.md` | DECISIONS | 1.5 | ACTIVE | PM+MW | Entscheidungsprotokoll einschließlich Remote-Provider- und Consent-Terminologie |
 | `requirements/REQ-000001-product-requirements.md` | REQ-000001 | 1.0 | APPROVED | BA | Produktanforderungen, NFRs und Story Map |
-| `requirements/RM-000001-roadmap.md` | RM-000001 | 1.1 | APPROVED | BA | Gesamt-Roadmap mit verbindlicher Sprint-6-Autonomie-Budget-Policy |
+| `requirements/RM-000001-roadmap.md` | RM-000001 | 1.2 | APPROVED | BA | Roadmap mit dreistoryigem Sprint-7-Schnitt |
 | `requirements/US-000001-installation-and-mcp-setup.md` | US-000001 | 1.0 | APPROVED | BA | Installation, Vault-Auswahl und MCP-Einrichtung |
 | `requirements/US-000002-read-search-and-citations.md` | US-000002 | 1.0 | APPROVED | BA | Lesen, Suche, Quellen und Anhänge |
 | `requirements/US-000003-controlled-mutations.md` | US-000003 | 1.1 | APPROVED | BA | Kontrollierte Mutationen mit 60/60-Autonomie-Budgets und Rollback |
 | `requirements/US-000004-knowledge-graph-exploration.md` | US-000004 | 1.0 | APPROVED | BA | Knowledge Graph und Exploration |
 | `requirements/US-000005-incremental-local-index.md` | US-000005 | 1.0 | APPROVED | BA | Lokale inkrementelle Indexierung |
-| `requirements/US-000006-knowledge-compilation.md` | US-000006 | 1.0 | APPROVED | BA | Wissenskompilierung und Vorlagen |
+| `requirements/US-000006-knowledge-compilation.md` | US-000006 | 1.1 | APPROVED | BA | Umbrella für Sprint-7-Kompilierung und Vorlagen |
 | `requirements/US-000007-security-and-data-flow.md` | US-000007 | 1.0 | APPROVED | BA | Injection-Schutz und Datenflusstransparenz |
-| `requirements/US-000008-change-history.md` | US-000008 | 1.0 | APPROVED | BA | Änderungsverlauf und Release-Sicht |
+| `requirements/US-000008-change-history.md` | US-000008 | 1.1 | APPROVED | BA | Lokale Mutationshistorie als Sprint-7-Slice |
 | `requirements/US-000009-campaignworld-boundary.md` | US-000009 | 1.0 | APPROVED | BA | campaignworld-Integrationsgrenze |
 | `requirements/US-000010-android-use.md` | US-000010 | 1.0 | APPROVED | BA | Android-Nutzung nach Desktop-MVP |
 | `requirements/US-000011-claude-desktop-local-setup.md` | US-000011 | 1.0 | APPROVED | BA | Lieferbarer lokaler Claude-Desktop-Slice für Sprint 1 |
 | `requirements/US-000012-full-text-search-and-citations.md` | US-000012 | 1.0 | APPROVED | BA | Lieferbarer Volltext- und Quellen-Slice für Sprint 2 |
 | `requirements/US-000013-local-relationship-exploration.md` | US-000013 | 1.0 | APPROVED | BA | Lieferbarer read-only Relationship-Slice für Sprint 3 |
 | `requirements/US-000014-controlled-human-in-mutations.md` | US-000014 | 1.0 | APPROVED | BA | Kontrollierter Human-in-the-Loop-Schreibslice für Sprint 4 |
+| `requirements/US-000015-compilation-preview.md` | US-000015 | 1.0 | APPROVED | BA | Quellengebundene sichere Kompilierungsvorschau |
+| `requirements/US-000016-project-templates.md` | US-000016 | 1.0 | APPROVED | BA | Versionierte projektlokale Kompilierungsvorlagen |
 | `architecture/ADR-000001-tech-stack.md` | ADR-000001 | 1.0 | APPROVED | AR | Tech-Stack, Systemdesign und NFR-Abdeckung |
 | `architecture/ADR-000002-modular-monolith.md` | ADR-000002 | 1.0 | APPROVED | AR | Prozess- und Modulgrenzen |
 | `architecture/ADR-000003-local-storage-and-retrieval.md` | ADR-000003 | 1.0 | APPROVED | AR | Lokale Datenhaltung und hybride Suche |
@@ -41,6 +43,7 @@ Letzte Aktualisierung: 2026-08-15 | Phase: DONE
 | `sprints/SP-000005-sprint-4-controlled-mutations.md` | SP-000005 | 1.0 | APPROVED | BA+FE+BE | Sprint-4-Backlog für kontrollierte Ein-Datei-Mutationen |
 | `sprints/SP-000006-sprint-5-remote-clients-and-consent.md` | SP-000006 | 1.0 | APPROVED | BA+FE+BE | Sprint-5-Backlog für Remote-Clients und minimierten Einmal-Consent |
 | `sprints/SP-000007-sprint-6-autonomie-budgets.md` | SP-000007 | 1.0 | APPROVED | BA+FE+BE | Sprint-6-Backlog für aktivierbare Autonomiestufen und 60/60-Mutationsbudget |
+| `sprints/SP-000008-sprint-7-compilation-history.md` | SP-000008 | 1.0 | APPROVED | BA+FE+BE | Drei Stories für Kompilierungsvorschau, Vorlagen und Verlauf |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
 | `testing/TP-000002-sprint-1-review-fixes.md` | TP-000002 | 1.0 | APPROVED | QA | Nachtestplan für die Gate-8-Review-Korrekturen |
 | `testing/TP-000003-sprint-2.md` | TP-000003 | 1.0 | APPROVED | QA | Sprint-2-Testplan für lokale Suche, Quellen, Scope und Degradation |
@@ -166,10 +169,10 @@ Letzte Aktualisierung: 2026-08-15 | Phase: DONE
 
 ## In Bearbeitung
 
-Sprint 6 ist dokumentiert und freigegeben. Human-on und Human-out sind bewusst aktivierbar
-und auf 60 Markdown-Erstellungen/-Aktualisierungen in 60 Minuten begrenzt. Löschungen
-bleiben automatisch ausgeschlossen. Die Bedienung ist in DOC-000007, die Sprint-Änderungen
-in RN-000006 und die häufigen Fragen in FAQ-000001@1.3 festgehalten.
+Sprint 7 ist verfeinert: US-000015 liefert eine quellengebundene Read-only-
+Kompilierungsvorschau, US-000016 unveränderliche lokale Vorlagenversionen und US-000008
+eine verständliche lokale Mutationshistorie. Der Sprint bleibt lokal: keine neue Provider-
+oder LLM-Integration und keine automatische Mehrdatei-Mutation.
 
 ## Übergabe: BE → QA — zweiter BUG-000005-Fix
 

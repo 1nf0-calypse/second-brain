@@ -1,15 +1,15 @@
 ---
 id: US-000008
 title: Änderungsverlauf und Release-Sicht
-version: 1.0
+version: 1.1
 status: APPROVED
 author-agent: BA (Business Analyst)
-date: 2026-07-30
+date: 2026-08-15
 project: second-brain
 based-on: REQ-000001 F-022
 epic: Betrieb und Ausbau
 priority: Should
-sprint: —
+sprint: 7
 supersedes: —
 superseded-by: —
 ---
@@ -51,3 +51,15 @@ DANN ist der unvollständige Zustand erkennbar und wird nicht als erfolgreiche M
 ## Abhängigkeiten
 
 Blockiert durch US-000003.
+
+## Sprint-7-Schnitt
+
+Sprint 7 liefert die lokale Mutationshistorie. Eine vollständige Produkt-Release-Sicht
+bleibt Restumfang, sofern sie nicht aus denselben lokalen Metadaten abgeleitet werden kann.
+
+## Änderungshistorie
+
+| Version | Datum | Änderung | Agent |
+|---|---|---|---|
+| 1.1 | 2026-08-15 | Lokalen Verlauf als Sprint-7-Slice präzisiert | BA+FE+BE |
+| 1.0 | 2026-07-30 | Initiale Umbrella-Story | BA |

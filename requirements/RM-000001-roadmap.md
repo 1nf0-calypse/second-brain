@@ -1,10 +1,10 @@
 ---
 id: RM-000001
 title: Roadmap / Release-Plan — Second Brain
-version: 1.1
+version: 1.2
 status: APPROVED
 author-agent: BA (Business Analyst)
-date: 2026-08-12
+date: 2026-08-15
 project: second-brain
 based-on: REQ-000001, US-000001–US-000014, BUG-000001–BUG-000006, DEBT-000001
 supersedes: —
@@ -46,10 +46,11 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
 | US-000001 | Einstieg: ChatGPT- und Mistral-MCP-Slices | Must | 13 | L | 5 | 2026-08-12 | 2026-08-26 | US-000011 geliefert; verbindliche Client-Matrix |
 | US-000007 | Trust Boundary: Provider-Consent und Datenfluss | Must | 8 | L | 5 | 2026-08-12 | 2026-08-26 | US-000001; ADR-000004 |
 | US-000003 | kontrollierte Mutationen: Restumfang | Must | 26 | XL | 6 | 2026-08-26 | 2026-09-09 | US-000014; verbindliche 60/60-Budget-Policy für höhere Autonomie |
-| US-000006 | Wissenskompilierung und Vorlagen | Must | 13 | L | 7 | 2026-09-09 | 2026-09-23 | US-000003, US-000005 |
+| US-000015 | Quellengebundene Kompilierungsvorschau | Must | 10 | L | 7 | 2026-09-09 | 2026-09-23 | US-000003, US-000005, US-000016 |
+| US-000016 | Versionierte projektlokale Vorlagen | Must | 7 | M | 7 | 2026-09-09 | 2026-09-23 | US-000006, US-000007 |
+| US-000008 | Lokale Mutationshistorie | Should | 6 | M | 7 | 2026-09-09 | 2026-09-23 | US-000003 |
 | US-000002 | Suche: semantisch und Anhänge | Must | 13 | L | 8 | 2026-09-23 | 2026-10-07 | US-000012; Windows-Vector-/Extraktionsentscheidung |
 | US-000004 | Exploration: visuelle Graphansicht | Must | 8 | L | 8 | 2026-09-23 | 2026-10-07 | US-000013, US-000005 |
-| US-000008 | Änderungsverlauf und Release-Sicht | Should | 5 | M | 9 | 2026-10-07 | 2026-10-21 | US-000003 |
 | US-000009 | campaignworld-Integrationsgrenze | Should | 5 | M | 10 | 2026-10-21 | 2026-11-04 | US-000002, US-000004; separater Vertrag |
 | US-000010 | Android-Nutzung nach Desktop-MVP | Should | 8 | L | 11 | 2026-11-04 | 2026-11-18 | Desktop-MVP; Plattformvalidierung |
 
@@ -65,6 +66,7 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
 |---:|---|---|---|---|
 | 5 | US-000001, US-000007 | 21 SP | 26 SP | Threat-Model, Negativmatrix sowie Consent- und Accessibility-Abnahme sind zusätzlich verbindlich. |
 | 6 | US-000003 | 13 SP | 26 SP | Die entschiedene Human-on/out-Policy verlangt serverseitige Budgetdurchsetzung, Pause, Audit/Rollback und vollständige Sicherheits- sowie UI-Abnahme. |
+| 7 | US-000015, US-000016, US-000008 | 18 SP | 23 SP | Wissenskompilierung wurde in Vorschau und Vorlagen geschnitten; die Verlaufssicht liefert den dritten Nutzerfluss. |
 | 1–4 | RM-000001 | Keine Roadmap vorhanden | Historische Liefer-Slices nachträglich eingeordnet | Roadmap-Pflicht wurde vor Sprint 5 nachgezogen. |
 
 ## Offene Annahmen
@@ -131,5 +133,6 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.2 | 2026-08-15 | Sprint 7 als drei Storys für Vorschau, Vorlagen und lokalen Verlauf geplant | BA+FE+BE |
 | 1.1 | 2026-08-13 | Sprint-6-Aufwand und verbindliche Autonomie-Budget-Policy präzisiert | BA+FE+BE |
 | 1.0 | 2026-08-12 | Initiale Vorausplanung für Sprint 5–11 | BA |
