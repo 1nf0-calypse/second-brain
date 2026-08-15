@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-15 | Phase: DOCUMENTATION
+Letzte Aktualisierung: 2026-08-15 | Phase: DONE
 
 ## Aktive Artefakte
 
@@ -77,15 +77,17 @@ Letzte Aktualisierung: 2026-08-15 | Phase: DOCUMENTATION
 | `docs/DOC-000002-local-index.md` | DOC-000002 | 1.0 | APPROVED | MW | Lokalen Index aktualisieren und sicher neu aufbauen |
 | `docs/DOC-000003-volltextsuche-und-quellen.md` | DOC-000003 | 1.0 | APPROVED | MW | Volltextsuche, Quellenprüfung und Recovery |
 | `docs/DOC-000004-beziehungen-erkunden.md` | DOC-000004 | 1.0 | APPROVED | MW | Direkte Beziehungen in Obsidian und Claude erkunden |
-| `docs/GS-000001.md` | GS-000001 | 1.1 | APPROVED | MW | Einstieg in Installation, Suche, Beziehungen und Index |
+| `docs/GS-000001.md` | GS-000001 | 1.2 | APPROVED | MW | Einstieg um aktivierbare begrenzte Autonomie ergänzt |
 | `docs/RN-000001-sprint-1.md` | RN-000001 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 1 |
 | `docs/RN-000002-sprint-2.md` | RN-000002 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 2 |
 | `docs/RN-000003-sprint-3.md` | RN-000003 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 3 |
 | `docs/DOC-000005-kontrollierte-notizaenderungen.md` | DOC-000005 | 1.0 | APPROVED | MW | Notizänderungen als Vorschau prüfen, bestätigen und zurücksetzen |
 | `docs/RN-000004-sprint-4.md` | RN-000004 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 4 |
-| `docs/FAQ-000001-suche-und-verbindung.md` | FAQ-000001 | 1.2 | APPROVED | MW | Fragen zu Installation, Suche, Verbindung und kontrollierten Änderungen |
+| `docs/FAQ-000001-suche-und-verbindung.md` | FAQ-000001 | 1.3 | APPROVED | MW | Fragen zu Autonomie, Budget, Pause und Reaktivierung ergänzt |
 | `docs/DOC-000006-remote-provider-und-einmal-consent.md` | DOC-000006 | 1.0 | APPROVED | MW | Remote-Provider prüfen und einen Textauszug bewusst einmalig freigeben |
 | `docs/RN-000005-sprint-5.md` | RN-000005 | 1.0 | APPROVED | MW | Nutzerorientierte Release Notes für Sprint 5 |
+| `docs/DOC-000007-autonomie-budgets-und-pause.md` | DOC-000007 | 1.0 | APPROVED | MW | Anleitung für aktivierbare Autonomie, Budget und Pause |
+| `docs/RN-000006-sprint-6.md` | RN-000006 | 1.0 | APPROVED | MW | Nutzerorientierte Sprint-6-Release-Notes |
 | `retros/RETRO-000001-sprint-1.md` | RETRO-000001 | 1.0 | REVIEW | AC | Sprint-1-Retrospektive |
 | `retros/PC-000001-implicit-approval-integrated-analysis.md` | PC-000001 | 1.1 | ACTIVE | AC | Implizite Freigabe und integrierte Analyse, umgesetzt in Tool Chain v2.11 |
 
@@ -164,14 +166,10 @@ Letzte Aktualisierung: 2026-08-15 | Phase: DOCUMENTATION
 
 ## In Bearbeitung
 
-Sprint 5 ist dokumentiert und abgeschlossen. Sprint 6 ist verfeinert: Human-on und
-Human-out sind bewusst aktivierbar und auf 60 Markdown-Erstellungen/-Aktualisierungen in
-60 Minuten begrenzt. Löschungen bleiben automatisch ausgeschlossen.
-
-Sprint 6 korrigiert die drei Review-Befunde: Reaktivierung bewahrt das laufende 60/60-
-Fenster, der finale Policy-Check linearisiert den Start eines automatischen Writes und die
-native Ansicht führt serverautorisierte Markdown-Create/Updates nun tatsächlich aus. Lint,
-84 Vitest- und 16 headed Playwright-Regressionen sind grün; QA prüft den Fix-Nachlauf.
+Sprint 6 ist dokumentiert und freigegeben. Human-on und Human-out sind bewusst aktivierbar
+und auf 60 Markdown-Erstellungen/-Aktualisierungen in 60 Minuten begrenzt. Löschungen
+bleiben automatisch ausgeschlossen. Die Bedienung ist in DOC-000007, die Sprint-Änderungen
+in RN-000006 und die häufigen Fragen in FAQ-000001@1.3 festgehalten.
 
 ## Übergabe: BE → QA — zweiter BUG-000005-Fix
 

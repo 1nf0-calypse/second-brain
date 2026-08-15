@@ -1,12 +1,12 @@
 ---
 id: FAQ-000001
 title: FAQ — Suche, Verbindung und Beziehungen
-version: 1.2
+version: 1.3
 status: APPROVED
 author-agent: MW (Manual Writer)
-date: 2026-07-31
+date: 2026-08-15
 project: second-brain
-based-on: DOC-000001, DOC-000003, DOC-000004, DOC-000005, RV-000004, RV-000005
+based-on: DOC-000001, DOC-000003, DOC-000004, DOC-000005, DOC-000007, RV-000004, RV-000005, RV-000007
 supersedes: —
 superseded-by: —
 ---
@@ -117,6 +117,34 @@ die neuere Version zu überschreiben.
 
 *Mehr Details: siehe [DOC-000005](DOC-000005-kontrollierte-notizaenderungen.md).*
 
+## Automatische Notizänderungen
+
+### Was darf die Automatisierung verändern?
+
+Nur Markdown-Notizen innerhalb des geöffneten Vaults dürfen erstellt oder aktualisiert
+werden. Löschen, Verschieben, Umbenennen, Mehrdatei-Änderungen und Ziele außerhalb des
+Vaults sind nicht automatisch möglich.
+
+### Wie lange gilt eine Aktivierung und wie viele Änderungen sind erlaubt?
+
+Eine bewusst aktivierte Automationsphase gilt höchstens 60 Minuten und umfasst höchstens
+60 erfolgreiche Änderungen. Das Restbudget und der Ablaufzeitpunkt stehen in der
+Statusmeldung der Ansicht **Second Brain Note Change**.
+
+### Was passiert, wenn ich auf „Pause automation“ klicke?
+
+Neue automatische Änderungen werden sofort blockiert. Eine Änderung, die bereits vor der
+Pause gestartet ist, darf noch fertiggestellt und auditiert werden. Danach verwendet jede
+weitere Änderung wieder die Einzelvorschau mit Bestätigung.
+
+### Setzt Reaktivieren das Budget zurück?
+
+Nein. Solange das bestehende Stundenfenster noch läuft, bewahrt eine Reaktivierung dessen
+Restbudget und Ablaufzeitpunkt. Nach Budgetende oder Ablauf ist eine neue bewusste
+Aktivierung erforderlich.
+
+*Mehr Details: siehe [DOC-000007](DOC-000007-autonomie-budgets-und-pause.md).*
+
 ---
 
 ## Übergabe: MW → ORCH
@@ -130,7 +158,7 @@ die neuere Version zu überschreiben.
 
 | Artefakt-ID | Status | Pfad | Hinweise |
 |---|---|---|---|
-| FAQ-000001@1.2 | APPROVED | `docs/FAQ-000001-suche-und-verbindung.md` | Installation, Suche, Beziehungen und kontrollierte Änderungen |
+| FAQ-000001@1.3 | APPROVED | `docs/FAQ-000001-suche-und-verbindung.md` | Installation, Suche, Beziehungen, kontrollierte und automatische Änderungen |
 
 ### Kritische Informationen für Empfänger
 
@@ -158,6 +186,7 @@ aktualisieren.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.3 | 2026-08-15 | Autonomie, 60/60-Budget, Pause und Reaktivierung ergänzt | MW |
 | 1.2 | 2026-08-12 | Kontrollierte Notizänderungen, relative Pfade und Obsidian-Sync-Hinweis ergänzt | MW |
 | 1.1 | 2026-07-31 | Vault-Pfade, Sidecar-Neustart und Relationship-Fehler ergänzt | MW |
 | 1.0 | 2026-07-31 | Initiale FAQ aus Sprint-2-Nutzerfragen | MW |
