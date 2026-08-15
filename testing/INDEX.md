@@ -1,6 +1,6 @@
 # Testing — Index
 
-Letzte Aktualisierung: 2026-08-13
+Letzte Aktualisierung: 2026-08-15
 
 ## Zweck
 
@@ -17,6 +17,7 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 | `TP-000005-sprint-4.md` | TP-000005 | 1.0 | APPROVED | QA | Sprint-4-Testplan für bestätigte Ein-Datei-Mutationen |
 | `TP-000006-sprint-5.md` | TP-000006 | 1.1 | APPROVED | QA | Nachtestplan für Remote-Clients, Einmal-Consent und Prozessgrenzen |
 | `TP-000007-sprint-6.md` | TP-000007 | 1.0 | APPROVED | QA | Testplan für Human-on/out, 60/60-Budget, Pause, Audit und Rollback |
+| `TP-000008-sprint-7.md` | TP-000008 | 1.0 | APPROVED | QA | Testplan für Kompilierung, Vorlagen und lokalen Verlauf |
 | `TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Testlauf: automatisiert grün, Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |

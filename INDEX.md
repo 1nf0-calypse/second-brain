@@ -51,6 +51,7 @@ Letzte Aktualisierung: 2026-08-15 | Phase: IMPLEMENTATION
 | `testing/TP-000005-sprint-4.md` | TP-000005 | 1.0 | APPROVED | QA | Sprint-4-Testplan für Preview, Confirm, Konflikt, Audit und Rollback |
 | `testing/TP-000006-sprint-5.md` | TP-000006 | 1.1 | APPROVED | QA | Nachtestplan für Remote-Clients, Payload-Minimierung und Einmal-Consent |
 | `testing/TP-000007-sprint-6.md` | TP-000007 | 1.0 | APPROVED | QA | Testplan für Autonomie, Budget, Pause, Audit und Einzelrollback |
+| `testing/TP-000008-sprint-7.md` | TP-000008 | 1.0 | APPROVED | QA | Testplan für Kompilierung, Vorlagen und lokalen Verlauf |
 | `testing/TR-000006-sprint-3.md` | TR-000006 | 1.2 | APPROVED | QA | Automatisierte und native Desktop-Abnahme vollständig bestanden |
 | `testing/BUG-000004-relationship-index-stale.md` | BUG-000004 | 1.2 | VERIFIZIERT | RV+FE+BE+QA | Schema-4-Migration nativ im aktiven Vault bestätigt |
 | `testing/TR-000007-sprint-4.md` | TR-000007 | 1.2 | CONDITIONAL | QA | Gate 7 funktional bestanden; native Nutzerabnahme als Review-Auflage erfüllt |
