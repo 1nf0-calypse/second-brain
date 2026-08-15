@@ -57,6 +57,7 @@ Letzte Aktualisierung: 2026-08-15 | Phase: IMPLEMENTATION
 | `testing/TR-000007-sprint-4.md` | TR-000007 | 1.2 | CONDITIONAL | QA | Gate 7 funktional bestanden; native Nutzerabnahme als Review-Auflage erfüllt |
 | `testing/TR-000008-sprint-5.md` | TR-000008 | 1.2 | CONDITIONAL | QA | Alle Sprint-5-BLOCKER verifiziert; native und reale Provider-Abnahme als MAJOR-Auflage offen |
 | `testing/TR-000009-sprint-6.md` | TR-000009 | 1.4 | CONDITIONAL | QA | Finale Pause-Semantik verifiziert; native UI- und gezielte Harness-Abnahme als MAJOR-Auflage offen |
+| `testing/TR-000010-sprint-7.md` | TR-000010 | 1.0 | CONDITIONAL | QA | Kernregressionen grün; Sprint-7-Nachweise als MAJOR-Auflagen offen |
 | `testing/BUG-000005-lock-error-reported-offline.md` | BUG-000005 | 1.6 | VERIFIZIERT | QA | Pre-Write-Lock liefert stabilen Write-Fehler bei intaktem Original |
 | `testing/BUG-000006-preview-storage-unbounded.md` | BUG-000006 | 1.3 | VERIFIZIERT | QA | Preview-Cleanup und feste Obergrenze unabhängig bestätigt |
 | `testing/BUG-000007-consent-flow-unreachable.md` | BUG-000007 | 1.0 | VERIFIZIERT | QA | Consent-/Transferpfad unabhängig nachgetestet |

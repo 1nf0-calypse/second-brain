@@ -27,6 +27,7 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 | `TR-000007-sprint-4.md` | TR-000007 | 1.2 | CONDITIONAL | QA | Gate 7 funktional bestanden; Claude-Desktop-UI als Review-Auflage |
 | `TR-000008-sprint-5.md` | TR-000008 | 1.2 | CONDITIONAL | QA | Alle Sprint-5-BLOCKER verifiziert; native und reale Provider-Abnahme als MAJOR-Auflage offen |
 | `TR-000009-sprint-6.md` | TR-000009 | 1.4 | CONDITIONAL | QA | Finale Pause-Semantik verifiziert; native UI- und dedizierte Harness-Abnahme offen |
+| `TR-000010-sprint-7.md` | TR-000010 | 1.0 | CONDITIONAL | QA | Kernregressionen grün; Sprint-7-MCP-, Prozess-, UI- und native Nachweise offen |
 | `BUG-000001-plugin-package-incomplete.md` | BUG-000001 | 1.0 | VERIFIZIERT | QA | Vollständiges Plugin-Paket bestätigt |
 | `BUG-000002-native-node-launch-invalid.md` | BUG-000002 | 1.0 | VERIFIZIERT | QA | Node-Runtime und realer Sidecar-Pfad bestätigt |
 | `BUG-000003-scope-error-code-generic.md` | BUG-000003 | 1.2 | VERIFIZIERT | QA | Scope-Verletzung wird über CLI, MCP und Plugin stabil typisiert |
