@@ -4,12 +4,16 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import {
   confirmNoteChange,
+  confirmTemplate,
   activateAutonomy,
   executeAutonomousMutation,
+  getHistory,
   getAutonomyStatus,
   pauseAutonomy,
   prepareNoteChange,
+  prepareCompilation,
   prepareNoteRollback,
+  prepareTemplate,
   type MutationTransport
 } from '../ipc/mutation-client.js';
 import type { MutationPreview } from '@second-brain/contracts';
@@ -85,6 +89,16 @@ export class MutationView extends ItemView {
     })());
     void refreshAutonomy().catch(() => { autonomyStatus.textContent = 'Automation status is unavailable. Each change still needs confirmation.'; });
 
+    root.createEl('h2', { text: 'Compilation template' });
+    const templateName = root.createEl('input', { attr: { 'aria-label': 'Template name', placeholder: 'Template name' } });
+    const templateContent = root.createEl('textarea', { attr: { 'aria-label': 'Template content', rows: '4', placeholder: 'Template content' } });
+    const prepareTemplateButton = root.createEl('button', { text: 'Prepare template version' });
+    const confirmTemplateButton = root.createEl('button', { text: 'Confirm template version' });
+    confirmTemplateButton.disabled = true;
+    const templateStatus = root.createEl('p', { attr: { role: 'status', 'aria-live': 'polite', tabindex: '-1' } });
+    let templateToken: string | null = null;
+    let selectedTemplate: { id: string; version: number; hash: string } | null = null;
+
     const pathLabel = root.createEl('label', { text: 'Vault-relative Markdown path' });
     const pathInput = root.createEl('input', {
       type: 'text',
@@ -101,6 +115,7 @@ export class MutationView extends ItemView {
     contentInput.id = contentLabel.htmlFor;
 
     const prepare = root.createEl('button', { text: 'Prepare read-only preview' });
+    const compile = root.createEl('button', { text: 'Generate compilation preview' });
     const previewHeading = root.createEl('h2', { text: 'Preview' });
     previewHeading.hidden = true;
     const diff = root.createEl('pre', {
@@ -155,6 +170,27 @@ export class MutationView extends ItemView {
       }
     };
 
+    prepareTemplateButton.addEventListener('click', () => void (async () => {
+      try {
+        const preview = await prepareTemplate(this.transport, this.vaultRoot, templateName.value, templateContent.value);
+        templateToken = preview.token;
+        confirmTemplateButton.disabled = false;
+        templateStatus.textContent = `Template ${preview.name} version ${preview.version} is ready for confirmation.`;
+      } catch (error: unknown) { templateStatus.textContent = error instanceof Error ? error.message : 'Template preview failed.'; }
+      templateStatus.focus();
+    })());
+    confirmTemplateButton.addEventListener('click', () => void (async () => {
+      if (!templateToken) return;
+      try {
+        const template = await confirmTemplate(this.transport, this.vaultRoot, templateToken);
+        selectedTemplate = template;
+        templateToken = null;
+        confirmTemplateButton.disabled = true;
+        templateStatus.textContent = `Template ${template.name} version ${template.version} confirmed.`;
+      } catch (error: unknown) { templateStatus.textContent = error instanceof Error ? error.message : 'Template confirmation failed.'; }
+      templateStatus.focus();
+    })());
+
     prepare.addEventListener('click', () => void run(async () => {
       clearPreview();
       rollback.hidden = true;
@@ -167,6 +203,32 @@ export class MutationView extends ItemView {
         contentInput.value
       ));
     }));
+
+    compile.addEventListener('click', () => void run(async () => {
+      if (!selectedTemplate) throw new Error('Confirm a local template version before generating a compilation preview.');
+      const sourcePath = pathInput.value.trim();
+      const preview = await prepareCompilation(this.transport, this.vaultRoot, {
+        targetPath: sourcePath,
+        content: contentInput.value,
+        sources: [{ relativePath: sourcePath }],
+        templateId: selectedTemplate.id,
+        templateVersion: selectedTemplate.version,
+        templateHash: selectedTemplate.hash
+      });
+      showPreview(preview);
+      status.textContent = `${preview.warnings.length ? 'Warnings found. ' : ''}Compilation preview is ready for ${preview.relativePath}.`;
+      status.focus();
+    }));
+
+    const historyButton = root.createEl('button', { text: 'Refresh change history' });
+    const history = root.createEl('ul', { attr: { 'aria-label': 'Change history' } });
+    historyButton.addEventListener('click', () => void (async () => {
+      try {
+        const result = await getHistory(this.transport, this.vaultRoot);
+        history.empty();
+        for (const entry of result.entries) history.createEl('li', { text: `${entry.createdAt}: ${entry.summary} (${entry.status}, rollback ${entry.rollbackStatus})` });
+      } catch (error: unknown) { status.textContent = error instanceof Error ? error.message : 'Change history is unavailable.'; status.focus(); }
+    })());
 
     automatic.addEventListener('click', () => void run(async () => {
       const result = await executeAutonomousMutation(

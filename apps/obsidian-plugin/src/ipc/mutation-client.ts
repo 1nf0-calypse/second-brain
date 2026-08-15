@@ -5,10 +5,18 @@ import {
   MutationPreviewSchema,
   MutationResultSchema,
   AutonomyStatusSchema,
+  CompilationPreviewSchema,
+  HistoryResponseSchema,
+  TemplatePreviewSchema,
+  TemplateVersionSchema,
   type AutonomyMode,
   type AutonomyStatus,
+  type CompilationPreview,
+  type HistoryResponse,
   type MutationPreview,
-  type MutationResult
+  type MutationResult,
+  type TemplatePreview,
+  type TemplateVersion
 } from '@second-brain/contracts';
 
 export interface MutationTransport {
@@ -19,6 +27,10 @@ export interface MutationTransport {
   activateAutonomy(vaultRoot: string, mode: AutonomyMode): Promise<unknown>;
   autonomyStatus(vaultRoot: string): Promise<unknown>;
   pauseAutonomy(vaultRoot: string): Promise<unknown>;
+  prepareCompilation(vaultRoot: string, request: unknown): Promise<unknown>;
+  prepareTemplate(vaultRoot: string, name: string, content: string): Promise<unknown>;
+  confirmTemplate(vaultRoot: string, token: string): Promise<unknown>;
+  history(vaultRoot: string): Promise<unknown>;
 }
 
 /** Activates a reviewed server-owned autonomy policy. */
@@ -57,6 +69,22 @@ export async function prepareNoteChange(
   return MutationPreviewSchema.parse(
     await transport.prepareMutation(vaultRoot, relativePath, content)
   );
+}
+
+export async function prepareCompilation(transport: MutationTransport, vaultRoot: string, request: unknown): Promise<CompilationPreview> {
+  return CompilationPreviewSchema.parse(await transport.prepareCompilation(vaultRoot, request));
+}
+
+export async function prepareTemplate(transport: MutationTransport, vaultRoot: string, name: string, content: string): Promise<TemplatePreview> {
+  return TemplatePreviewSchema.parse(await transport.prepareTemplate(vaultRoot, name, content));
+}
+
+export async function confirmTemplate(transport: MutationTransport, vaultRoot: string, token: string): Promise<TemplateVersion> {
+  return TemplateVersionSchema.parse(await transport.confirmTemplate(vaultRoot, token));
+}
+
+export async function getHistory(transport: MutationTransport, vaultRoot: string): Promise<HistoryResponse> {
+  return HistoryResponseSchema.parse(await transport.history(vaultRoot));
 }
 
 export async function confirmNoteChange(

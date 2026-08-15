@@ -202,6 +202,28 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
     return this.run('--pause-autonomy', vaultRoot, {}, MUTATION_TIMEOUT_MS);
   }
 
+  public prepareCompilation(vaultRoot: string, request: unknown): Promise<unknown> {
+    return this.run('--prepare-compilation', vaultRoot, {
+      SECOND_BRAIN_COMPILATION_REQUEST: JSON.stringify(request)
+    }, MUTATION_TIMEOUT_MS);
+  }
+
+  public prepareTemplate(vaultRoot: string, name: string, content: string): Promise<unknown> {
+    return this.run('--prepare-template', vaultRoot, {
+      SECOND_BRAIN_TEMPLATE_REQUEST: JSON.stringify({ name, content })
+    }, MUTATION_TIMEOUT_MS);
+  }
+
+  public confirmTemplate(vaultRoot: string, token: string): Promise<unknown> {
+    return this.run('--confirm-template', vaultRoot, {
+      SECOND_BRAIN_TEMPLATE_CONFIRMATION: JSON.stringify({ token })
+    }, MUTATION_TIMEOUT_MS);
+  }
+
+  public history(vaultRoot: string): Promise<unknown> {
+    return this.run('--change-history', vaultRoot, {}, MUTATION_TIMEOUT_MS);
+  }
+
   /**
    * Führt eine Sidecar-Operation aus und bewahrt validierte öffentliche Fehlercodes.
    * @param operation CLI-Operation.

@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-15 | Phase: REFINEMENT
+Letzte Aktualisierung: 2026-08-15 | Phase: IMPLEMENTATION
 
 ## Aktive Artefakte
 

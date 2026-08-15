@@ -122,7 +122,11 @@ if (!vaultRoot) {
       process.argv.includes('--activate-autonomy') ||
       process.argv.includes('--autonomy-status') ||
       process.argv.includes('--pause-autonomy') ||
-      process.argv.includes('--autonomous-mutation')
+      process.argv.includes('--autonomous-mutation') ||
+      process.argv.includes('--prepare-compilation') ||
+      process.argv.includes('--prepare-template') ||
+      process.argv.includes('--confirm-template') ||
+      process.argv.includes('--change-history')
     ) {
       await mkdir(dirname(indexPath), { recursive: true });
       const index = new LocalIndex(indexPath);
@@ -173,6 +177,14 @@ if (!vaultRoot) {
         } else if (process.argv.includes('--autonomous-mutation')) {
           response = await mutations.executeAutonomous(JSON.parse(process.env['SECOND_BRAIN_AUTONOMOUS_MUTATION'] ?? '{}'));
           await index.synchronize(vaultRoot);
+        } else if (process.argv.includes('--prepare-compilation')) {
+          response = await mutations.prepareCompilation(JSON.parse(process.env['SECOND_BRAIN_COMPILATION_REQUEST'] ?? '{}'));
+        } else if (process.argv.includes('--prepare-template')) {
+          response = mutations.prepareTemplate(JSON.parse(process.env['SECOND_BRAIN_TEMPLATE_REQUEST'] ?? '{}'));
+        } else if (process.argv.includes('--confirm-template')) {
+          response = mutations.confirmTemplate(JSON.parse(process.env['SECOND_BRAIN_TEMPLATE_CONFIRMATION'] ?? '{}'));
+        } else if (process.argv.includes('--change-history')) {
+          response = mutations.history();
         } else {
           response = await mutations.confirm(
             process.env['SECOND_BRAIN_CONFIRMATION_TOKEN'] ?? ''

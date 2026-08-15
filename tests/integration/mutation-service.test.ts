@@ -349,4 +349,35 @@ describe('MutationService', () => {
     database.close();
     service.close();
   });
+
+  it('binds a compilation preview to immutable template and source hashes', async () => {
+    const { root, service } = await fixture();
+    await writeFile(join(root, 'Source.md'), 'facts only');
+    const template = service.confirmTemplate({ token: service.prepareTemplate({ name: 'Summary', content: '# {{title}}' }).token });
+    const preview = await service.prepareCompilation({
+      targetPath: 'Result.md', content: '# Result', sources: [{ relativePath: 'Source.md' }],
+      templateId: template.id, templateVersion: template.version, templateHash: template.hash
+    });
+    expect(preview.readOnly).toBe(true);
+    expect(preview.sources[0]?.relativePath).toBe('Source.md');
+    expect(await readFile(join(root, 'Result.md'), 'utf8').catch(() => null)).toBeNull();
+    await service.confirm(preview.token);
+    expect(await readFile(join(root, 'Result.md'), 'utf8')).toBe('# Result');
+    service.close();
+  });
+
+  it('blocks a compilation confirmation when a source changed and exposes local history', async () => {
+    const { root, service } = await fixture();
+    await writeFile(join(root, 'Source.md'), 'before');
+    const template = service.confirmTemplate({ token: service.prepareTemplate({ name: 'Summary', content: '# template' }).token });
+    const preview = await service.prepareCompilation({
+      targetPath: 'Result.md', content: '# Result', sources: [{ relativePath: 'Source.md' }],
+      templateId: template.id, templateVersion: template.version, templateHash: template.hash
+    });
+    await writeFile(join(root, 'Source.md'), 'after');
+    await expect(service.confirm(preview.token)).rejects.toMatchObject({ code: 'MUTATION_CONFLICT' });
+    const result = await service.confirm((await service.prepare('History.md', '# done')).token);
+    expect(service.history().entries).toContainEqual(expect.objectContaining({ auditId: result.auditId, status: 'success' }));
+    service.close();
+  });
 });

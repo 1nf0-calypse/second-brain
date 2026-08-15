@@ -251,6 +251,51 @@ export const AutonomousMutationRequestSchema = z.object({
   content: z.string().max(2_000_000)
 }).strict();
 
+export const TemplateVersionSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().trim().min(1).max(120),
+  version: z.number().int().positive(),
+  content: z.string().min(1).max(100_000),
+  hash: z.string().length(64),
+  createdAt: z.string().datetime()
+}).strict();
+export const TemplatePrepareRequestSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  content: z.string().min(1).max(100_000)
+}).strict();
+export const TemplatePreviewSchema = TemplateVersionSchema.extend({
+  token: z.string().uuid(),
+  readOnly: z.literal(true)
+}).strict();
+export const TemplateConfirmRequestSchema = z.object({ token: z.string().uuid() }).strict();
+export const CompilationSourceSchema = z.object({
+  relativePath: z.string().trim().min(1),
+  expectedHash: z.string().length(64).optional()
+}).strict();
+export const CompilationPrepareRequestSchema = z.object({
+  targetPath: z.string().trim().min(1),
+  content: z.string().min(1).max(2_000_000),
+  sources: z.array(CompilationSourceSchema).min(1).max(20),
+  templateId: z.string().uuid(),
+  templateVersion: z.number().int().positive(),
+  templateHash: z.string().length(64)
+}).strict();
+export const CompilationPreviewSchema = MutationPreviewSchema.extend({
+  sources: z.array(CompilationSourceSchema.extend({ hash: z.string().length(64) })).min(1),
+  template: TemplateVersionSchema.pick({ id: true, name: true, version: true, hash: true }),
+  warnings: z.array(z.enum(['untrusted-instruction-like-content', 'potentially-contradictory-sources']))
+}).strict();
+export const HistoryEntrySchema = z.object({
+  auditId: z.string().uuid(),
+  action: MutationActionSchema,
+  relativePath: z.string().min(1),
+  createdAt: z.string().datetime(),
+  status: z.enum(['success', 'incomplete']),
+  rollbackStatus: z.enum(['available', 'rolled-back', 'blocked']),
+  summary: z.string().min(1)
+}).strict();
+export const HistoryResponseSchema = z.object({ entries: z.array(HistoryEntrySchema) }).strict();
+
 export type SetupRequest = z.infer<typeof SetupRequestSchema>;
 export type SetupResponse = z.infer<typeof SetupResponseSchema>;
 export type ProviderId = z.infer<typeof ProviderIdSchema>;
@@ -281,5 +326,12 @@ export type AutonomyMode = z.infer<typeof AutonomyModeSchema>;
 export type AutonomyActivationRequest = z.infer<typeof AutonomyActivationRequestSchema>;
 export type AutonomyStatus = z.infer<typeof AutonomyStatusSchema>;
 export type AutonomousMutationRequest = z.infer<typeof AutonomousMutationRequestSchema>;
+export type TemplateVersion = z.infer<typeof TemplateVersionSchema>;
+export type TemplatePrepareRequest = z.infer<typeof TemplatePrepareRequestSchema>;
+export type TemplatePreview = z.infer<typeof TemplatePreviewSchema>;
+export type CompilationPrepareRequest = z.infer<typeof CompilationPrepareRequestSchema>;
+export type CompilationPreview = z.infer<typeof CompilationPreviewSchema>;
+export type HistoryEntry = z.infer<typeof HistoryEntrySchema>;
+export type HistoryResponse = z.infer<typeof HistoryResponseSchema>;
 export type ErrorCode = z.infer<typeof ErrorCodeSchema>;
 export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;

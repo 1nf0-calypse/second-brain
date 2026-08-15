@@ -11,10 +11,21 @@ import {
   AutonomyActivationRequestSchema,
   AutonomyStatusSchema,
   AutonomousMutationRequestSchema,
+  CompilationPrepareRequestSchema,
+  CompilationPreviewSchema,
+  HistoryResponseSchema,
+  TemplateConfirmRequestSchema,
+  TemplatePrepareRequestSchema,
+  TemplatePreviewSchema,
+  TemplateVersionSchema,
   type AutonomyStatus,
+  type CompilationPreview,
   type ErrorCode,
+  type HistoryResponse,
   type MutationPreview,
-  type MutationResult
+  type MutationResult,
+  type TemplatePreview,
+  type TemplateVersion
 } from '@second-brain/contracts';
 import { VaultScopeError } from '../policy/vault-root.js';
 
@@ -189,6 +200,57 @@ export class MutationService {
     });
   }
 
+  public async prepareCompilation(input: unknown): Promise<CompilationPreview> {
+    const request = CompilationPrepareRequestSchema.parse(input);
+    const template = this.readTemplate(request.templateId, request.templateVersion, request.templateHash);
+    const sources = await Promise.all(request.sources.map(async (source) => {
+      const target = await this.resolveMarkdownTarget(source.relativePath);
+      const content = await this.readExisting(target.absolutePath);
+      if (content === null) throw new MutationError('MUTATION_CONFLICT', `Source ${target.relativePath} no longer exists.`);
+      const hash = hashOf(content);
+      if (source.expectedHash !== undefined && source.expectedHash !== hash) {
+        throw new MutationError('MUTATION_CONFLICT', `Source ${target.relativePath} changed before preview.`);
+      }
+      return { relativePath: target.relativePath, hash, content };
+    }));
+    const preview = await this.prepare(request.targetPath, request.content);
+    const warnings: Array<'untrusted-instruction-like-content' | 'potentially-contradictory-sources'> = [];
+    if (sources.some((source) => /ignore (previous|all) instructions|system prompt|tool call|run command/iu.test(source.content))) warnings.push('untrusted-instruction-like-content');
+    if (sources.some((source) => /\bcontradict(?:s|ory|ion)?\b/iu.test(source.content))) warnings.push('potentially-contradictory-sources');
+    this.database.prepare(`INSERT INTO compilation_bindings(token, sources_json, template_id, template_version, template_hash, warnings_json) VALUES (?, ?, ?, ?, ?, ?)`)
+      .run(preview.token, JSON.stringify(sources.map(({ relativePath, hash }) => ({ relativePath, hash }))), template.id, template.version, template.hash, JSON.stringify(warnings));
+    return CompilationPreviewSchema.parse({ ...preview, sources: sources.map(({ relativePath, hash }) => ({ relativePath, hash })), template: { id: template.id, name: template.name, version: template.version, hash: template.hash }, warnings });
+  }
+
+  public prepareTemplate(input: unknown): TemplatePreview {
+    const request = TemplatePrepareRequestSchema.parse(input);
+    const version = Number(this.database.prepare('SELECT COALESCE(MAX(version), 0) AS version FROM template_versions WHERE name = ?').get(request.name)?.['version'] ?? 0) + 1;
+    const preview = { id: randomUUID(), name: request.name, version, content: request.content, hash: hashOf(request.content), createdAt: new Date(this.clock()).toISOString() };
+    const token = randomUUID();
+    this.database.prepare(`INSERT INTO template_previews(token, template_id, name, version, content, hash, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+      .run(token, preview.id, preview.name, preview.version, preview.content, preview.hash, preview.createdAt, new Date(this.clock() + TOKEN_TTL_MS).toISOString());
+    return TemplatePreviewSchema.parse({ ...preview, token, readOnly: true });
+  }
+
+  public confirmTemplate(input: unknown): TemplateVersion {
+    const request = TemplateConfirmRequestSchema.parse(input);
+    const now = new Date(this.clock()).toISOString();
+    const row = this.database.prepare('SELECT * FROM template_previews WHERE token = ? AND used_at IS NULL AND expires_at > ?').get(request.token, now);
+    if (!row) throw new MutationError('CONFIRMATION_INVALID', 'The template confirmation is missing, expired, or already used.');
+    if (this.database.prepare('UPDATE template_previews SET used_at = ? WHERE token = ? AND used_at IS NULL').run(now, request.token).changes !== 1) throw new MutationError('CONFIRMATION_INVALID', 'The template confirmation was already used.');
+    const template = TemplateVersionSchema.parse({ id: String(row['template_id']), name: String(row['name']), version: Number(row['version']), content: String(row['content']), hash: String(row['hash']), createdAt: String(row['created_at']) });
+    this.database.prepare('INSERT INTO template_versions(id, name, version, content, hash, created_at) VALUES (?, ?, ?, ?, ?, ?)').run(template.id, template.name, template.version, template.content, template.hash, template.createdAt);
+    return template;
+  }
+
+  public history(): HistoryResponse {
+    const entries = this.database.prepare('SELECT audit_id, action, relative_path, created_at, source_audit_id FROM mutation_audit ORDER BY created_at DESC').all().map((row) => ({
+      auditId: String(row['audit_id']), action: String(row['action']), relativePath: String(row['relative_path']), createdAt: String(row['created_at']), status: 'success' as const,
+      rollbackStatus: row['source_audit_id'] === null ? 'available' as const : 'rolled-back' as const, summary: `${String(row['action'])} ${String(row['relative_path'])}`
+    }));
+    return HistoryResponseSchema.parse({ entries });
+  }
+
   /**
    * Bestätigt genau eine vorbereitete Änderung.
    * @param token UUID der angezeigten Vorschau.
@@ -198,6 +260,7 @@ export class MutationService {
    */
   public async confirm(token: string): Promise<MutationResult> {
     const preview = this.readPreview(token);
+    await this.assertCompilationBinding(token);
     const claimedAt = new Date(this.clock()).toISOString();
     const claim = this.database.prepare(`
       UPDATE mutation_previews
@@ -340,6 +403,18 @@ export class MutationService {
         used_mutations INTEGER NOT NULL CHECK(used_mutations >= 0 AND used_mutations <= 60),
         in_flight INTEGER NOT NULL DEFAULT 0 CHECK(in_flight >= 0),
         paused_at TEXT
+      );
+      CREATE TABLE IF NOT EXISTS template_versions (
+        id TEXT PRIMARY KEY, name TEXT NOT NULL, version INTEGER NOT NULL, content TEXT NOT NULL,
+        hash TEXT NOT NULL, created_at TEXT NOT NULL, UNIQUE(name, version)
+      );
+      CREATE TABLE IF NOT EXISTS template_previews (
+        token TEXT PRIMARY KEY, template_id TEXT NOT NULL, name TEXT NOT NULL, version INTEGER NOT NULL,
+        content TEXT NOT NULL, hash TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, used_at TEXT
+      );
+      CREATE TABLE IF NOT EXISTS compilation_bindings (
+        token TEXT PRIMARY KEY, sources_json TEXT NOT NULL, template_id TEXT NOT NULL,
+        template_version INTEGER NOT NULL, template_hash TEXT NOT NULL, warnings_json TEXT NOT NULL
       );
       INSERT OR IGNORE INTO schema_migrations(version, applied_at)
       VALUES (5, datetime('now'));
@@ -486,6 +561,24 @@ export class MutationService {
       afterContent: nullableString(row['after_content']),
       sourceAuditId: nullableString(row['source_audit_id'])
     };
+  }
+
+  private readTemplate(id: string, version: number, hash: string): TemplateVersion {
+    const row = this.database.prepare('SELECT * FROM template_versions WHERE id = ? AND version = ? AND hash = ?').get(id, version, hash);
+    if (!row) throw new MutationError('MUTATION_CONFLICT', 'The selected template is missing or changed. Create a new preview.');
+    return TemplateVersionSchema.parse({ id: String(row['id']), name: String(row['name']), version: Number(row['version']), content: String(row['content']), hash: String(row['hash']), createdAt: String(row['created_at']) });
+  }
+
+  private async assertCompilationBinding(token: string): Promise<void> {
+    const binding = this.database.prepare('SELECT * FROM compilation_bindings WHERE token = ?').get(token);
+    if (!binding) return;
+    const sources = JSON.parse(String(binding['sources_json'])) as Array<{ relativePath: string; hash: string }>;
+    for (const source of sources) {
+      const target = await this.resolveMarkdownTarget(source.relativePath);
+      const content = await this.readExisting(target.absolutePath);
+      if (content === null || hashOf(content) !== source.hash) throw new MutationError('MUTATION_CONFLICT', `Source ${source.relativePath} changed after preview.`);
+    }
+    this.readTemplate(String(binding['template_id']), Number(binding['template_version']), String(binding['template_hash']));
   }
 
   private async resolveMarkdownTarget(requestedPath: string): Promise<{

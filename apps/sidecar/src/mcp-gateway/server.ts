@@ -13,9 +13,12 @@ import {
   MutationPrepareRequestSchema,
   AutonomyActivationRequestSchema,
   AutonomousMutationRequestSchema,
+  CompilationPrepareRequestSchema,
   NodeDetailRequestSchema,
   RelationshipQueryRequestSchema,
-  RollbackPrepareRequestSchema
+  RollbackPrepareRequestSchema,
+  TemplateConfirmRequestSchema,
+  TemplatePrepareRequestSchema
 } from '@second-brain/contracts';
 import { LocalIndex } from '../indexing/sqlite-index.js';
 import { performSetupHandshake } from '../bootstrap/setup-service.js';
@@ -162,6 +165,26 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
         }
       }
       ,{
+        name: 'second_brain_prepare_compilation',
+        description: 'Creates a read-only single-note compilation preview bound to selected local sources and a template version.',
+        inputSchema: { type: 'object', properties: { targetPath: { type: 'string' }, content: { type: 'string' }, sources: { type: 'array' }, templateId: { type: 'string' }, templateVersion: { type: 'integer' }, templateHash: { type: 'string' } }, required: ['targetPath', 'content', 'sources', 'templateId', 'templateVersion', 'templateHash'], additionalProperties: false }
+      },
+      {
+        name: 'second_brain_prepare_template',
+        description: 'Creates a read-only confirmation for one immutable local template version.',
+        inputSchema: { type: 'object', properties: { name: { type: 'string' }, content: { type: 'string' } }, required: ['name', 'content'], additionalProperties: false }
+      },
+      {
+        name: 'second_brain_confirm_template',
+        description: 'Saves exactly one reviewed immutable local template version.',
+        inputSchema: { type: 'object', properties: { token: { type: 'string', format: 'uuid' } }, required: ['token'], additionalProperties: false }
+      },
+      {
+        name: 'second_brain_change_history',
+        description: 'Returns the local immutable mutation history without vault content.',
+        inputSchema: { type: 'object', properties: {}, additionalProperties: false }
+      }
+      ,{
         name: 'second_brain_activate_autonomy',
         description: 'Activates a reviewed Human-on or Human-out policy for at most 60 Markdown creates or updates in one hour. Deletes are excluded.',
         inputSchema: { type: 'object', properties: { mode: { type: 'string', enum: ['human-on', 'human-out'] }, reviewed: { type: 'boolean', const: true } }, required: ['mode', 'reviewed'], additionalProperties: false }
@@ -220,6 +243,24 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
         const input = MutationPrepareRequestSchema.parse(request.params.arguments ?? {});
         const result = await mutations.prepare(input.relativePath, input.content);
         return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_prepare_compilation') {
+        const input = CompilationPrepareRequestSchema.parse(request.params.arguments ?? {});
+        const result = await mutations.prepareCompilation(input);
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_prepare_template') {
+        const input = TemplatePrepareRequestSchema.parse(request.params.arguments ?? {});
+        const result = mutations.prepareTemplate(input);
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_confirm_template') {
+        const input = TemplateConfirmRequestSchema.parse(request.params.arguments ?? {});
+        const result = mutations.confirmTemplate(input);
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_change_history') {
+        return { content: [{ type: 'text' as const, text: JSON.stringify(mutations.history()) }] };
       }
       if (request.params.name === 'second_brain_activate_autonomy') {
         const input = AutonomyActivationRequestSchema.parse(request.params.arguments ?? {});

@@ -38,7 +38,11 @@ describe('mutation client', () => {
       }),
       activateAutonomy: vi.fn(),
       autonomyStatus: vi.fn(),
-      pauseAutonomy: vi.fn()
+      pauseAutonomy: vi.fn(),
+      prepareCompilation: vi.fn(),
+      prepareTemplate: vi.fn(),
+      confirmTemplate: vi.fn(),
+      history: vi.fn()
     };
     await expect(prepareNoteChange(transport, 'C:\\vault', 'Note.md', 'after'))
       .resolves.toMatchObject({ readOnly: true, action: 'update' });
@@ -59,7 +63,11 @@ describe('mutation client', () => {
       executeAutonomousMutation: () => Promise.resolve({}),
       activateAutonomy: () => Promise.resolve({}),
       autonomyStatus: () => Promise.resolve({}),
-      pauseAutonomy: () => Promise.resolve({})
+      pauseAutonomy: () => Promise.resolve({}),
+      prepareCompilation: () => Promise.resolve({}),
+      prepareTemplate: () => Promise.resolve({}),
+      confirmTemplate: () => Promise.resolve({}),
+      history: () => Promise.resolve({})
     };
     await expect(prepareNoteChange(transport, 'C:\\vault', 'Note.md', 'x')).rejects.toThrow();
     await expect(confirmNoteChange(transport, 'C:\\vault', preview.token)).rejects.toThrow();
