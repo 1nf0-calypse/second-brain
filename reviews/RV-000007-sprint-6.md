@@ -1,8 +1,8 @@
 ---
 id: RV-000007
 title: Code Review Second Brain Sprint 6
-version: 1.4
-status: CONDITIONAL
+version: 1.5
+status: APPROVED
 author-agent: RV (Code Reviewer)
 date: 2026-08-13
 project: second-brain
@@ -17,11 +17,12 @@ superseded-by: —
 
 ## Entscheidung
 
-**CONDITIONAL.** Die finale Pause-Semantik löst die künstlich eingeführte In-flight-
+**APPROVED.** Die finale Pause-Semantik löst die künstlich eingeführte In-flight-
 Wartekette auf: Pause sperrt atomar neue Claims, während ein bereits gestarteter Write
 konfliktgeschützt zu Ende läuft und auditiert wird. Es bestehen keine offenen technischen
-Code-Befunde. Die zwei verbleibenden MAJOR-Auflagen stammen aus TR-000009 und betreffen nur
-den dedizierten Autonomie-Harness sowie die native Obsidian-Abnahme.
+Code-Befunde. Die zwei verbleibenden QA-Nachweise betreffen nur den dedizierten
+Autonomie-Harness sowie die native Obsidian-Abnahme und wurden am 2026-08-15 ausdrücklich
+vom Nutzer als Restprüfung akzeptiert.
 
 ## Befunde
 
@@ -208,8 +209,8 @@ native Tastaturprüfung ergänzen.
 | MINOR | 0 |
 | SUGGESTION | 0 |
 
-Technisch ist Sprint 6 freigegeben. Für die uneingeschränkte Produktfreigabe bleiben die zwei
-QA-Auflagen aus TR-000009: dedizierter headed Autonomie-Flow und native Obsidian-Abnahme.
+Sprint 6 ist freigegeben. Der dedizierte headed Autonomie-Flow und die native
+Obsidian-Abnahme bleiben als nicht blockierende Restprüfung in TR-000009 nachvollziehbar.
 
 ## Übergabe: RV -> FE+BE
 
@@ -221,6 +222,7 @@ QA-Auflagen aus TR-000009: dedizierter headed Autonomie-Flow und native Obsidian
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.5 | 2026-08-15 | Nutzerfreigabe erfasst; zwei QA-Restprüfungen akzeptiert | RV |
 | 1.4 | 2026-08-14 | Finale Pause-Semantik bestätigt; keine offenen Code-Befunde, zwei QA-Auflagen verbleiben | RV |
 | 1.3 | 2026-08-14 | R6-004 behoben; fehlende Lease für lebenden, blockierten Claim als R6-005 ergänzt | RV |
 | 1.2 | 2026-08-14 | R6-002 behoben; neuer Crash-/Recovery-Befund R6-004 | RV |
