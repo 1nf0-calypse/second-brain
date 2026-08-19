@@ -1,275 +1,186 @@
-// Beschreibung: Native Mutationsansicht für Human-in/out, Vorschau, Budget und Rollback.
-// Artefakte:    US-000003; US-000014; UX-000001; ADR-000003; ADR-000004
-// Agent:        FE — 2026-08-13
-import { ItemView, WorkspaceLeaf } from 'obsidian';
+// Beschreibung: Changes-Arbeitsbereich fuer Pending Reviews, Templates und History.
+// Artefakte:    US-000017; US-000016; US-000008; UX-000004; ADR-000007
+// Agent:        FE — 2026-08-15
+import { ItemView, Modal, Notice, WorkspaceLeaf } from 'obsidian';
+import type { PendingCompilationDetail, PendingCompilationSummary } from '@second-brain/contracts';
 import {
-  confirmNoteChange,
-  confirmTemplate,
-  activateAutonomy,
-  executeAutonomousMutation,
-  getHistory,
-  getAutonomyStatus,
-  pauseAutonomy,
-  prepareNoteChange,
-  prepareCompilation,
-  prepareNoteRollback,
-  prepareTemplate,
-  type MutationTransport
-} from '../ipc/mutation-client.js';
-import type { MutationPreview } from '@second-brain/contracts';
+  decidePendingCompilation,
+  getPendingCompilation,
+  getPendingCompilationSummary,
+  listPendingCompilations,
+  type CompilationInboxTransport
+} from '../ipc/compilation-client.js';
+import type { TemplateStoreTransport } from '../ipc/template-client.js';
+import { renderCompilationReview, type CompilationDecision } from './compilation-review.js';
+import { compilationErrorMessage } from './compilation-error.js';
+import { renderOperationHistory } from './operation-history.js';
+import { renderPendingReviewList } from './pending-review-list.js';
+import { PendingReviewPoller } from './pending-review-poller.js';
+import { renderTemplateLibrary } from './template-library.js';
 
 export const MUTATION_VIEW_TYPE = 'second-brain-mutations';
+type ChangesSection = 'pending' | 'templates' | 'history';
+
+class RejectProposalModal extends Modal {
+  public constructor(app: ConstructorParameters<typeof Modal>[0], private readonly decide: () => void) { super(app); }
+  public onOpen(): void {
+    this.contentEl.empty();
+    this.contentEl.createEl('h2', { text: 'Reject proposal' });
+    this.contentEl.createEl('p', { text: 'Reject this proposal without writing to the vault?' });
+    const actions = this.contentEl.createDiv({ cls: 'second-brain-actions' });
+    actions.createEl('button', { text: 'Cancel' }).addEventListener('click', () => this.close());
+    const reject = actions.createEl('button', { text: 'Reject proposal', cls: 'mod-warning' });
+    reject.addEventListener('click', () => { this.close(); this.decide(); });
+    reject.focus();
+  }
+}
 
 export class MutationView extends ItemView {
+  private poller: PendingReviewPoller | null = null;
+  private lastSummary: PendingCompilationSummary | null = null;
+  private currentSection: ChangesSection = 'pending';
+  private content: HTMLElement | null = null;
+  private status: HTMLElement | null = null;
+
   public constructor(
     leaf: WorkspaceLeaf,
-    private readonly transport: MutationTransport,
+    private readonly transport: CompilationInboxTransport & TemplateStoreTransport,
     private readonly vaultRoot: string
-  ) {
-    super(leaf);
-  }
+  ) { super(leaf); }
 
-  public getViewType(): string {
-    return MUTATION_VIEW_TYPE;
-  }
+  public getViewType(): string { return MUTATION_VIEW_TYPE; }
+  public getDisplayText(): string { return 'Second Brain Changes'; }
 
-  public getDisplayText(): string {
-    return 'Second Brain Note Change';
-  }
-
+  /** Opens the MCP-first inbox without manual target or Markdown entry fields. */
+  // Implementiert: US-000017; US-000016; US-000008
   public async onOpen(): Promise<void> {
     const root = this.containerEl.children[1] as HTMLElement;
     root.empty();
     root.addClass('second-brain-mutations');
-    root.createEl('h1', { text: 'Review note change' });
-    root.createEl('p', {
-      text: 'Nothing is written until you inspect the preview and confirm it.'
-    });
-
-    root.createEl('h2', { text: 'Automation mode' });
-    root.createEl('p', { text: 'Human-on and Human-out can create or update Markdown notes automatically: at most 60 changes in one hour. Deletes, moves, and renames are never automatic.' });
-    const modeLabel = root.createEl('label', { text: 'Automation mode' });
-    const mode = root.createEl('select', { attr: { id: 'second-brain-autonomy-mode', 'aria-label': 'Automation mode' } });
-    mode.createEl('option', { value: 'human-on', text: 'Human-on-the-loop' });
-    mode.createEl('option', { value: 'human-out', text: 'Human-out-of-the-loop' });
-    modeLabel.htmlFor = mode.id;
-    const reviewed = root.createEl('input', { attr: { id: 'second-brain-autonomy-reviewed', type: 'checkbox' } });
-    const reviewedLabel = root.createEl('label', { text: 'I understand this mode can change my vault without asking for every operation.' });
-    reviewedLabel.htmlFor = reviewed.id;
-    const activate = root.createEl('button', { text: 'Activate automation' });
-    activate.disabled = true;
-    const pause = root.createEl('button', { text: 'Pause automation' });
-    pause.disabled = true;
-    const automatic = root.createEl('button', { text: 'Apply automatic create or update' });
-    automatic.hidden = true;
-    const autonomyStatus = root.createEl('p', { attr: { role: 'status', 'aria-live': 'polite', tabindex: '-1' } });
-
-    const renderAutonomy = (value: Awaited<ReturnType<typeof getAutonomyStatus>>): void => {
-      autonomyStatus.textContent = value.message;
-      pause.disabled = !value.active;
-      automatic.hidden = !value.active;
-      automatic.disabled = !value.active;
-      activate.disabled = !reviewed.checked;
-    };
-    const refreshAutonomy = async (): Promise<void> => renderAutonomy(await getAutonomyStatus(this.transport, this.vaultRoot));
-    reviewed.addEventListener('change', () => { activate.disabled = !reviewed.checked; });
-    activate.addEventListener('click', () => void (async () => {
-      activate.disabled = true;
-      try {
-        renderAutonomy(await activateAutonomy(this.transport, this.vaultRoot, mode.value as 'human-on' | 'human-out'));
-        reviewed.checked = false;
-      } catch (error: unknown) {
-        autonomyStatus.textContent = error instanceof Error ? error.message : 'Automation could not be activated.';
-      }
-      autonomyStatus.focus();
-    })());
-    pause.addEventListener('click', () => void (async () => {
-      try { renderAutonomy(await pauseAutonomy(this.transport, this.vaultRoot)); } catch (error: unknown) { autonomyStatus.textContent = error instanceof Error ? error.message : 'Automation could not be paused.'; }
-      autonomyStatus.focus();
-    })());
-    void refreshAutonomy().catch(() => { autonomyStatus.textContent = 'Automation status is unavailable. Each change still needs confirmation.'; });
-
-    root.createEl('h2', { text: 'Compilation template' });
-    const templateName = root.createEl('input', { attr: { 'aria-label': 'Template name', placeholder: 'Template name' } });
-    const templateContent = root.createEl('textarea', { attr: { 'aria-label': 'Template content', rows: '4', placeholder: 'Template content' } });
-    const prepareTemplateButton = root.createEl('button', { text: 'Prepare template version' });
-    const confirmTemplateButton = root.createEl('button', { text: 'Confirm template version' });
-    confirmTemplateButton.disabled = true;
-    const templateStatus = root.createEl('p', { attr: { role: 'status', 'aria-live': 'polite', tabindex: '-1' } });
-    let templateToken: string | null = null;
-    let selectedTemplate: { id: string; version: number; hash: string } | null = null;
-
-    const pathLabel = root.createEl('label', { text: 'Vault-relative Markdown path' });
-    const pathInput = root.createEl('input', {
-      type: 'text',
-      attr: { 'aria-label': 'Vault-relative Markdown path' }
-    });
-    pathLabel.htmlFor = 'second-brain-mutation-path';
-    pathInput.id = pathLabel.htmlFor;
-
-    const contentLabel = root.createEl('label', { text: 'Complete proposed note content' });
-    const contentInput = root.createEl('textarea', {
-      attr: { 'aria-label': 'Complete proposed note content', rows: '12' }
-    });
-    contentLabel.htmlFor = 'second-brain-mutation-content';
-    contentInput.id = contentLabel.htmlFor;
-
-    const prepare = root.createEl('button', { text: 'Prepare read-only preview' });
-    const compile = root.createEl('button', { text: 'Generate compilation preview' });
-    const previewHeading = root.createEl('h2', { text: 'Preview' });
-    previewHeading.hidden = true;
-    const diff = root.createEl('pre', {
-      cls: 'second-brain-mutation-diff',
-      attr: { 'aria-label': 'Change preview' }
-    });
-    diff.hidden = true;
-    const confirm = root.createEl('button', { text: 'Confirm this exact change' });
-    confirm.disabled = true;
-    confirm.hidden = true;
-    const rollback = root.createEl('button', { text: 'Prepare rollback' });
-    rollback.hidden = true;
-    const status = root.createEl('p', {
-      attr: { role: 'status', 'aria-live': 'polite', tabindex: '-1' }
-    });
-
-    let currentPreview: MutationPreview | null = null;
-    let auditId: string | null = null;
-    const showPreview = (preview: MutationPreview): void => {
-      currentPreview = preview;
-      previewHeading.hidden = false;
-      diff.hidden = false;
-      diff.textContent = preview.diff;
-      confirm.hidden = false;
-      confirm.disabled = false;
-      confirm.textContent = preview.action === 'rollback'
-        ? 'Confirm this exact rollback'
-        : 'Confirm this exact change';
-      status.textContent = `Read-only ${preview.action} preview ready for ${preview.relativePath}. Expires ${new Date(preview.expiresAt).toLocaleTimeString()}.`;
-      status.focus();
-    };
-    const clearPreview = (): void => {
-      currentPreview = null;
-      confirm.disabled = true;
-      confirm.hidden = true;
-      diff.hidden = true;
-      previewHeading.hidden = true;
-    };
-    const run = async (operation: () => Promise<void>): Promise<void> => {
-      prepare.disabled = true;
-      confirm.disabled = true;
-      rollback.disabled = true;
-      try {
-        await operation();
-      } catch (error: unknown) {
-        clearPreview();
-        status.textContent = error instanceof Error ? error.message : 'The operation failed.';
-        status.focus();
-      } finally {
-        prepare.disabled = false;
-        rollback.disabled = false;
-      }
-    };
-
-    prepareTemplateButton.addEventListener('click', () => void (async () => {
-      try {
-        const preview = await prepareTemplate(this.transport, this.vaultRoot, templateName.value, templateContent.value);
-        templateToken = preview.token;
-        confirmTemplateButton.disabled = false;
-        templateStatus.textContent = `Template ${preview.name} version ${preview.version} is ready for confirmation.`;
-      } catch (error: unknown) { templateStatus.textContent = error instanceof Error ? error.message : 'Template preview failed.'; }
-      templateStatus.focus();
-    })());
-    confirmTemplateButton.addEventListener('click', () => void (async () => {
-      if (!templateToken) return;
-      try {
-        const template = await confirmTemplate(this.transport, this.vaultRoot, templateToken);
-        selectedTemplate = template;
-        templateToken = null;
-        confirmTemplateButton.disabled = true;
-        templateStatus.textContent = `Template ${template.name} version ${template.version} confirmed.`;
-      } catch (error: unknown) { templateStatus.textContent = error instanceof Error ? error.message : 'Template confirmation failed.'; }
-      templateStatus.focus();
-    })());
-
-    prepare.addEventListener('click', () => void run(async () => {
-      clearPreview();
-      rollback.hidden = true;
-      auditId = null;
-      status.textContent = 'Preparing a read-only preview…';
-      showPreview(await prepareNoteChange(
-        this.transport,
-        this.vaultRoot,
-        pathInput.value.trim(),
-        contentInput.value
-      ));
-    }));
-
-    compile.addEventListener('click', () => void run(async () => {
-      if (!selectedTemplate) throw new Error('Confirm a local template version before generating a compilation preview.');
-      const sourcePath = pathInput.value.trim();
-      const preview = await prepareCompilation(this.transport, this.vaultRoot, {
-        targetPath: sourcePath,
-        content: contentInput.value,
-        sources: [{ relativePath: sourcePath }],
-        templateId: selectedTemplate.id,
-        templateVersion: selectedTemplate.version,
-        templateHash: selectedTemplate.hash
-      });
-      showPreview(preview);
-      status.textContent = `${preview.warnings.length ? 'Warnings found. ' : ''}Compilation preview is ready for ${preview.relativePath}.`;
-      status.focus();
-    }));
-
-    const historyButton = root.createEl('button', { text: 'Refresh change history' });
-    const history = root.createEl('ul', { attr: { 'aria-label': 'Change history' } });
-    historyButton.addEventListener('click', () => void (async () => {
-      try {
-        const result = await getHistory(this.transport, this.vaultRoot);
-        history.empty();
-        for (const entry of result.entries) history.createEl('li', { text: `${entry.createdAt}: ${entry.summary} (${entry.status}, rollback ${entry.rollbackStatus})` });
-      } catch (error: unknown) { status.textContent = error instanceof Error ? error.message : 'Change history is unavailable.'; status.focus(); }
-    })());
-
-    automatic.addEventListener('click', () => void run(async () => {
-      const result = await executeAutonomousMutation(
-        this.transport,
-        this.vaultRoot,
-        pathInput.value.trim(),
-        contentInput.value
-      );
-      const autonomy = await getAutonomyStatus(this.transport, this.vaultRoot);
-      renderAutonomy(autonomy);
-      status.textContent = `Automatic ${result.action} completed for ${result.relativePath}. ${autonomy.message}`;
-      status.focus();
-    }));
-
-    confirm.addEventListener('click', () => void run(async () => {
-      if (!currentPreview) return;
-      const result = await confirmNoteChange(
-        this.transport,
-        this.vaultRoot,
-        currentPreview.token
-      );
-      auditId = result.auditId;
-      clearPreview();
-      rollback.hidden = false;
-      status.textContent = `${result.action} confirmed for ${result.relativePath}. Audit ID: ${result.auditId}`;
-      status.focus();
-    }));
-
-    rollback.addEventListener('click', () => void run(async () => {
-      if (!auditId) return;
-      rollback.hidden = true;
-      showPreview(await prepareNoteRollback(this.transport, this.vaultRoot, auditId));
-    }));
-
-    const active = this.app.workspace.getActiveFile();
-    if (active) {
-      pathInput.value = active.path;
-      contentInput.value = await this.app.vault.read(active);
-      status.textContent = `Loaded ${active.path}. Edit the proposed content, then prepare a preview.`;
-    } else {
-      status.textContent = 'Enter a new or existing Markdown path and the complete proposed content.';
+    root.createEl('h1', { text: 'Changes' });
+    root.createEl('p', { text: 'Review MCP proposals before anything is written to your vault.' });
+    const navigation = root.createDiv({ cls: 'second-brain-changes-navigation', attr: { 'aria-label': 'Changes sections' } });
+    for (const [section, label] of [['pending', 'Pending reviews'], ['templates', 'Templates'], ['history', 'History']] as const) {
+      const button = navigation.createEl('button', { text: label, attr: { type: 'button' } });
+      button.dataset.section = section;
+      button.addEventListener('click', () => { void this.showSection(section); });
     }
+    this.content = root.createDiv({ cls: 'second-brain-changes-content' });
+    this.status = root.createEl('p', { attr: { role: 'status', 'aria-live': 'polite', tabindex: '-1' } });
+    this.poller = new PendingReviewPoller(
+      () => getPendingCompilationSummary(this.transport, this.vaultRoot),
+      (summary) => this.receiveSummary(summary),
+      (error) => this.announce(error instanceof Error ? `Pending reviews are offline. ${error.message}` : 'Pending reviews are offline.', true)
+    );
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    await this.showSection('pending');
+    this.poller.start();
+  }
+
+  public onClose(): Promise<void> {
+    this.poller?.stop();
+    this.poller = null;
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    return Promise.resolve();
+  }
+
+  private readonly handleVisibilityChange = (): void => {
+    this.poller?.refreshNow();
+  };
+
+  private async receiveSummary(summary: PendingCompilationSummary): Promise<void> {
+    const isNewRevision = this.lastSummary !== null && summary.revision > this.lastSummary.revision;
+    this.lastSummary = summary;
+    this.updatePendingLabel(summary.count);
+    if (isNewRevision && summary.count > 0) new Notice(`${summary.count} pending Second Brain review${summary.count === 1 ? '' : 's'}.`);
+    if (isNewRevision && this.currentSection === 'pending' && !this.content?.querySelector('[data-review-heading]')) await this.showPending(false);
+  }
+
+  private updatePendingLabel(count: number): void {
+    const button = this.containerEl.querySelector<HTMLButtonElement>('[data-section="pending"]');
+    if (button) button.textContent = `Pending reviews (${count})`;
+  }
+
+  private async showSection(section: ChangesSection): Promise<void> {
+    this.currentSection = section;
+    for (const button of Array.from(this.containerEl.querySelectorAll<HTMLButtonElement>('[data-section]'))) {
+      button.setAttribute('aria-current', button.dataset.section === section ? 'page' : 'false');
+    }
+    try {
+      if (section === 'pending') await this.showPending(true);
+      else if (section === 'templates' && this.content) await renderTemplateLibrary(this.content, this.transport, this.vaultRoot, (message, alert) => this.announce(message, alert));
+      else if (this.content) await renderOperationHistory(this.content, this.transport, this.vaultRoot);
+      this.announce(`${section === 'pending' ? 'Pending reviews' : section === 'templates' ? 'Templates' : 'History'} loaded.`);
+    } catch (error: unknown) { this.renderError(error); }
+  }
+
+  private async showPending(focusHeading: boolean): Promise<void> {
+    if (!this.content) return;
+    this.content.replaceChildren();
+    const loading = document.createElement('p');
+    loading.textContent = 'Loading pending reviews…';
+    this.content.append(loading);
+    const list = await listPendingCompilations(this.transport, this.vaultRoot);
+    renderPendingReviewList(this.content, list, (pendingId) => { void this.showReview(pendingId); });
+    this.updatePendingLabel(list.items.length);
+    if (focusHeading) this.content.querySelector<HTMLElement>('h2')?.focus();
+  }
+
+  private async showReview(pendingId: string): Promise<void> {
+    if (!this.content) return;
+    try {
+      const detail = await getPendingCompilation(this.transport, this.vaultRoot, pendingId);
+      renderCompilationReview(this.content, detail, () => { void this.showPending(true); },
+        (decision) => this.requestDecision(detail, decision),
+        (value) => { void navigator.clipboard.writeText(value)
+          .then(() => this.announce('Recovery request copied.'))
+          .catch(() => this.announce('Recovery request could not be copied. Select and copy it manually.', true)); });
+      this.content.querySelector<HTMLElement>('[data-review-heading]')?.focus();
+      this.announce(`Review loaded for ${detail.targetPath}.`);
+    } catch (error: unknown) { this.renderError(error); }
+  }
+
+  private requestDecision(detail: PendingCompilationDetail, decision: CompilationDecision): void {
+    const execute = (): void => { void this.executeDecision(detail, decision); };
+    if (decision === 'reject') new RejectProposalModal(this.app, execute).open();
+    else execute();
+  }
+
+  private async executeDecision(detail: PendingCompilationDetail, decision: CompilationDecision): Promise<void> {
+    try {
+      const result = await decidePendingCompilation(this.transport, this.vaultRoot, {
+        pendingId: detail.pendingId, revision: detail.revision, decision, decisionToken: detail.decisionToken
+      });
+      const message = result.state === 'confirmed'
+        ? `Confirmed and wrote ${detail.targetPath}. Audit ID: ${result.auditId ?? 'unavailable'}.`
+        : result.state === 'rejected'
+          ? `Rejected ${detail.targetPath}. Nothing was written.`
+          : `${detail.targetPath} finished with state ${result.state}. It was not reported as success.`;
+      await this.showPending(false);
+      this.announce(message, !['confirmed', 'rejected'].includes(result.state));
+    } catch (error: unknown) { this.renderError(error); }
+  }
+
+  private renderError(error: unknown): void {
+    if (!this.content) return;
+    const message = compilationErrorMessage(error);
+    this.content.replaceChildren();
+    const alert = document.createElement('p');
+    alert.setAttribute('role', 'alert');
+    alert.textContent = message;
+    alert.tabIndex = -1;
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.textContent = 'Refresh current section';
+    retry.addEventListener('click', () => { void this.showSection(this.currentSection); });
+    this.content.append(alert, retry);
+    alert.focus();
+    this.announce(message, true);
+  }
+
+  private announce(message: string, alert = false): void {
+    if (!this.status) return;
+    this.status.textContent = message;
+    this.status.setAttribute('role', alert ? 'alert' : 'status');
   }
 }

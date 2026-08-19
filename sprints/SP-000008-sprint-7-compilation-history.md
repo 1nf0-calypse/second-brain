@@ -2,17 +2,20 @@
 id: SP-000008
 title: Sprint 7 Backlog — Wissenskompilierung, Vorlagen und Verlauf
 version: 1.0
-status: APPROVED
+status: SUPERSEDED
 author-agent: BA (Business Analyst) + FE + BE
 date: 2026-08-15
 project: second-brain
 sprint: 7
 based-on: RM-000001@1.2, US-000006@1.1, US-000008@1.1, US-000015, US-000016, US-000003@1.1, US-000005, US-000007, UX-000001, ADR-000004
 supersedes: —
-superseded-by: —
+superseded-by: SP-000009
 ---
 
 # SP-000008: Sprint 7 — Wissenskompilierung, Vorlagen und Verlauf
+
+> ⚠️ SUPERSEDED by SP-000009 (2026-08-15) — Der abgelehnte manuelle
+> Compilation-Flow wurde durch den MCP-first-Recovery-Backlog ersetzt.
 
 ## Sprint-Ziel
 

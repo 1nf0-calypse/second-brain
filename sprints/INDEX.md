@@ -1,6 +1,6 @@
 # Sprints — Index
 
-Letzte Aktualisierung: 2026-08-15
+Letzte Aktualisierung: 2026-08-18
 
 ## Zweck
 
@@ -17,4 +17,6 @@ Sprint-Ziele, Backlogs, Schätzungen, Voraussetzungen und Risiken.
 | `SP-000005-sprint-4-controlled-mutations.md` | SP-000005 | 1.0 | APPROVED | BA+FE+BE | Sprint-4-Backlog für kontrollierte Ein-Datei-Mutationen |
 | `SP-000006-sprint-5-remote-clients-and-consent.md` | SP-000006 | 1.0 | APPROVED | BA+FE+BE | Sprint-5-Backlog für Remote-Clients und minimierten Einmal-Consent |
 | `SP-000007-sprint-6-autonomie-budgets.md` | SP-000007 | 1.0 | APPROVED | BA+FE+BE | Sprint-6-Backlog für Human-on/out, 60/60-Budgets, Pause und Audit-Rollback |
-| `SP-000008-sprint-7-compilation-history.md` | SP-000008 | 1.0 | APPROVED | BA+FE+BE | Drei Stories für Kompilierungsvorschau, Vorlagen und Verlauf |
+| `SP-000008-sprint-7-compilation-history.md` | SP-000008 | 1.0 | SUPERSEDED | BA+FE+BE | Abgelehnter manueller Sprint-7-Backlog; durch SP-000009 ersetzt |
+| `SP-000009-sprint-7-mcp-first-recovery.md` | SP-000009 | 1.0 | SUPERSEDED | BA+FE+BE | 42-SP-Recovery-Backlog; durch Gate-8-Korrekturschnitt SP-000010 ersetzt |
+| `SP-000010-sprint-7-gate-8-corrections.md` | SP-000010 | 1.0 | APPROVED | BA+FE+BE | 8-SP-Delta für Saga, Template-Recovery/-Drift und verbindliche Warn-Microcopy |

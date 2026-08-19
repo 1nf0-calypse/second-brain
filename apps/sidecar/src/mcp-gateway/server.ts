@@ -1,6 +1,6 @@
-// Beschreibung: Capability-basiertes MCP-Gateway für Lesen, Mutationen und serverseitige Autonomie.
-// Artefakte:    US-000003; US-000011; US-000014; ADR-000001; ADR-000004
-// Agent:        BE — 2026-08-13
+// Beschreibung: Capability-basiertes MCP-Gateway für Lesen, Vorschläge und serverseitige Autonomie.
+// Artefakte:    US-000003; US-000011; US-000014; US-000017; ADR-000001; ADR-000004; ADR-000007
+// Agent:        BE — 2026-08-15
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
@@ -13,7 +13,7 @@ import {
   MutationPrepareRequestSchema,
   AutonomyActivationRequestSchema,
   AutonomousMutationRequestSchema,
-  CompilationPrepareRequestSchema,
+  CompilationStatusRequestSchema,
   NodeDetailRequestSchema,
   RelationshipQueryRequestSchema,
   RollbackPrepareRequestSchema,
@@ -26,6 +26,7 @@ import { validateVaultRoot } from '../policy/vault-root.js';
 import { SearchService } from '../search/search-service.js';
 import { toMcpToolError } from '../errors/public-error.js';
 import { MutationService } from '../mutations/mutation-service.js';
+import { CompilationInboxService } from '../compilations/compilation-inbox-service.js';
 
 /**
  * Startet den MCP-Server über stdio.
@@ -40,6 +41,13 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
   const index = new LocalIndex(indexPath);
   const search = new SearchService(canonicalVault, index);
   const mutations = new MutationService(canonicalVault, indexPath);
+  const compilations = new CompilationInboxService(
+    canonicalVault,
+    indexPath,
+    'mcp:claude-desktop',
+    'Claude Desktop'
+  );
+  await compilations.recoverApplying();
   // Der Low-Level-Server ist hier bewusst gewählt, weil die Capability-Liste statisch und
   // streng read-only ist; der High-Level-Wrapper würde keine zusätzliche Policy liefern.
   // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -165,9 +173,37 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
         }
       }
       ,{
-        name: 'second_brain_prepare_compilation',
-        description: 'Creates a read-only single-note compilation preview bound to selected local sources and a template version.',
-        inputSchema: { type: 'object', properties: { targetPath: { type: 'string' }, content: { type: 'string' }, sources: { type: 'array' }, templateId: { type: 'string' }, templateVersion: { type: 'integer' }, templateHash: { type: 'string' } }, required: ['targetPath', 'content', 'sources', 'templateId', 'templateVersion', 'templateHash'], additionalProperties: false }
+        name: 'second_brain_submit_compilation',
+        description: 'Submits one source-bound compilation proposal to the local Obsidian review inbox. Never changes the vault.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            contractVersion: { type: 'string', const: '3.0.0' },
+            clientRequestId: { type: 'string', minLength: 1, maxLength: 128 },
+            target: {
+              type: 'object',
+              properties: { relativePath: { type: 'string' }, content: { type: 'string', maxLength: 2000000 } },
+              required: ['relativePath', 'content'], additionalProperties: false
+            },
+            sources: {
+              type: 'array', minItems: 1, maxItems: 20,
+              items: { type: 'object', properties: { relativePath: { type: 'string' }, expectedHash: { type: 'string', minLength: 64, maxLength: 64 } }, required: ['relativePath', 'expectedHash'], additionalProperties: false }
+            },
+            template: {
+              anyOf: [
+                { type: 'null' },
+                { type: 'object', properties: { id: { type: 'string', format: 'uuid' }, version: { type: 'integer', minimum: 1 }, hash: { type: 'string', minLength: 64, maxLength: 64 } }, required: ['id', 'version', 'hash'], additionalProperties: false }
+              ]
+            }
+          },
+          required: ['contractVersion', 'clientRequestId', 'target', 'sources'],
+          additionalProperties: false
+        }
+      },
+      {
+        name: 'second_brain_compilation_status',
+        description: 'Reads the state of one proposal submitted by this MCP client. Returns no decision token.',
+        inputSchema: { type: 'object', properties: { pendingId: { type: 'string', format: 'uuid' } }, required: ['pendingId'], additionalProperties: false }
       },
       {
         name: 'second_brain_prepare_template',
@@ -244,9 +280,13 @@ export async function startMcpServer(vaultRoot: string, indexPath: string): Prom
         const result = await mutations.prepare(input.relativePath, input.content);
         return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
       }
-      if (request.params.name === 'second_brain_prepare_compilation') {
-        const input = CompilationPrepareRequestSchema.parse(request.params.arguments ?? {});
-        const result = await mutations.prepareCompilation(input);
+      if (request.params.name === 'second_brain_submit_compilation') {
+        const result = await compilations.submit(request.params.arguments ?? {});
+        return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
+      }
+      if (request.params.name === 'second_brain_compilation_status') {
+        const input = CompilationStatusRequestSchema.parse(request.params.arguments ?? {});
+        const result = compilations.status(input);
         return { content: [{ type: 'text' as const, text: JSON.stringify(result) }] };
       }
       if (request.params.name === 'second_brain_prepare_template') {

@@ -1,12 +1,14 @@
-// Beschreibung: Prüft den realen Node-Kindprozess des Obsidian-Setup-Transports.
-// Artefakte:    US-000011; US-000012; BUG-000002; BUG-000003
-// Agent:        FE — 2026-07-31
-import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
+// Beschreibung: Prüft den realen Node-Kindprozess einschließlich JSON-stdin für Pending Reviews.
+// Artefakte:    US-000011; US-000012; US-000017; BUG-000002; BUG-000003; ADR-000007
+// Agent:        BE — 2026-08-15
+import { createHash } from 'node:crypto';
+import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { RelationshipQueryResponseSchema } from '@second-brain/contracts';
 import { NodeSetupTransport } from '../../apps/obsidian-plugin/src/ipc/node-setup-transport.js';
+import { CompilationInboxService } from '../../apps/sidecar/src/compilations/compilation-inbox-service.js';
 
 describe('NodeSetupTransport', () => {
   it('startet den Sidecar mit einer expliziten Node-Runtime', async () => {
@@ -129,4 +131,30 @@ describe('NodeSetupTransport', () => {
     await expect(transport.confirmMutation(vaultRoot, preview.token))
       .rejects.toThrow('CONFIRMATION_INVALID');
   }, 15_000);
+
+  it('transportiert große Pending-Payloads über JSON-stdin und bewahrt Decision-Codes', async () => {
+    const vaultRoot = await mkdtemp(join(tmpdir(), 'second-brain-transport-compilation-'));
+    await mkdir(join(vaultRoot, '.obsidian'));
+    await mkdir(join(vaultRoot, '.second-brain'));
+    await writeFile(join(vaultRoot, 'Source.md'), 'facts');
+    const databasePath = join(vaultRoot, '.second-brain', 'index.sqlite');
+    const service = new CompilationInboxService(vaultRoot, databasePath, 'mcp:test', 'Test MCP');
+    const submitted = await service.submit({
+      contractVersion: '3.0.0', clientRequestId: 'transport-request',
+      target: { relativePath: 'Result.md', content: `# Result\n${'x'.repeat(128_000)}` },
+      sources: [{ relativePath: 'Source.md', expectedHash: createHash('sha256').update('facts').digest('hex') }],
+      template: null
+    });
+    service.close();
+    const transport = new NodeSetupTransport(resolve('dist/sidecar/main.js'), process.execPath);
+    await expect(transport.pendingCompilationSummary(vaultRoot)).resolves.toMatchObject({ count: 1 });
+    await expect(transport.listPendingCompilations(vaultRoot, { limit: 10 })).resolves.toMatchObject({ items: [expect.objectContaining({ pendingId: submitted.pendingId })] });
+    const detail = await transport.getPendingCompilation(vaultRoot, { pendingId: submitted.pendingId }) as { revision: number; decisionToken: string; content: string };
+    expect(detail.content).toHaveLength(128_009);
+    await expect(transport.decidePendingCompilation(vaultRoot, {
+      pendingId: submitted.pendingId, revision: detail.revision,
+      decision: 'reject', decisionToken: detail.decisionToken
+    })).resolves.toMatchObject({ state: 'rejected' });
+    await expect(readFile(join(vaultRoot, 'Result.md'), 'utf8')).rejects.toMatchObject({ code: 'ENOENT' });
+  }, 20_000);
 });

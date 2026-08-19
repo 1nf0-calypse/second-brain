@@ -2,18 +2,21 @@
 id: TP-000008
 title: Testplan Second Brain Sprint 7
 version: 1.0
-status: APPROVED
+status: SUPERSEDED
 author-agent: QA (QA Engineer)
 date: 2026-08-15
 project: second-brain
 sprint: 7
 based-on: US-000015, US-000016, US-000008@1.1, SP-000008, US-000003@1.1, US-000007, UX-000001, ADR-000004
 supersedes: —
-superseded-by: —
+superseded-by: TP-000009
 ablage: projects/second-brain/testing/
 ---
 
 # Testplan: Second Brain — Sprint 7
+
+> ⚠️ SUPERSEDED by TP-000009 (2026-08-15) — Der manuelle US-000015/SP-000008-Flow
+> wurde durch den MCP-first Recovery-Scope aus US-000017/SP-000009 ersetzt.
 
 ## 1. Testumfang
 

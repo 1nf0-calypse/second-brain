@@ -1,9 +1,11 @@
 // Beschreibung: Versionierte Laufzeitverträge für Setup, Suche, Beziehungen und Mutationen.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; ADR-000001; ADR-000004
-// Agent:        BE — 2026-07-31
+// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; US-000017; ADR-000001; ADR-000004; ADR-000007
+// Agent:        BE — 2026-08-15
 import { z } from 'zod';
 
-export const CONTRACT_VERSION = '1.0.0';
+export * from './compilation.js';
+
+export const CONTRACT_VERSION = '3.0.0';
 
 export const ErrorCodeSchema = z.enum([
   'INVALID_VAULT',
@@ -22,7 +24,15 @@ export const ErrorCodeSchema = z.enum([
   'PROVIDER_NOT_APPROVED',
   'PROVIDER_SCOPE_MISMATCH',
   'CONSENT_REQUIRED',
-  'CONSENT_EXPIRED'
+  'CONSENT_EXPIRED',
+  'COMPILATION_INVALID_SOURCE',
+  'COMPILATION_INVALID_TARGET',
+  'COMPILATION_TEMPLATE_NOT_FOUND',
+  'COMPILATION_DRIFT',
+  'CONFIRMATION_EXPIRED',
+  'CONFIRMATION_ALREADY_DECIDED',
+  'PENDING_CAPACITY_REACHED',
+  'IDEMPOTENCY_CONFLICT'
 ]);
 
 export const ErrorResponseSchema = z.object({

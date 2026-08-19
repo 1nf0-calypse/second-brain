@@ -1,6 +1,6 @@
-// Beschreibung: Registriert native Setup-, Search- und Relationship-Views in Obsidian.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; UX-000001; UX-000002
-// Agent:        FE — 2026-07-31
+// Beschreibung: Registriert native Setup-, Search-, Relationship- und Changes-Views in Obsidian.
+// Artefakte:    US-000011; US-000012; US-000013; US-000017; US-000016; US-000008; UX-000004
+// Agent:        FE — 2026-08-15
 import { FileSystemAdapter, Plugin } from 'obsidian';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -87,12 +87,12 @@ export default class SecondBrainPlugin extends Plugin {
         void this.openSearch();
       }
     });
-    this.addRibbonIcon('file-pen-line', 'Review a Second Brain note change', () => {
+    this.addRibbonIcon('file-check-2', 'Review Second Brain changes', () => {
       void this.openMutations();
     });
     this.addCommand({
       id: 'open-mutations',
-      name: 'Review and confirm a note change',
+      name: 'Open Changes and review pending compilations',
       callback: () => {
         void this.openMutations();
       }

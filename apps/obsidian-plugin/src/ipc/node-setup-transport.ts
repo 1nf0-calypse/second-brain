@@ -1,6 +1,6 @@
-// Beschreibung: Lokaler Kindprozess-Transport mit operationsspezifischen Zeitlimits.
-// Artefakte:    US-000003; US-000011; US-000014; BUG-000003; ADR-000001; ADR-000004
-// Agent:        BE — 2026-08-13
+// Beschreibung: Lokaler Kindprozess-Transport mit operationsspezifischen Zeitlimits und JSON-stdin.
+// Artefakte:    US-000003; US-000011; US-000014; US-000017; BUG-000003; ADR-000001; ADR-000004; ADR-000007
+// Agent:        BE — 2026-08-15
 import { execFile } from 'node:child_process';
 import {
   CONTRACT_VERSION,
@@ -10,13 +10,15 @@ import type { SetupTransport } from './setup-client.js';
 import type { SearchTransport } from './search-client.js';
 import type { RelationshipTransport } from './relationship-client.js';
 import type { MutationTransport } from './mutation-client.js';
+import type { CompilationInboxTransport } from './compilation-client.js';
+import type { TemplateStoreTransport } from './template-client.js';
 
 const CONNECTION_TIMEOUT_MS = 5_000;
 const SEARCH_TIMEOUT_MS = 10_000;
 const INDEX_TIMEOUT_MS = 60_000;
 const MUTATION_TIMEOUT_MS = 60_000;
 
-export class NodeSetupTransport implements SetupTransport, SearchTransport, RelationshipTransport, MutationTransport {
+export class NodeSetupTransport implements SetupTransport, SearchTransport, RelationshipTransport, MutationTransport, CompilationInboxTransport, TemplateStoreTransport {
   public constructor(
     private readonly sidecarEntry: string,
     private readonly nodeExecutable = 'node'
@@ -224,6 +226,38 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
     return this.run('--change-history', vaultRoot, {}, MUTATION_TIMEOUT_MS);
   }
 
+  public pendingCompilationSummary(vaultRoot: string): Promise<unknown> {
+    return this.run('--pending-compilation-summary', vaultRoot, {}, MUTATION_TIMEOUT_MS);
+  }
+
+  public listPendingCompilations(vaultRoot: string, request: unknown): Promise<unknown> {
+    return this.run('--list-pending-compilations', vaultRoot, {}, MUTATION_TIMEOUT_MS, undefined, request);
+  }
+
+  public getPendingCompilation(vaultRoot: string, request: unknown): Promise<unknown> {
+    return this.run('--get-pending-compilation', vaultRoot, {}, MUTATION_TIMEOUT_MS, undefined, request);
+  }
+
+  public decidePendingCompilation(vaultRoot: string, request: unknown): Promise<unknown> {
+    return this.run('--decide-pending-compilation', vaultRoot, {}, MUTATION_TIMEOUT_MS, undefined, request);
+  }
+
+  public operationHistory(vaultRoot: string, request: unknown): Promise<unknown> {
+    return this.run('--operation-history', vaultRoot, {}, MUTATION_TIMEOUT_MS, undefined, request);
+  }
+
+  public listTemplates(vaultRoot: string, request: unknown): Promise<unknown> {
+    return this.run('--list-templates', vaultRoot, {}, MUTATION_TIMEOUT_MS, undefined, request);
+  }
+
+  public readTemplate(vaultRoot: string, request: unknown): Promise<unknown> {
+    return this.run('--read-template', vaultRoot, {}, MUTATION_TIMEOUT_MS, undefined, request);
+  }
+
+  public writeTemplateVersion(vaultRoot: string, request: unknown): Promise<unknown> {
+    return this.run('--write-template-version', vaultRoot, {}, MUTATION_TIMEOUT_MS, undefined, request);
+  }
+
   /**
    * Führt eine Sidecar-Operation aus und bewahrt validierte öffentliche Fehlercodes.
    * @param operation CLI-Operation.
@@ -231,6 +265,7 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
    * @param operationEnvironment Operationsspezifische Umgebungswerte.
    * @param timeout Maximale Laufzeit in Millisekunden.
    * @param signal Optionales Abbruchsignal.
+   * @param stdinPayload Optionale große JSON-Nutzlast für stdin statt Umgebungsvariablen.
    * @returns Geparste Erfolgsantwort.
    * @throws Bei Abbruch, Timeout, validiertem Sidecar-Fehler oder ungültiger Antwort.
    * @sideEffect Startet genau einen lokalen Node-Prozess.
@@ -240,10 +275,11 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
     vaultRoot: string,
     operationEnvironment: Readonly<Record<string, string>>,
     timeout: number,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    stdinPayload?: unknown
   ): Promise<unknown> {
     return new Promise((resolve, reject) => {
-      execFile(
+      const child = execFile(
         this.nodeExecutable,
         [this.sidecarEntry, operation],
         {
@@ -284,6 +320,7 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
           }
         }
       );
+      if (stdinPayload !== undefined) child.stdin?.end(JSON.stringify(stdinPayload));
     });
   }
 }

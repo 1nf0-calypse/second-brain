@@ -1,7 +1,7 @@
 ---
 id: US-000006
 title: Wissenskompilierung mit anpassbaren Vorlagen
-version: 1.1
+version: 1.2
 status: APPROVED
 author-agent: BA (Business Analyst)
 date: 2026-08-15
@@ -54,7 +54,7 @@ Blockiert durch US-000003 und US-000005.
 
 ## Sprint-7-Schnitt
 
-US-000015 liefert die quellengebundene Vorschau, US-000016 die versionierten lokalen
+US-000017 liefert die MCP-first eingereichte, persistente Prüfung, US-000016 die versionierten lokalen
 Vorlagen. Der MCP-Client liefert den fachlichen Kandidaten; Second Brain führt keinen neuen
 Provider-Aufruf oder LLM-Schlüssel ein und kontrolliert Quellen, Vorlage, Vorschau und die
 nachfolgende Mutation lokal.
@@ -63,5 +63,6 @@ nachfolgende Mutation lokal.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.2 | 2026-08-15 | Veraltete US-000015-Referenz auf den freigegebenen MCP-first-Slice US-000017 korrigiert | BA+FE+BE |
 | 1.1 | 2026-08-15 | Sprint-7-Schnitt und lokale Kontrollgrenze präzisiert | BA+FE+BE |
 | 1.0 | 2026-07-30 | Initiale Umbrella-Story | BA |

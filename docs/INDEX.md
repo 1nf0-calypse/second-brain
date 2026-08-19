@@ -2,7 +2,7 @@
 
 Nutzerorientierte Anleitungen und Release-Informationen für Second Brain MCP.
 
-Letzte Aktualisierung: 2026-08-15
+Letzte Aktualisierung: 2026-08-19
 
 | Datei | ID | Version | Status | Kurzbeschreibung |
 |---|---|---|---|---|
@@ -21,3 +21,5 @@ Letzte Aktualisierung: 2026-08-15
 | `RN-000005-sprint-5.md` | RN-000005 | 1.0 | APPROVED | Release Notes für Sprint 5 |
 | `DOC-000007-autonomie-budgets-und-pause.md` | DOC-000007 | 1.0 | APPROVED | Automationsmodi, 60/60-Budget, Pause und Sicherheitsgrenzen |
 | `RN-000006-sprint-6.md` | RN-000006 | 1.0 | APPROVED | Release Notes für Sprint 6 |
+| `DOC-000008-mcp-vorschlaege-pruefen.md` | DOC-000008 | 1.0 | APPROVED | MCP-Vorschläge, Warnungen, Vorlagen und Verlauf prüfen |
+| `RN-000007-sprint-7.md` | RN-000007 | 1.0 | APPROVED | Release Notes für Sprint 7 |

@@ -1,6 +1,6 @@
 # Architecture — Index
 
-Letzte Aktualisierung: 2026-08-12
+Letzte Aktualisierung: 2026-08-15
 
 | Datei | ID | Version | Status | Agent | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -10,4 +10,5 @@ Letzte Aktualisierung: 2026-08-12
 | `ADR-000004-security-and-mutations.md` | ADR-000004 | 1.0 | APPROVED | AR | Capability-, Consent-, Audit- und Rollback-Modell |
 | `ADR-000005-branching-strategy.md` | ADR-000005 | 1.0 | APPROVED | AR | Sprint-Worktree, Merge und SemVer |
 | `ADR-000006-client-connectivity-and-external-data-flow.md` | ADR-000006 | 1.0 | APPROVED | AR | Client-Matrix, Remote-Grenze und Provider-Consent für Sprint 5 |
+| `ADR-000007-mcp-first-pending-confirmation.md` | ADR-000007 | 1.0 | APPROVED | AR | Durable MCP-Inbox, Contract 3, Schema 6 und Pending-Lebenszyklus |
 | `STRUCTURE.md` | STRUCTURE | 1.0 | APPROVED | AR | Projekt-, Modul- und Teststruktur |

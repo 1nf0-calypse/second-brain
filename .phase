@@ -3,15 +3,15 @@
 # Kopiere dieses Template nach projects/<projektname>/.phase beim Start.
 
 project: second-brain
-current-phase: REVIEW
-previous-phase: TESTING
-phase-started: 2026-08-15
+current-phase: DONE
+previous-phase: DOCUMENTATION
+phase-started: 2026-08-19
 sprint: 7
-last-agent: QA
-last-artifact: TR-000010
+last-agent: MW
+last-artifact: RN-000007@1.0
 approval-source: transition-command
-approval-command: Freigeben
-approved-artifacts: [RM-000001@1.2, ADR-000004@1.0, UX-000001@1.0, US-000006@1.1, US-000008@1.1, US-000015@1.0, US-000016@1.0, SP-000008@1.0]
+approval-command: /manual
+approved-artifacts: [RM-000001@1.4, RM-000002@1.2, ADR-000004@1.0, ADR-000007@1.0, UX-000001@1.0, UX-000004@1.0, REQ-000002@1.0, US-000006@1.2, US-000008@1.1, US-000016@1.0, US-000017@1.0, SP-000008@1.0, SP-000009@1.0, SP-000010@1.0, TP-000009@1.1, TR-000012@1.1, TR-000013@1.0, RV-000010@1.0]
 worktree-path: projects/second-brain/.worktrees/sprint-6
 worktree-branch: feature/sprint-6
 # Phasen-History (wird vom Orchestrator gepflegt)
@@ -384,4 +384,60 @@ history:
     artifacts: [TP-000008]
   - phase: REVIEW
     started: 2026-08-15
-    artifacts: [TR-000010]
+    artifacts: [TR-000010, RV-000008]
+    completed: 2026-08-15
+  - phase: REQUIREMENTS
+    started: 2026-08-15
+    artifacts: [REQ-000002, US-000017, RM-000002]
+    completed: 2026-08-15
+  - phase: ARCHITECTURE
+    started: 2026-08-15
+    artifacts: [ADR-000007]
+    completed: 2026-08-15
+  - phase: UX
+    started: 2026-08-15
+    completed: 2026-08-15
+    artifacts: [UX-000004]
+  - phase: REFINEMENT
+    started: 2026-08-15
+    completed: 2026-08-15
+    artifacts: [RM-000001@1.3, RM-000002@1.1, US-000006@1.2, SP-000009]
+  - phase: IMPLEMENTATION
+    started: 2026-08-15
+    completed: 2026-08-15
+    artifacts: [SP-000009@1.0, US-000017, US-000016, US-000008]
+  - phase: TESTING
+    started: 2026-08-15
+    completed: 2026-08-16
+    artifacts: [SP-000009@1.0, TP-000009@1.0, TR-000011@1.0, BUG-000010, BUG-000011, BUG-000012]
+  - phase: IMPLEMENTATION
+    started: 2026-08-16
+    completed: 2026-08-16
+    artifacts: [BUG-000010@1.2, BUG-000011@1.2, BUG-000012@1.2]
+  - phase: TESTING
+    started: 2026-08-16
+    completed: 2026-08-16
+    artifacts: [TP-000009@1.1, TR-000012@1.1, BUG-000010@1.3, BUG-000011@1.3, BUG-000012@1.3]
+  - phase: REVIEW
+    started: 2026-08-16
+    completed: 2026-08-18
+    artifacts: [TP-000009@1.1, TR-000012@1.1, RV-000009@1.0]
+  - phase: IMPLEMENTATION
+    started: 2026-08-18
+    artifacts: [RV-000009@1.0]
+    completed: 2026-08-18
+  - phase: REFINEMENT
+    started: 2026-08-18
+    completed: 2026-08-18
+    artifacts: [SP-000010@1.0, RM-000001@1.4, RM-000002@1.2]
+  - phase: IMPLEMENTATION
+    started: 2026-08-18
+    completed: 2026-08-18
+    artifacts: [SP-000010@1.0]
+  - phase: TESTING
+    started: 2026-08-18
+    completed: 2026-08-18
+    artifacts: [TP-000009@1.1, TR-000013@1.0]
+  - phase: REVIEW
+    started: 2026-08-18
+    artifacts: [TR-000013@1.0]

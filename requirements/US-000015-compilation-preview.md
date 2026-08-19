@@ -1,8 +1,8 @@
 ---
 id: US-000015
 title: Quellengebundene Kompilierungsvorschau
-version: 1.0
-status: APPROVED
+version: 1.1
+status: SUPERSEDED
 author-agent: BA (Business Analyst)
 date: 2026-08-15
 project: second-brain
@@ -11,10 +11,15 @@ epic: Wissensmodell
 priority: Must
 sprint: 7
 supersedes: —
-superseded-by: —
+superseded-by: US-000017
 ---
 
 # US-000015: Quellengebundene Kompilierungsvorschau
+
+> **Ersetzt durch US-000017.** Die ursprüngliche Story ließ offen, dass interne
+> Eingabeparameter als manuelle UI-Felder umgesetzt werden konnten. Nach RV-000008 ist
+> stattdessen ein durchgängiger MCP-first-Flow mit persistentem `Pending Confirmation`
+> verbindlich.
 
 ## User Story
 
@@ -64,3 +69,10 @@ UND keine Berechtigung, kein Pfad und keine Aktion wird aus dem Quelltext abgele
 
 Eigene LLM-Ausführung, automatische Mehrdatei-Kompilation, Löschen, Verschieben,
 Umbenennen, Konflikt-Merge und Wahrheitsgarantie.
+
+## Änderungshistorie
+
+| Version | Datum | Änderung | Agent |
+|---|---|---|---|
+| 1.1 | 2026-08-15 | Nach abgelehntem Review durch US-000017 ersetzt | BA |
+| 1.0 | 2026-08-15 | Initiale Story | BA |

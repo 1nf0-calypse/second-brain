@@ -70,16 +70,17 @@ artifacts:
   next-ids:                         # Nächste freie Nummer pro Typ
     SB: 2
     CON: 2
-    REQ: 2
-    US: 17
-    ADR: 6
+    REQ: 3
+    RM: 3
+    US: 18
+    ADR: 8
     GAP: 1
-    UX: 3
-    SP: 9
-    TP: 9
-    TR: 11
-    RV: 5
-    BUG: 7
+    UX: 5
+    SP: 11
+    TP: 10
+    TR: 14
+    RV: 10
+    BUG: 13
     DEBT: 2
     SRP: 1
     DOC: 8

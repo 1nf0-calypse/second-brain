@@ -1,6 +1,6 @@
-// Beschreibung: Sidecar-Startpunkt für MCP, Index-, Lese-, Mutations- und Autonomieoperationen.
-// Artefakte:    US-000001; US-000003; US-000007; ADR-000004; ADR-000006
-// Agent:        BE — 2026-08-13
+// Beschreibung: Sidecar-Startpunkt für MCP, Index-, Lese-, Mutations-, Inbox- und Autonomieoperationen.
+// Artefakte:    US-000001; US-000003; US-000007; US-000017; US-000008; ADR-000004; ADR-000006; ADR-000007
+// Agent:        BE — 2026-08-15
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { CONTRACT_VERSION, ConsentReceiptSchema, type ConsentReceipt } from '@second-brain/contracts';
@@ -10,6 +10,8 @@ import { LocalIndex } from '../indexing/sqlite-index.js';
 import { SearchService } from '../search/search-service.js';
 import { toPublicErrorResponse } from '../errors/public-error.js';
 import { MutationService } from '../mutations/mutation-service.js';
+import { CompilationInboxService } from '../compilations/compilation-inbox-service.js';
+import { TemplateStore } from '../templates/template-store.js';
 import {
   inspectProviderConnection,
   ConsentService,
@@ -18,6 +20,14 @@ import {
 } from '../providers/provider-service.js';
 
 const vaultRoot = process.env['SECOND_BRAIN_VAULT_ROOT'];
+
+async function readJsonStdin(): Promise<unknown> {
+  process.stdin.setEncoding('utf8');
+  const chunks: string[] = [];
+  for await (const chunk of process.stdin) chunks.push(String(chunk));
+  const text = chunks.join('').trim();
+  return text.length === 0 ? {} : JSON.parse(text);
+}
 
 async function loadConsentReceipts(file: string): Promise<ConsentReceipt[]> {
   try {
@@ -126,13 +136,30 @@ if (!vaultRoot) {
       process.argv.includes('--prepare-compilation') ||
       process.argv.includes('--prepare-template') ||
       process.argv.includes('--confirm-template') ||
-      process.argv.includes('--change-history')
+      process.argv.includes('--change-history') ||
+      process.argv.includes('--pending-compilation-summary') ||
+      process.argv.includes('--list-pending-compilations') ||
+      process.argv.includes('--get-pending-compilation') ||
+      process.argv.includes('--decide-pending-compilation') ||
+      process.argv.includes('--operation-history')
+      || process.argv.includes('--list-templates')
+      || process.argv.includes('--read-template')
+      || process.argv.includes('--write-template-version')
     ) {
       await mkdir(dirname(indexPath), { recursive: true });
       const index = new LocalIndex(indexPath);
       try {
         const search = new SearchService(vaultRoot, index);
         const mutations = new MutationService(vaultRoot, indexPath);
+        const compilations = new CompilationInboxService(
+          vaultRoot,
+          indexPath,
+          'plugin:obsidian',
+          'Obsidian'
+        );
+        const templates = new TemplateStore(vaultRoot, indexPath);
+        await templates.rebuildRegistry();
+        await compilations.recoverApplying();
         let response: unknown;
         if (process.argv.includes('--rebuild-index')) {
           response = await index.rebuild(vaultRoot);
@@ -185,6 +212,23 @@ if (!vaultRoot) {
           response = mutations.confirmTemplate(JSON.parse(process.env['SECOND_BRAIN_TEMPLATE_CONFIRMATION'] ?? '{}'));
         } else if (process.argv.includes('--change-history')) {
           response = mutations.history();
+        } else if (process.argv.includes('--pending-compilation-summary')) {
+          response = compilations.summary();
+        } else if (process.argv.includes('--list-pending-compilations')) {
+          response = compilations.list(await readJsonStdin());
+        } else if (process.argv.includes('--get-pending-compilation')) {
+          response = await compilations.detail(await readJsonStdin());
+        } else if (process.argv.includes('--decide-pending-compilation')) {
+          response = await compilations.decide(await readJsonStdin(), 'plugin:compilation:decide');
+          await index.synchronize(vaultRoot);
+        } else if (process.argv.includes('--operation-history')) {
+          response = compilations.history(await readJsonStdin());
+        } else if (process.argv.includes('--list-templates')) {
+          response = templates.list(await readJsonStdin());
+        } else if (process.argv.includes('--read-template')) {
+          response = await templates.read(await readJsonStdin());
+        } else if (process.argv.includes('--write-template-version')) {
+          response = await templates.write(await readJsonStdin());
         } else {
           response = await mutations.confirm(
             process.env['SECOND_BRAIN_CONFIRMATION_TOKEN'] ?? ''
@@ -193,6 +237,8 @@ if (!vaultRoot) {
         }
         process.stdout.write(`${JSON.stringify(response)}\n`);
         mutations.close();
+        compilations.close();
+        templates.close();
       } finally {
         index.close();
       }

@@ -1,6 +1,6 @@
 # Reviews — Index
 
-Letzte Aktualisierung: 2026-08-13
+Letzte Aktualisierung: 2026-08-18
 
 ## Zweck
 
@@ -17,3 +17,6 @@ Fachliche Nutzerabnahmen und technische Code-Reviews.
 | `RV-000005-sprint-4.md` | RV-000005 | 1.0 | APPROVED | RV | Kontrollierte Ein-Datei-Mutation in Nutzer- und Technikabnahme freigegeben |
 | `RV-000006-sprint-5.md` | RV-000006 | 1.1 | APPROVED | RV | Sprint-5-Re-Review: servergebundener Einmal-Consent und automatischer Vault-Pfad freigegeben |
 | `RV-000007-sprint-6.md` | RV-000007 | 1.5 | APPROVED | RV | Nutzerfreigabe für finale Pause-Semantik; QA-Restprüfungen akzeptiert |
+| `RV-000008-sprint-7.md` | RV-000008 | 1.0 | REJECTED | RV | MCP-first-Kompilierungsflow fachlich abgelehnt; sechs technische MAJOR-Funde |
+| `RV-000009-sprint-7-recovery.md` | RV-000009 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme akzeptiert; Gate 8 wegen Saga-, Template- und Microcopy-Funden blockiert |
+| `RV-000010-sprint-7-gate-8-corrections.md` | RV-000010 | 1.0 | APPROVED | RV | Gate-8-Korrekturen technisch und nativ freigegeben |

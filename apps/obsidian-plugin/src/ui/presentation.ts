@@ -1,7 +1,7 @@
 // Beschreibung: Laufzeitunabhängige Setup- und Index-Präsentationslogik.
-// Artefakte:    US-000011; US-000005; UX-000001; UX-000002
-// Agent:        FE — 2026-07-30
-import type { IndexStatus } from '@second-brain/contracts';
+// Artefakte:    US-000011; US-000005; US-000017; UX-000001; UX-000002; ADR-000007
+// Agent:        BE — 2026-08-15
+import { CONTRACT_VERSION, type IndexStatus } from '@second-brain/contracts';
 
 /**
  * Erstellt eine ungefährliche Vorschau ohne Secrets oder API-Keys.
@@ -21,7 +21,7 @@ export function createConfigurationPreview(
         args: [sidecarEntry],
         env: {
           SECOND_BRAIN_VAULT_ROOT: vaultRoot,
-          SECOND_BRAIN_CONTRACT_VERSION: '1.0.0'
+          SECOND_BRAIN_CONTRACT_VERSION: CONTRACT_VERSION
         }
       }
     }

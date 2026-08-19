@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 5,
+  "fixture": "schema-5-production.sql",
+  "fixtureSha256": "6dc63e33b5bfda276ca88487b16a4b74b3dd2e6f1ed1c112078d23071d1c46c4",
+  "schemaMigrations": [1, 2, 3, 4, 5],
+  "mutationPreviewTokens": ["fixture-live-preview"],
+  "compilationBindingTokensBeforeMigration": ["fixture-live-preview", "fixture-orphan-preview"],
+  "compilationBindingTokensAfterMigration": ["fixture-live-preview"],
+  "auditRows": 2,
+  "templateVersionRows": 1
+}

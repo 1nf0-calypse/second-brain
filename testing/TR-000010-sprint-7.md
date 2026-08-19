@@ -1,19 +1,22 @@
 ---
 id: TR-000010
 title: Testbericht Second Brain Sprint 7
-version: 1.0
-status: CONDITIONAL
+version: 1.1
+status: SUPERSEDED
 author-agent: QA (QA Engineer)
 date: 2026-08-15
 project: second-brain
 sprint: 7
 based-on: TP-000008@1.0, SP-000008@1.0, US-000015, US-000016, US-000008@1.1
 supersedes: —
-superseded-by: —
+superseded-by: TR-000011
 ablage: projects/second-brain/testing/
 ---
 
 # Testbericht: Second Brain — Sprint 7
+
+> **SUPERSEDED by TR-000011 (2026-08-16).** Der Recovery-Testlauf ersetzt die auf dem
+> verworfenen TP-000008/SP-000008 basierende bedingte Bewertung.
 
 ## Ergebnis
 
@@ -70,3 +73,10 @@ sind MAJOR-Review-Auflagen und kein stillschweigend bestandener Nachweis.
 Review prüft insbesondere, ob die fehlenden Nachweise funktionale Lücken oder nur fehlende
 Evidenz sind. Eine Freigabe muss die fünf MAJOR-Auflagen entweder schließen oder explizit
 als Restrisiko akzeptieren.
+
+## Änderungshistorie
+
+| Version | Datum | Änderung | Agent |
+|---|---|---|---|
+| 1.1 | 2026-08-16 | Durch Recovery-Testbericht TR-000011 ersetzt | QA |
+| 1.0 | 2026-08-15 | Initialer Sprint-7-Testbericht | QA |

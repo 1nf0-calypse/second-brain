@@ -75,6 +75,63 @@
   margin-block-start: var(--size-4-3);
 }
 
+.second-brain-changes-navigation,
+.second-brain-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-4-2);
+  margin-block: var(--size-4-3);
+}
+
+.second-brain-changes-navigation button,
+.second-brain-inline-actions button {
+  width: auto;
+}
+
+.second-brain-changes-navigation button[aria-current='page'] {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.second-brain-card-list {
+  display: grid;
+  gap: var(--size-4-3);
+  list-style: none;
+  padding: 0;
+}
+
+.second-brain-card-list > li,
+.second-brain-review-panel {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  overflow-wrap: anywhere;
+  padding: var(--size-4-3);
+}
+
+.second-brain-card-button {
+  align-items: start;
+  display: grid !important;
+  gap: var(--size-4-1);
+  text-align: start;
+}
+
+.second-brain-mutations select {
+  min-height: 2.75rem;
+  width: 100%;
+}
+
+.second-brain-state {
+  border-inline-start: 0.25rem solid var(--text-muted);
+  padding-inline-start: var(--size-4-2);
+}
+
+.second-brain-state-success { border-color: var(--color-green); }
+.second-brain-state-rejected,
+.second-brain-state-incomplete,
+.second-brain-state-conflicted,
+.second-brain-state-expired { border-color: var(--color-orange); }
+.second-brain-state-failed { border-color: var(--color-red); }
+
 .second-brain-mutation-diff {
   border: 1px solid var(--background-modifier-border);
   max-height: 24rem;
@@ -129,10 +186,20 @@
   .second-brain-actions {
     grid-template-columns: 1fr;
   }
+
+  .second-brain-changes-navigation {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .second-brain-changes-navigation button {
+    width: 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .second-brain-setup * {
+  .second-brain-setup *,
+  .second-brain-mutations * {
     scroll-behavior: auto;
     transition: none;
   }
