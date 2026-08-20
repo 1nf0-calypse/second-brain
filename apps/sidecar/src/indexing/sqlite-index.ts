@@ -1,6 +1,6 @@
 // Beschreibung: Lokaler SQLite-Index mit Delta-Synchronisierung, FTS5 und Quellen.
-// Artefakte:    US-000005; US-000012; US-000013; BUG-000004; ADR-000003
-// Agent:        BE — 2026-07-31
+// Artefakte:    US-000004; US-000005; US-000012; US-000013; BUG-000004; ADR-000003
+// Agent:        BE — 2026-08-19
 import { createHash } from 'node:crypto';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { extname, join, relative } from 'node:path';
@@ -8,8 +8,10 @@ import { DatabaseSync } from 'node:sqlite';
 import {
   SearchResponseSchema,
   NodeDetailResponseSchema,
+  LocalGraphResponseSchema,
   RelationshipQueryResponseSchema,
   type IndexStatus,
+  type LocalGraphResponse,
   type NodeDetailResponse,
   type RelationshipQueryResponse,
   type SearchResponse
@@ -366,6 +368,49 @@ export class LocalIndex {
     });
   }
 
+  // Implementiert: US-000004 — Belegbare Fokus-Projektion für die native Graphansicht
+  /**
+   * Projiziert einen begrenzten Graphen aus bereits indexierten direkten Beziehungen.
+   * @param relativePath Relative Pfadangabe der fokussierten Notiz.
+   * @param limit Maximale Anzahl direkter Kanten.
+   * @returns Laufzeitvalidierter, rein lesender Fokus-Graph.
+   * @throws Wenn die fokussierte Notiz nicht indexiert ist.
+   * @sideEffect Liest ausschließlich den lokalen abgeleiteten Index.
+   */
+  public localGraph(relativePath: string, limit = 100): LocalGraphResponse {
+    const focus = this.nodeDetail(relativePath);
+    const relationships = this.relationships(relativePath, limit).relationships;
+    const nodes = new Map<string, unknown>();
+    nodes.set(`note:${focus.relativePath}`, {
+      kind: 'note',
+      id: focus.relativePath,
+      label: focus.title,
+      relativePath: focus.relativePath,
+      resolved: true,
+      extractionStatus: focus.extractionStatus
+    });
+    for (const relationship of relationships) {
+      const target = relationship.target;
+      const key = `${target.kind}:${target.id}`;
+      if (nodes.has(key)) continue;
+      const detail = target.relativePath ? this.nodeDetailIfIndexed(target.relativePath) : null;
+      nodes.set(key, {
+        kind: target.kind,
+        id: target.id,
+        label: target.label,
+        relativePath: target.relativePath,
+        resolved: target.relativePath !== null,
+        extractionStatus: detail?.extractionStatus ?? null
+      });
+    }
+    return LocalGraphResponseSchema.parse({
+      focus,
+      nodes: [...nodes.values()],
+      relationships,
+      readOnly: true
+    });
+  }
+
   private readFiles(): IndexedFileState[] {
     return this.database
       .prepare(`
@@ -441,6 +486,19 @@ export class LocalIndex {
     if (!this.database.prepare('SELECT 1 FROM files WHERE relative_path = ?').get(relativePath)) {
       throw new Error(`Indexed note not found: ${relativePath}`);
     }
+  }
+
+  /**
+   * Liest sichere Details, ohne unaufgelöste Ziele als Notizen zu erfinden.
+   * @param relativePath Aufgelöster relativer Notizpfad.
+   * @returns Knotendetails oder `null`, falls die Notiz nicht im Index existiert.
+   * @throws Fehler des SQLite-Treibers.
+   * @sideEffect Liest ausschließlich den lokalen Index.
+   */
+  private nodeDetailIfIndexed(relativePath: string): NodeDetailResponse | null {
+    return this.database.prepare('SELECT 1 FROM files WHERE relative_path = ?').get(relativePath)
+      ? this.nodeDetail(relativePath)
+      : null;
   }
 
   private mapRelationship(

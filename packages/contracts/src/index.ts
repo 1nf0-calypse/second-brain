@@ -1,6 +1,6 @@
 // Beschreibung: Versionierte Laufzeitverträge für Setup, Suche, Beziehungen und Mutationen.
-// Artefakte:    US-000011; US-000005; US-000012; US-000013; US-000014; US-000017; ADR-000001; ADR-000004; ADR-000007
-// Agent:        BE — 2026-08-15
+// Artefakte:    US-000004; US-000011; US-000005; US-000012; US-000013; US-000014; US-000017; ADR-000001; ADR-000003; ADR-000004; ADR-000007
+// Agent:        BE — 2026-08-19
 import { z } from 'zod';
 
 export * from './compilation.js';
@@ -241,6 +241,23 @@ export const RollbackPrepareRequestSchema = z.object({
   auditId: z.string().uuid()
 }).strict();
 
+// Implementiert: US-000004 — Versionierter, rein lesender Fokus-Graph
+export const LocalGraphNodeSchema = z.object({
+  kind: RelationshipTargetKindSchema,
+  id: z.string().min(1),
+  label: z.string().min(1),
+  relativePath: z.string().min(1).nullable(),
+  resolved: z.boolean(),
+  extractionStatus: ExtractionStatusSchema.nullable()
+}).strict();
+
+export const LocalGraphResponseSchema = z.object({
+  focus: NodeDetailResponseSchema,
+  nodes: z.array(LocalGraphNodeSchema).min(1).max(201),
+  relationships: z.array(RelationshipSchema).max(200),
+  readOnly: z.literal(true)
+}).strict();
+
 export const AutonomyModeSchema = z.enum(['human-in', 'human-on', 'human-out']);
 export const AutonomyActivationRequestSchema = z.object({
   mode: z.enum(['human-on', 'human-out']),
@@ -327,6 +344,8 @@ export type RelationshipQueryRequest = z.infer<typeof RelationshipQueryRequestSc
 export type RelationshipQueryResponse = z.infer<typeof RelationshipQueryResponseSchema>;
 export type NodeDetailRequest = z.infer<typeof NodeDetailRequestSchema>;
 export type NodeDetailResponse = z.infer<typeof NodeDetailResponseSchema>;
+export type LocalGraphNode = z.infer<typeof LocalGraphNodeSchema>;
+export type LocalGraphResponse = z.infer<typeof LocalGraphResponseSchema>;
 export type MutationPrepareRequest = z.infer<typeof MutationPrepareRequestSchema>;
 export type MutationPreview = z.infer<typeof MutationPreviewSchema>;
 export type MutationConfirmRequest = z.infer<typeof MutationConfirmRequestSchema>;

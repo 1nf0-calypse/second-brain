@@ -1,6 +1,6 @@
 // Beschreibung: Lokaler Kindprozess-Transport mit operationsspezifischen Zeitlimits und JSON-stdin.
-// Artefakte:    US-000003; US-000011; US-000014; US-000017; BUG-000003; ADR-000001; ADR-000004; ADR-000007
-// Agent:        BE — 2026-08-15
+// Artefakte:    US-000003; US-000004; US-000011; US-000014; US-000017; BUG-000003; ADR-000001; ADR-000003; ADR-000004; ADR-000007
+// Agent:        BE — 2026-08-19
 import { execFile } from 'node:child_process';
 import {
   CONTRACT_VERSION,
@@ -9,6 +9,7 @@ import {
 import type { SetupTransport } from './setup-client.js';
 import type { SearchTransport } from './search-client.js';
 import type { RelationshipTransport } from './relationship-client.js';
+import type { LocalGraphTransport } from './local-graph-client.js';
 import type { MutationTransport } from './mutation-client.js';
 import type { CompilationInboxTransport } from './compilation-client.js';
 import type { TemplateStoreTransport } from './template-client.js';
@@ -18,7 +19,7 @@ const SEARCH_TIMEOUT_MS = 10_000;
 const INDEX_TIMEOUT_MS = 60_000;
 const MUTATION_TIMEOUT_MS = 60_000;
 
-export class NodeSetupTransport implements SetupTransport, SearchTransport, RelationshipTransport, MutationTransport, CompilationInboxTransport, TemplateStoreTransport {
+export class NodeSetupTransport implements SetupTransport, SearchTransport, RelationshipTransport, LocalGraphTransport, MutationTransport, CompilationInboxTransport, TemplateStoreTransport {
   public constructor(
     private readonly sidecarEntry: string,
     private readonly nodeExecutable = 'node'
@@ -180,6 +181,29 @@ export class NodeSetupTransport implements SetupTransport, SearchTransport, Rela
     return this.run('--prepare-rollback', vaultRoot, {
       SECOND_BRAIN_AUDIT_ID: auditId
     }, MUTATION_TIMEOUT_MS);
+  }
+
+  /**
+   * Liest die begrenzte lokale Graphprojektion einer indexierten Notiz.
+   * @param vaultRoot Freigegebener Vault-Root.
+   * @param relativePath Relativer Pfad der Fokusnotiz.
+   * @param signal Optionales Abbruchsignal.
+   * @returns Ungeprüfte Sidecar-Antwort.
+   * @throws Bei Abbruch, Timeout, Prozess- oder Vertragsfehlern.
+   * @sideEffect Startet einen lokalen read-only Prozess.
+   */
+  public localGraph(
+    vaultRoot: string,
+    relativePath: string,
+    signal?: AbortSignal
+  ): Promise<unknown> {
+    return this.run(
+      '--local-graph',
+      vaultRoot,
+      { SECOND_BRAIN_RELATIONSHIP_PATH: relativePath },
+      SEARCH_TIMEOUT_MS,
+      signal
+    );
   }
 
   public executeAutonomousMutation(

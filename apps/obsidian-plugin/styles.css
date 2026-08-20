@@ -5,6 +5,7 @@
 .second-brain-setup,
 .second-brain-search,
 .second-brain-relationships,
+.second-brain-local-graph,
 .second-brain-mutations {
   box-sizing: border-box;
   max-width: 48rem;
@@ -56,6 +57,7 @@
 }
 
 .second-brain-relationships button,
+.second-brain-local-graph button,
 .second-brain-mutations input,
 .second-brain-mutations textarea,
 .second-brain-mutations button {
@@ -154,6 +156,59 @@
   overflow-wrap: anywhere;
   padding: var(--size-4-3);
 }
+
+.second-brain-local-graph fieldset {
+  border: 1px solid var(--background-modifier-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-4-2);
+  margin-block: var(--size-4-3);
+  padding: var(--size-4-3);
+}
+
+.second-brain-local-graph label {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--size-4-1);
+}
+
+.second-brain-local-graph input[type='checkbox'] {
+  accent-color: var(--interactive-accent);
+}
+
+.second-brain-local-graph fieldset button {
+  margin-inline-start: auto;
+  min-height: 2.25rem;
+  width: auto;
+}
+
+.second-brain-local-graph-detail {
+  border: 1px solid var(--background-modifier-border);
+  margin-block: var(--size-4-3);
+  overflow-wrap: anywhere;
+  padding: var(--size-4-3);
+}
+
+.second-brain-local-graph-canvas {
+  background: var(--background-primary-alt);
+  border: 1px solid var(--background-modifier-border);
+  display: block;
+  height: auto;
+  margin-block: var(--size-4-3);
+  max-width: 100%;
+  min-height: 16rem;
+  width: 100%;
+}
+
+.second-brain-local-graph-canvas.is-hidden { display: none; }
+.second-brain-local-graph-canvas-summary {
+  color: var(--text-muted);
+  margin-block: calc(var(--size-4-1) * -1) var(--size-4-3);
+}
+.second-brain-local-graph-edge { stroke: var(--text-muted); stroke-width: 1.5; }
+.second-brain-local-graph-node { fill: var(--background-secondary); stroke: var(--interactive-accent); stroke-width: 2; }
+.second-brain-local-graph-focus { fill: var(--interactive-accent); }
+.second-brain-local-graph-label { fill: var(--text-normal); font-size: 12px; pointer-events: none; }
 
 .second-brain-search-results {
   display: grid;

@@ -1,6 +1,6 @@
 # Architecture — Index
 
-Letzte Aktualisierung: 2026-08-15
+Letzte Aktualisierung: 2026-08-19
 
 | Datei | ID | Version | Status | Agent | Kurzbeschreibung |
 |---|---|---|---|---|---|
@@ -12,3 +12,4 @@ Letzte Aktualisierung: 2026-08-15
 | `ADR-000006-client-connectivity-and-external-data-flow.md` | ADR-000006 | 1.0 | APPROVED | AR | Client-Matrix, Remote-Grenze und Provider-Consent für Sprint 5 |
 | `ADR-000007-mcp-first-pending-confirmation.md` | ADR-000007 | 1.0 | APPROVED | AR | Durable MCP-Inbox, Contract 3, Schema 6 und Pending-Lebenszyklus |
 | `STRUCTURE.md` | STRUCTURE | 1.0 | APPROVED | AR | Projekt-, Modul- und Teststruktur |
+| `SRP-000001-windows-vektorsuche-und-anhangsextraktion.md` | SRP-000001 | 1.0 | APPROVED | AR | Semantik aus Sprint 8 verschieben; Vector-Entscheid vorziehen |

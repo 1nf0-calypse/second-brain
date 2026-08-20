@@ -1,10 +1,10 @@
 ---
 id: RM-000001
 title: Roadmap / Release-Plan — Second Brain
-version: 1.4
+version: 1.6
 status: APPROVED
 author-agent: BA (Business Analyst)
-date: 2026-08-15
+date: 2026-08-19
 project: second-brain
 based-on: REQ-000001, REQ-000002, US-000001–US-000017, BUG-000001–BUG-000006, DEBT-000001, RM-000002
 supersedes: —
@@ -49,7 +49,7 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
 | US-000017 | MCP-first Pending Compilation | Must | 21 | XL | 7 | 2026-08-15 | 2026-08-29 | US-000003, US-000005, US-000007, US-000016, ADR-000007 |
 | US-000016 | Versionierte projektlokale Vorlagen | Must | 13 | L | 7 | 2026-08-15 | 2026-08-29 | US-000006, US-000007, ADR-000007 |
 | US-000008 | Lokale Mutationshistorie | Must im Recovery-Slice | 8 | L | 7 | 2026-08-15 | 2026-08-29 | US-000003, ADR-000007 |
-| US-000002 | Suche: semantisch und Anhänge | Must | 13 | L | 8 | 2026-09-23 | 2026-10-07 | US-000012; Windows-Vector-/Extraktionsentscheidung |
+| US-000002 | Suche: semantisch und Anhänge | Must | 13 | L | 9 | 2026-10-07 | 2026-10-21 | US-000012; ADR für lokale Embeddings/Windows-Paket |
 | US-000004 | Exploration: visuelle Graphansicht | Must | 8 | L | 8 | 2026-09-23 | 2026-10-07 | US-000013, US-000005 |
 | US-000009 | campaignworld-Integrationsgrenze | Should | 5 | M | 10 | 2026-10-21 | 2026-11-04 | US-000002, US-000004; separater Vertrag |
 | US-000010 | Android-Nutzung nach Desktop-MVP | Should | 8 | L | 11 | 2026-11-04 | 2026-11-18 | Desktop-MVP; Plattformvalidierung |
@@ -68,6 +68,7 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
 | 6 | US-000003 | 13 SP | 26 SP | Die entschiedene Human-on/out-Policy verlangt serverseitige Budgetdurchsetzung, Pause, Audit/Rollback und vollständige Sicherheits- sowie UI-Abnahme. |
 | 7 | US-000017, US-000016, US-000008 | 26 SP Recovery-Grobplanung nach abgelehnten 23 SP | 42 SP | Contract 3, Schema 6, durable Inbox, Write-ahead-Recovery, komponentisierte Plugin-UI und echte Prozess-/Restart-/headed-E2E-Nachweise wurden im Refinement vollständig geschnitten. |
 | 7 Gate-8-Rücklauf | US-000017, US-000016, US-000008 | 42 SP implementierter Recovery-Schnitt | 50 SP kumuliert (8 SP Rework) | RV-000009 identifizierte ein Post-Write-Saga-Fenster, fehlende reale Template-Dateidrift-/Registry-Recovery und abweichende Warn-Microcopy. SP-000010 schneidet diese lokalen Korrekturen ohne neuen Produktscope. |
+| 8 | US-000002 | Sprint-8-Semantik und Anhänge | Sprint 9; Sprint 8 liefert US-000004 | SRP-000001 bewertet Vector-/Extraktions-Paketierung für Windows als noch nicht releasebereit. |
 | 1–4 | RM-000001 | Keine Roadmap vorhanden | Historische Liefer-Slices nachträglich eingeordnet | Roadmap-Pflicht wurde vor Sprint 5 nachgezogen. |
 
 ## Offene Annahmen
@@ -81,8 +82,9 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
   in 60 Minuten. Beide Modi laufen höchstens eine Stunde; Löschungen, Verschiebungen und
   Umbenennungen sind automatisch ausgeschlossen. Budgetende, Ablauf oder Pause sperren neue
   automatische Mutationen sofort.
-- Die Windows-Vector-/Anhangsextraktionsentscheidung bleibt ein separates, vor Sprint 8 zu
-  klärendes Risiko.
+- Die Windows-Vector-/Anhangsextraktionsentscheidung bleibt bis zu einem separaten
+  Packaging-ADR ein Risiko für Sprint 9. Sprint 8 nutzt ausschließlich vorhandene sichere
+  Metadaten und enthält keine Semantik oder Extraktion.
 
 ## Definition of Done
 
@@ -134,6 +136,7 @@ Umbrella-Storys bleiben offen, solange ihre ausdrücklich ausgeschlossenen Teile
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.6 | 2026-08-19 | Sprint 8 auf US-000004 mit unveränderter 8-SP-Schätzung verfeinert; sichere Metadaten ohne Extraktion präzisiert | BA+FE+BE |
 | 1.4 | 2026-08-18 | Gate-8-Korrekturschnitt SP-000010 mit 8 SP Rework; kumulierter Sprint-7-Aufwand 50 SP | BA+FE+BE |
 | 1.3 | 2026-08-15 | Abgelehnte US-000015 durch US-000017 ersetzt und Sprint-7-Recovery auf 42 SP verfeinert | BA+FE+BE |
 | 1.2 | 2026-08-15 | Sprint 7 als drei Storys für Vorschau, Vorlagen und lokalen Verlauf geplant | BA+FE+BE |

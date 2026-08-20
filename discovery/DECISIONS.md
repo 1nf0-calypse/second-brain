@@ -1,7 +1,7 @@
 ---
 id: DECISIONS
 title: Entscheidungsprotokoll — Second Brain
-version: 1.5
+version: 1.6
 status: ACTIVE
 author-agent: PM (Product Manager)
 date: 2026-07-30
@@ -17,6 +17,15 @@ Leichtgewichtiges, chronologisches Protokoll aller wesentlichen Entscheidungen i
 ---
 
 ## Aktive Entscheidungen
+
+### D-000011 — Nutzerbegriffe und Scope für den lokalen Graphen
+
+**Datum:** 2026-08-20 | **Kategorie:** Dokumentation | **Status:** ACTIVE
+Die Dokumentation verwendet **Local graph**, **direkte Beziehungen**, **Quelle**,
+**Fundzeile**, **Eigenschaft**, **Unresolved link** und **Not extracted**. Der Canvas wird
+ausdrücklich als Übersicht beschrieben; die Relationship-Liste enthält stets die vollständige
+gefilterte Auswahl. **Refresh graph** wird als lesende Aktualisierung erklärt und verspricht
+keine automatische Inferenz, Anhangsextraktion oder Vault-Änderung.
 
 ### D-000010 — Dokumentation für Remote-Provider und Einmal-Consent
 
@@ -99,6 +108,7 @@ vollständigen Frontend-Ausarbeitung priorisiert.
 
 | ID | Datum | Kategorie | Kurztitel | Agent | Status |
 |----|-------|---------|---------|-------|--------|
+| D-000011 | 2026-08-20 | Dokumentation | Nutzerbegriffe und Scope für den lokalen Graphen | MW | ACTIVE |
 | D-000010 | 2026-08-13 | Dokumentation | Remote-Provider und Einmal-Consent | MW | ACTIVE |
 | D-000009 | 2026-08-12 | Dokumentation | Begriffe und Scope für kontrollierte Notizänderungen | MW | ACTIVE |
 | D-000008 | 2026-07-31 | Dokumentation | Begriffe und Recovery für direkte Beziehungen | MW | ACTIVE |
@@ -128,6 +138,7 @@ Entscheidungen, die revidiert oder überschrieben wurden, bleiben hier sichtbar.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.6 | 2026-08-20 | D-000011 zu lokalen Graphbegriffen, Canvas und read-only Refresh ergänzt | MW |
 | 1.5 | 2026-08-13 | D-000010 zu automatischem Vault-Pfad, Remote-Provider und Einmal-Consent ergänzt | MW |
 | 1.4 | 2026-08-12 | D-000009 zu Mutationsterminologie und Obsidian-Sync-Abgrenzung ergänzt | MW |
 | 1.3 | 2026-07-31 | D-000008 zu Beziehungen, relativen Pfaden und Neustart ergänzt | MW |

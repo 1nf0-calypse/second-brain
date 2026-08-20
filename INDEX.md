@@ -1,6 +1,6 @@
 # Second Brain — Index
 
-Letzte Aktualisierung: 2026-08-19 | Phase: DOCUMENTATION
+Letzte Aktualisierung: 2026-08-19 | Phase: REFINEMENT
 
 ## Aktive Artefakte
 
@@ -11,7 +11,7 @@ Letzte Aktualisierung: 2026-08-19 | Phase: DOCUMENTATION
 | `discovery/DECISIONS.md` | DECISIONS | 1.5 | ACTIVE | PM+MW | Entscheidungsprotokoll einschließlich Remote-Provider- und Consent-Terminologie |
 | `requirements/REQ-000001-product-requirements.md` | REQ-000001 | 1.0 | APPROVED | BA | Produktanforderungen, NFRs und Story Map |
 | `requirements/REQ-000002-sprint-7-mcp-first-correction.md` | REQ-000002 | 1.0 | APPROVED | BA | MCP-first-Korrekturanforderungen aus dem Sprint-7-Review |
-| `requirements/RM-000001-roadmap.md` | RM-000001 | 1.4 | APPROVED | BA+FE+BE | Roadmap mit kumuliertem 50-SP-Sprint-7-Aufwand einschließlich Gate-8-Rework |
+| `requirements/RM-000001-roadmap.md` | RM-000001 | 1.6 | APPROVED | BA+FE+BE | Roadmap: Sprint 8 mit lokaler Graphansicht; Semantik/Extraktion in Sprint 9 |
 | `requirements/RM-000002-sprint-7-recovery-roadmap.md` | RM-000002 | 1.2 | APPROVED | BA+FE+BE | Recovery-Roadmap mit 8-SP-Korrekturabgleich aus RV-000009 |
 | `requirements/US-000001-installation-and-mcp-setup.md` | US-000001 | 1.0 | APPROVED | BA | Installation, Vault-Auswahl und MCP-Einrichtung |
 | `requirements/US-000002-read-search-and-citations.md` | US-000002 | 1.0 | APPROVED | BA | Lesen, Suche, Quellen und Anhänge |
@@ -37,11 +37,13 @@ Letzte Aktualisierung: 2026-08-19 | Phase: DOCUMENTATION
 | `architecture/ADR-000005-branching-strategy.md` | ADR-000005 | 1.0 | APPROVED | AR | Branching- und Release-Strategie |
 | `architecture/ADR-000006-client-connectivity-and-external-data-flow.md` | ADR-000006 | 1.0 | APPROVED | AR | Client-Matrix und externe Datenflussgrenze für Sprint 5 |
 | `architecture/ADR-000007-mcp-first-pending-confirmation.md` | ADR-000007 | 1.0 | APPROVED | AR | Durable MCP-Inbox, Contract 3, Schema 6 und atomarer Pending-Lebenszyklus |
+| `architecture/SRP-000001-windows-vektorsuche-und-anhangsextraktion.md` | SRP-000001 | 1.0 | APPROVED | AR | Windows-Spike: Semantik/Extraktion nach Sprint 8 verschoben; lokaler Graph bleibt möglich |
 | `architecture/STRUCTURE.md` | STRUCTURE | 1.0 | APPROVED | AR | Verbindliche Projektstruktur |
 | `ux/UX-000001-mvp-interaction-design.md` | UX-000001 | 1.0 | APPROVED | UX | Journeys, Zustände, Microcopy und WCAG 2.2 AA |
 | `ux/UX-000002-claude-desktop-setup-slice.md` | UX-000002 | 1.0 | APPROVED | UX | Expliziter Claude-Desktop-Setup-Flow für US-000011 |
 | `ux/UX-000003-remote-client-consent.md` | UX-000003 | 1.0 | APPROVED | UX | Remote-Client-Setup und einzeln bestätigter Datenfluss für Sprint 5 |
 | `ux/UX-000004-mcp-first-compilation-review.md` | UX-000004 | 1.0 | APPROVED | UX | Pending Inbox, vollständige Compilation-Prüfung, Templates und History |
+| `ux/UX-000005-graph-exploration.md` | UX-000005 | 1.0 | APPROVED | UX | Lokale Graphansicht, zugängliche Liste, Zustände und Microcopy für Sprint 8 |
 | `sprints/SP-000002-sprint-1-foundation.md` | SP-000002 | 1.0 | APPROVED | BA+FE+BE | Verbindlicher Sprint-1-Backlog mit US-000011 und US-000005 |
 | `sprints/SP-000003-sprint-2-search.md` | SP-000003 | 1.0 | APPROVED | BA+FE+BE | Sprint-2-Backlog für Volltextsuche, Quellen und Sprint-1-Schuld |
 | `sprints/SP-000004-sprint-3-relationships.md` | SP-000004 | 1.0 | APPROVED | BA+FE+BE | Sprint-3-Backlog für lokale Relationship-Exploration |
@@ -51,6 +53,7 @@ Letzte Aktualisierung: 2026-08-19 | Phase: DOCUMENTATION
 | `sprints/SP-000008-sprint-7-compilation-history.md` | SP-000008 | 1.0 | SUPERSEDED | BA+FE+BE | Abgelehnter manueller Sprint-7-Backlog; durch SP-000009 ersetzt |
 | `sprints/SP-000009-sprint-7-mcp-first-recovery.md` | SP-000009 | 1.0 | SUPERSEDED | BA+FE+BE | 42-SP-Recovery-Backlog; durch SP-000010 ersetzt |
 | `sprints/SP-000010-sprint-7-gate-8-corrections.md` | SP-000010 | 1.0 | APPROVED | BA+FE+BE | 8-SP-Delta für alle fünf technischen Funde aus RV-000009 |
+| `sprints/SP-000011-sprint-8-local-graph.md` | SP-000011 | 1.0 | APPROVED | BA+FE+BE | 8-SP-Backlog für lokale Graphansicht, zugängliche Liste und sichere Metadaten |
 | `testing/TR-000013-sprint-7-gate-8-corrections.md` | TR-000013 | 1.0 | APPROVED | QA | Gate-8-Delta-Nachtest und Gate-7-Freigabe |
 | `reviews/RV-000010-sprint-7-gate-8-corrections.md` | RV-000010 | 1.0 | APPROVED | RV | Nutzer- und technische Re-Review für Gate-8-Korrekturen freigegeben |
 | `testing/TP-000001-sprint-1.md` | TP-000001 | 1.0 | APPROVED | QA | Testplan für Setup, Index, Security, UI und Performance |
@@ -198,12 +201,51 @@ Letzte Aktualisierung: 2026-08-19 | Phase: DOCUMENTATION
 | 2026-08-18 | Gate 5.5 (Sprint 7 Gate-8-Korrekturen → Implementierung) | PASS | 0 | 0 | 0 |
 | 2026-08-18 | Gate 6 (Sprint 7 Gate-8-Korrekturen → Testing) | PASS | 0 | 0 | 0 |
 | 2026-08-18 | Gate 7 (Sprint 7 Gate-8-Korrekturen → Review) | PASS | 0 | 0 | 0 |
+| 2026-08-19 | Gate 4 (Sprint 8 UX → Refinement) | PASS | 0 | 0 | 0 |
+| 2026-08-20 | Gate 5.5 (Sprint 8 Implementierungs-Preflight) | PASS | 0 | 0 | 0 |
+| 2026-08-20 | Gate 6 (Sprint 8 Implementation → Testing) | PASS | 0 | 0 | 0 |
+| 2026-08-20 | Gate 7 (Sprint 8 Testing → Review) | CONDITIONAL | 0 | 2 | 1 |
+| 2026-08-20 | Gate 8 (Sprint 8 Review → Implementation) | REQUEST_CHANGES | 0 | 3 | 1 |
+| 2026-08-20 | Gate 7 (Sprint 8 Reviewkorrekturen Testing → Review) | PASS | 0 | 0 | 0 |
+| 2026-08-20 | Gate 8 (Sprint 8 Delta-Review → Documentation) | PASS | 0 | 0 | 1 |
 
 ## In Bearbeitung
 
-Gate 7 ist bestanden. TR-000013 belegt 114 grüne Vitest-Tests, Coverage, die vier
-Gate-8-Regressionen, die Performance-Baseline und 19/19 headed Playwright-Clickpfade.
-Die Gate-8-Korrekturen warten auf den erneuten technischen Review.
+Sprint 8 ist abgeschlossen: Der lokale Graph, die vollständige Relationship-Liste und die
+Nutzerdokumentation sind freigegeben. Semantik und Anhangsextraktion bleiben bis Sprint 9
+ausgeschlossen.
+
+## Übergabe: FE+BE → QA — Sprint-8-Reviewkorrekturen
+
+**Datum:** 2026-08-20
+**Von:** Frontend und Backend Development (FE+BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-run second-brain 8`
+
+| Review-Fund | Korrektur | Nachweis |
+|---|---|---|
+| K-001 | Canvas nennt bei Begrenzung die genaue Zahl und verweist auf die vollständige Liste. | UI-Regressionstest ergänzt |
+| K-002 | Jede Beziehung zeigt Pfad plus Zeile oder Frontmatter-Property der Quelle. | UI-Regressionstest ergänzt |
+| T-001 | Echter `--local-graph`-Transport testet Datenfluss und Vault-Scope-Ablehnung. | Integrationstest grün |
+
+`npm run build`, `npm run lint` sowie die gezielten Vitest-Graph- und Transporttests sind
+grün. Der headed Playwright-Start benötigt eine interaktive Windows-Sitzung und wird im
+QA-Nachtest ausgeführt.
+
+## Übergabe: FE+BE → QA — Sprint 8
+
+**Datum:** 2026-08-20
+**Von:** Frontend und Backend Development (FE+BE)
+**An:** QA Engineer (QA)
+**Nächster Befehl:** `/test-plan second-brain 8`
+
+| Bereich | Umsetzung | Nachweis |
+|---|---|---|
+| Sidecar und Vertrag | `LocalGraphResponse`, `--local-graph`, reine Metadaten | Vertrags- und Integrationstest |
+| Obsidian | Ribbon/Command „Open local graph“, SVG, Liste, Filter, Offline-Meldung | `npm run build` |
+| Regression | Keine Vault-Mutation, Anhang als „Not extracted“ | 117 Vitest-Tests grün |
+
+Gate 5.5 und Gate 6 sind bestanden. QA erstellt als Nächstes den Sprint-8-Testplan.
 
 ## Übergabe: BA+FE+BE → FE+BE+QA — Gate-8-Korrekturen
 

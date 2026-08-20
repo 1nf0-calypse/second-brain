@@ -1,6 +1,6 @@
 # Sprints — Index
 
-Letzte Aktualisierung: 2026-08-18
+Letzte Aktualisierung: 2026-08-19
 
 ## Zweck
 
@@ -20,3 +20,4 @@ Sprint-Ziele, Backlogs, Schätzungen, Voraussetzungen und Risiken.
 | `SP-000008-sprint-7-compilation-history.md` | SP-000008 | 1.0 | SUPERSEDED | BA+FE+BE | Abgelehnter manueller Sprint-7-Backlog; durch SP-000009 ersetzt |
 | `SP-000009-sprint-7-mcp-first-recovery.md` | SP-000009 | 1.0 | SUPERSEDED | BA+FE+BE | 42-SP-Recovery-Backlog; durch Gate-8-Korrekturschnitt SP-000010 ersetzt |
 | `SP-000010-sprint-7-gate-8-corrections.md` | SP-000010 | 1.0 | APPROVED | BA+FE+BE | 8-SP-Delta für Saga, Template-Recovery/-Drift und verbindliche Warn-Microcopy |
+| `SP-000011-sprint-8-local-graph.md` | SP-000011 | 1.0 | APPROVED | BA+FE+BE | 8-SP-Backlog für lokale, zugängliche Graphansicht ohne Semantik oder Extraktion |

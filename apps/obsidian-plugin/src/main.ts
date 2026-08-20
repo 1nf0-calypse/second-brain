@@ -1,6 +1,6 @@
-// Beschreibung: Registriert native Setup-, Search-, Relationship- und Changes-Views in Obsidian.
-// Artefakte:    US-000011; US-000012; US-000013; US-000017; US-000016; US-000008; UX-000004
-// Agent:        FE — 2026-08-15
+// Beschreibung: Registriert native Setup-, Search-, Relationship-, Graph- und Changes-Views in Obsidian.
+// Artefakte:    US-000011; US-000012; US-000013; US-000004; US-000017; US-000016; US-000008; UX-000005
+// Agent:        FE — 2026-08-20
 import { FileSystemAdapter, Plugin } from 'obsidian';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -12,6 +12,7 @@ import {
   RelationshipView
 } from './ui/relationship-view.js';
 import { MUTATION_VIEW_TYPE, MutationView } from './ui/mutation-view.js';
+import { LOCAL_GRAPH_VIEW_TYPE, LocalGraphView } from './ui/local-graph-view.js';
 
 declare const __SECOND_BRAIN_SIDECAR_SOURCE__: string;
 
@@ -51,7 +52,13 @@ export default class SecondBrainPlugin extends Plugin {
     );
     this.registerView(
       RELATIONSHIP_VIEW_TYPE,
-      (leaf) => new RelationshipView(leaf, transport, vaultRoot)
+      (leaf) => new RelationshipView(leaf, transport, vaultRoot, () => {
+        void this.openLocalGraph();
+      })
+    );
+    this.registerView(
+      LOCAL_GRAPH_VIEW_TYPE,
+      (leaf) => new LocalGraphView(leaf, transport, vaultRoot)
     );
     this.registerView(
       MUTATION_VIEW_TYPE,
@@ -75,6 +82,16 @@ export default class SecondBrainPlugin extends Plugin {
       name: 'Explore active note relationships',
       callback: () => {
         void this.openRelationships();
+      }
+    });
+    this.addRibbonIcon('git-fork', 'Open local graph', () => {
+      void this.openLocalGraph();
+    });
+    this.addCommand({
+      id: 'open-local-graph',
+      name: 'Open local graph',
+      callback: () => {
+        void this.openLocalGraph();
       }
     });
     this.addRibbonIcon('search', 'Search Second Brain', () => {
@@ -144,6 +161,22 @@ export default class SecondBrainPlugin extends Plugin {
       throw new Error('No workspace leaf is available for Second Brain relationships.');
     }
     await leaf.setViewState({ type: RELATIONSHIP_VIEW_TYPE, active: true });
+    await this.app.workspace.revealLeaf(leaf);
+  }
+
+  /**
+   * Öffnet oder fokussiert die lokale Graphansicht der aktiven Notiz.
+   * @returns Promise nach Aktivierung der View.
+   * @throws Obsidian-Workspace-Fehler.
+   * @sideEffect Öffnet ein rechtes Workspace-Pane.
+   */
+  private async openLocalGraph(): Promise<void> {
+    const existing = this.app.workspace.getLeavesOfType(LOCAL_GRAPH_VIEW_TYPE)[0];
+    const leaf = existing ?? this.app.workspace.getRightLeaf(false);
+    if (!leaf) {
+      throw new Error('No workspace leaf is available for the local graph.');
+    }
+    await leaf.setViewState({ type: LOCAL_GRAPH_VIEW_TYPE, active: true });
     await this.app.workspace.revealLeaf(leaf);
   }
 

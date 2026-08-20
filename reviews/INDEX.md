@@ -1,6 +1,6 @@
 # Reviews — Index
 
-Letzte Aktualisierung: 2026-08-18
+Letzte Aktualisierung: 2026-08-20
 
 ## Zweck
 
@@ -20,3 +20,5 @@ Fachliche Nutzerabnahmen und technische Code-Reviews.
 | `RV-000008-sprint-7.md` | RV-000008 | 1.0 | REJECTED | RV | MCP-first-Kompilierungsflow fachlich abgelehnt; sechs technische MAJOR-Funde |
 | `RV-000009-sprint-7-recovery.md` | RV-000009 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme akzeptiert; Gate 8 wegen Saga-, Template- und Microcopy-Funden blockiert |
 | `RV-000010-sprint-7-gate-8-corrections.md` | RV-000010 | 1.0 | APPROVED | RV | Gate-8-Korrekturen technisch und nativ freigegeben |
+| `RV-000011-sprint-8-local-graph.md` | RV-000011 | 1.0 | REQUEST_CHANGES | RV | Nutzerabnahme akzeptiert; Canvas-, Quellen- und Regressionstest-MAJORS offen |
+| `RV-000012-sprint-8-review-retest.md` | RV-000012 | 1.0 | APPROVED | RV | Sprint-8-Delta: Canvas, Fundstellen und echter Graph-Transport freigegeben |

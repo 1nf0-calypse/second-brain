@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Second Brain local graph QA harness</title>
+    <style>
+      body { font-family: sans-serif; max-width: 48rem; margin: 0 auto; padding: 1rem; }
+      fieldset, button { margin-block: .5rem; }
+      li { margin-block: .5rem; }
+      small { display: block; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Explore local graph</h1>
+      <p data-testid="local-graph-status" role="status">Showing 13 local relationships.</p>
+      <fieldset>
+        <legend>Relationship filters</legend>
+        <label><input data-testid="wiki-filter" type="checkbox" checked> Wiki links</label>
+        <label><input data-testid="property-filter" type="checkbox" checked> Properties</label>
+      </fieldset>
+      <p data-testid="local-graph-canvas-summary"></p>
+      <ol data-testid="local-graph-list" aria-label="Filtered local relationships"></ol>
+    </main>
+    <script>
+      const relationships = Array.from({ length: 13 }, (_, index) => ({
+        kind: index === 12 ? 'property' : 'wiki-link',
+        target: index === 12 ? 'status: active' : `Target ${index + 1}`,
+        source: index === 12 ? 'Source: Source.md · status' : `Source: Source.md:${index + 1}`
+      }));
+      const list = document.querySelector('[data-testid="local-graph-list"]');
+      const summary = document.querySelector('[data-testid="local-graph-canvas-summary"]');
+      const status = document.querySelector('[data-testid="local-graph-status"]');
+      const filters = document.querySelectorAll('input[type="checkbox"]');
+
+      const render = () => {
+        const activeKinds = [...filters].filter((filter) => filter.checked).map((filter) =>
+          filter.dataset.testid === 'wiki-filter' ? 'wiki-link' : 'property'
+        );
+        const filtered = relationships.filter((relationship) => activeKinds.includes(relationship.kind));
+        summary.textContent = filtered.length > 12
+          ? `Graph canvas shows 12 of ${filtered.length} filtered relationships. The complete set is available in the list below.`
+          : `Graph canvas shows all ${filtered.length} filtered relationships.`;
+        status.textContent = `Showing ${filtered.length} local relationships.`;
+        list.replaceChildren(...filtered.map((relationship) => {
+          const item = document.createElement('li');
+          item.textContent = `${relationship.kind}: ${relationship.target}`;
+          const source = document.createElement('small');
+          source.textContent = relationship.source;
+          item.append(source);
+          return item;
+        }));
+      };
+
+      filters.forEach((filter) => filter.addEventListener('change', render));
+      render();
+    </script>
+  </body>
+</html>

@@ -9,7 +9,8 @@ export default defineConfig({
   reporter: [['html', { outputFolder: 'testing/playwright-report', open: 'never' }]],
   use: {
     browserName: 'chromium',
-    headless: false,
+    // Lokale QA nutzt den sichtbaren Browser; automatisierte Windows-/CI-Läufe haben keine Desktop-Sitzung.
+    headless: process.env['CI'] === 'true',
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure'
   }

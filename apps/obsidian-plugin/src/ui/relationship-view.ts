@@ -1,6 +1,6 @@
 // Beschreibung: Zugängliche Listenansicht für direkte Beziehungen einer Obsidian-Notiz.
-// Artefakte:    US-000013; BUG-000004; UX-000001; ADR-000003
-// Agent:        FE — 2026-07-31
+// Artefakte:    US-000013; US-000004; BUG-000004; UX-000005; ADR-000003
+// Agent:        FE — 2026-08-20
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import {
   getRelationships,
@@ -14,7 +14,8 @@ export class RelationshipView extends ItemView {
   public constructor(
     leaf: WorkspaceLeaf,
     private readonly transport: RelationshipTransport,
-    private readonly vaultRoot: string
+    private readonly vaultRoot: string,
+    private readonly showInGraph?: () => void
   ) {
     super(leaf);
   }
@@ -43,7 +44,12 @@ export class RelationshipView extends ItemView {
     root.createEl('p', {
       text: 'Explicit links, backlinks, tags, and properties. Your vault stays unchanged.'
     });
-    const refresh = root.createEl('button', { text: 'Refresh active note' });
+    const actions = root.createDiv({ cls: 'second-brain-inline-actions' });
+    const refresh = actions.createEl('button', { text: 'Refresh active note' });
+    if (this.showInGraph) {
+      const showInGraph = actions.createEl('button', { text: 'Show in graph' });
+      showInGraph.addEventListener('click', this.showInGraph);
+    }
     const status = root.createEl('p', {
       attr: { role: 'status', 'aria-live': 'polite', tabindex: '-1' }
     });

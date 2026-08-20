@@ -1,6 +1,6 @@
 # UX — Index
 
-Letzte Aktualisierung: 2026-08-15
+Letzte Aktualisierung: 2026-08-19
 
 ## Zweck
 
@@ -14,3 +14,4 @@ User Journeys, UI-Zustände, Microcopy, Accessibility und Interaktionsverträge.
 | `UX-000002-claude-desktop-setup-slice.md` | UX-000002 | 1.0 | APPROVED | UX | Expliziter Claude-Desktop-Setup-Flow für US-000011 |
 | `UX-000003-remote-client-consent.md` | UX-000003 | 1.0 | APPROVED | UX | Remote-Client-Setup, Einmal-Consent, Fehler und Widerruf für Sprint 5 |
 | `UX-000004-mcp-first-compilation-review.md` | UX-000004 | 1.0 | APPROVED | UX | MCP-first Inbox, Compilation Review, Templates und History für Sprint 7 |
+| `UX-000005-graph-exploration.md` | UX-000005 | 1.0 | APPROVED | UX | Lokale Graphansicht mit zugänglicher Relationship-Listenalternative für Sprint 8 |

@@ -1,12 +1,13 @@
 // Beschreibung: Sidecar-Startpunkt für MCP, Index-, Lese-, Mutations-, Inbox- und Autonomieoperationen.
-// Artefakte:    US-000001; US-000003; US-000007; US-000017; US-000008; ADR-000004; ADR-000006; ADR-000007
-// Agent:        BE — 2026-08-15
+// Artefakte:    US-000001; US-000003; US-000004; US-000007; US-000017; US-000008; ADR-000003; ADR-000004; ADR-000006; ADR-000007
+// Agent:        BE — 2026-08-19
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { CONTRACT_VERSION, ConsentReceiptSchema, type ConsentReceipt } from '@second-brain/contracts';
 import { performSetupHandshake } from './setup-service.js';
 import { startMcpServer } from '../mcp-gateway/server.js';
 import { LocalIndex } from '../indexing/sqlite-index.js';
+import { resolveInsideVault } from '../policy/vault-root.js';
 import { SearchService } from '../search/search-service.js';
 import { toPublicErrorResponse } from '../errors/public-error.js';
 import { MutationService } from '../mutations/mutation-service.js';
@@ -125,6 +126,7 @@ if (!vaultRoot) {
       process.argv.includes('--search') ||
       process.argv.includes('--read-note') ||
       process.argv.includes('--relationships') ||
+      process.argv.includes('--local-graph') ||
       process.argv.includes('--node-detail') ||
       process.argv.includes('--prepare-mutation') ||
       process.argv.includes('--confirm-mutation') ||
@@ -194,6 +196,13 @@ if (!vaultRoot) {
         } else if (process.argv.includes('--prepare-rollback')) {
           response = await mutations.prepareRollback(
             process.env['SECOND_BRAIN_AUDIT_ID'] ?? ''
+          );
+        } else if (process.argv.includes('--local-graph')) {
+          const relativePath = process.env['SECOND_BRAIN_RELATIONSHIP_PATH'] ?? '';
+          await resolveInsideVault(vaultRoot, relativePath);
+          response = index.localGraph(
+            relativePath,
+            Number(process.env['SECOND_BRAIN_RELATIONSHIP_LIMIT'] ?? 100)
           );
         } else if (process.argv.includes('--activate-autonomy')) {
           response = mutations.activateAutonomy(JSON.parse(process.env['SECOND_BRAIN_AUTONOMY_REQUEST'] ?? '{}'));

@@ -75,16 +75,16 @@ artifacts:
     US: 18
     ADR: 8
     GAP: 1
-    UX: 5
-    SP: 11
-    TP: 10
-    TR: 14
-    RV: 10
+    UX: 6
+    SP: 12
+    TP: 11
+    TR: 16
+    RV: 13
     BUG: 13
     DEBT: 2
     SRP: 1
-    DOC: 8
-    RN: 7
+    DOC: 10
+    RN: 9
     GS: 2
     FAQ: 2
     RETRO: 2

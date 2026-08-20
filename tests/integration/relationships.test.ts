@@ -1,6 +1,6 @@
-// Beschreibung: Prüft Kantenmigration, Backlinks, Delta und read-only Knotendetails.
-// Artefakte:    US-000013; ADR-000003; ADR-000004
-// Agent:        BE — 2026-07-31
+// Beschreibung: Prüft Kantenmigration, lokalen Graphen, Backlinks, Delta und Knotendetails.
+// Artefakte:    US-000013; US-000004; ADR-000003; ADR-000004
+// Agent:        BE — 2026-08-20
 import { createHash } from 'node:crypto';
 import { mkdtemp, mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -12,8 +12,9 @@ import { LocalIndex } from '../../apps/sidecar/src/indexing/sqlite-index.js';
 async function createRelationshipVault(): Promise<string> {
   const root = await mkdtemp(join(tmpdir(), 'second-brain-relationships-'));
   await mkdir(join(root, '.obsidian'));
-  await writeFile(join(root, 'Source.md'), 'See [[Target]] and [[Missing]]. #topic');
+  await writeFile(join(root, 'Source.md'), 'See [[Target]], [[Missing]], and [[Attachment.pdf]]. #topic');
   await writeFile(join(root, 'Target.md'), '# Target');
+  await writeFile(join(root, 'Attachment.pdf'), Buffer.from('%PDF-1.4 fixture'));
   return root;
 }
 
@@ -52,6 +53,15 @@ describe('LocalIndex relationships', () => {
       incomingCount: 1,
       readOnly: true
     });
+    const graph = index.localGraph('Source.md');
+    expect(graph).toMatchObject({
+      readOnly: true,
+      focus: { relativePath: 'Source.md' }
+    });
+    expect(graph.nodes).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: 'Attachment.pdf', extractionStatus: 'not_extracted' }),
+      expect.objectContaining({ id: 'Missing.md', resolved: false })
+    ]));
     expect(await hash(sourcePath)).toBe(before);
     index.close();
   });
@@ -84,7 +94,7 @@ describe('LocalIndex relationships', () => {
     const migrated = new LocalIndex(databasePath);
     const status = await migrated.synchronize(root);
 
-    expect(status.changedFiles).toBe(2);
+    expect(status.changedFiles).toBe(3);
     expect(migrated.relationships('Source.md').relationships.some((relationship) =>
       relationship.target.relativePath === 'Target.md'
     )).toBe(true);

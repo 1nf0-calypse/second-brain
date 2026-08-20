@@ -1,6 +1,6 @@
 # Testing — Index
 
-Letzte Aktualisierung: 2026-08-18
+Letzte Aktualisierung: 2026-08-20
 
 ## Zweck
 
@@ -19,6 +19,9 @@ Testpläne, Ausführungsberichte, Fehlerberichte und Playwright-Evidenz.
 | `TP-000007-sprint-6.md` | TP-000007 | 1.0 | APPROVED | QA | Testplan für Human-on/out, 60/60-Budget, Pause, Audit und Rollback |
 | `TP-000008-sprint-7.md` | TP-000008 | 1.0 | SUPERSEDED | QA | Verworfener manueller Sprint-7-Testplan; ersetzt durch TP-000009 |
 | `TP-000009-sprint-7-recovery.md` | TP-000009 | 1.1 | APPROVED | QA | Freigegebener Recovery-Testplan für MCP-first Inbox, Templates, History, Restart und native UI |
+| `TP-000010-sprint-8-local-graph.md` | TP-000010 | 1.0 | APPROVED | QA | Sprint-8-Testplan für lokalen read-only Graphen, native Obsidian-A11y und Vault-Integrität |
+| `TR-000014-sprint-8-local-graph.md` | TR-000014 | 1.0 | CONDITIONAL | QA | Sprint-8-Testlauf: Contract/Index grün, native Obsidian- und E2E-Auflagen offen |
+| `TR-000015-sprint-8-review-retest.md` | TR-000015 | 1.0 | APPROVED | QA | Sprint-8-Nachtest: Review-Funde, 118 Vitest, Coverage und E2E-Re-Verify grün |
 | `TR-000001-sprint-1.md` | TR-000001 | 1.0 | REJECTED | QA | Testlauf: automatisiert grün, Gate 7 wegen zwei BLOCKERN fehlgeschlagen |
 | `TR-000002-sprint-1.md` | TR-000002 | 1.0 | APPROVED | QA | Bugfixes und echter Desktop-P0-Pfad verifiziert; Gate 7 PASS |
 | `TR-000003-sprint-1-review-fixes.md` | TR-000003 | 1.0 | CONDITIONAL | QA | Review-Regressionen grün; erneuter Desktop-Systemtest offen |

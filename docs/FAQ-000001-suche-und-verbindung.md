@@ -1,7 +1,7 @@
 ---
 id: FAQ-000001
 title: FAQ — Suche, Verbindung und Beziehungen
-version: 1.3
+version: 1.4
 status: APPROVED
 author-agent: MW (Manual Writer)
 date: 2026-08-15
@@ -63,6 +63,20 @@ blockiert.
 [DOC-000003](DOC-000003-volltextsuche-und-quellen.md).*
 
 ## Beziehungen
+
+### Warum zeigt der Local graph nicht jede Verbindung im Canvas?
+
+Bei vielen Beziehungen zeigt der Canvas nur eine übersichtliche Auswahl und nennt die genaue
+Anzahl. Die vollständige gefilterte Auswahl steht direkt darunter in der Relationship-Liste.
+
+*Mehr Details: siehe [DOC-000009](DOC-000009-lokalen-graphen-erkunden.md).*
+
+### Verändert Refresh graph meine Notizen?
+
+Nein. Refresh aktualisiert nur die lokale Übersicht. Deine Notizen, Links, Tags und
+Eigenschaften werden dadurch nicht geändert.
+
+*Mehr Details: siehe [DOC-000009](DOC-000009-lokalen-graphen-erkunden.md).*
 
 ### Warum zeigt Obsidian keine Beziehungen, obwohl die Notiz einen Link enthält?
 
@@ -186,6 +200,7 @@ aktualisieren.
 
 | Version | Datum | Änderung | Agent |
 |---|---|---|---|
+| 1.4 | 2026-08-20 | Fragen zu Canvas-Begrenzung und read-only Graph-Refresh ergänzt | MW |
 | 1.3 | 2026-08-15 | Autonomie, 60/60-Budget, Pause und Reaktivierung ergänzt | MW |
 | 1.2 | 2026-08-12 | Kontrollierte Notizänderungen, relative Pfade und Obsidian-Sync-Hinweis ergänzt | MW |
 | 1.1 | 2026-07-31 | Vault-Pfade, Sidecar-Neustart und Relationship-Fehler ergänzt | MW |

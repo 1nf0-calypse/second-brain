@@ -1,12 +1,12 @@
-// Beschreibung: Prüft den realen Node-Kindprozess einschließlich JSON-stdin für Pending Reviews.
-// Artefakte:    US-000011; US-000012; US-000017; BUG-000002; BUG-000003; ADR-000007
-// Agent:        BE — 2026-08-15
+// Beschreibung: Prüft den realen Node-Kindprozess einschließlich Graph- und Pending-Review-Transporten.
+// Artefakte:    US-000004; US-000011; US-000012; US-000017; BUG-000002; BUG-000003; ADR-000003; ADR-000007
+// Agent:        BE — 2026-08-20
 import { createHash } from 'node:crypto';
 import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { RelationshipQueryResponseSchema } from '@second-brain/contracts';
+import { LocalGraphResponseSchema, RelationshipQueryResponseSchema } from '@second-brain/contracts';
 import { NodeSetupTransport } from '../../apps/obsidian-plugin/src/ipc/node-setup-transport.js';
 import { CompilationInboxService } from '../../apps/sidecar/src/compilations/compilation-inbox-service.js';
 
@@ -130,6 +130,24 @@ describe('NodeSetupTransport', () => {
     expect(result).toMatchObject({ action: 'update', relativePath: 'Note.md', changed: true });
     await expect(transport.confirmMutation(vaultRoot, preview.token))
       .rejects.toThrow('CONFIRMATION_INVALID');
+  }, 15_000);
+
+  it('liefert den lokalen Graphen über den realen Kindprozess read-only aus', async () => {
+    const vaultRoot = await mkdtemp(join(tmpdir(), 'second-brain-transport-local-graph-'));
+    await mkdir(join(vaultRoot, '.obsidian'));
+    await writeFile(join(vaultRoot, 'Source.md'), 'See [[Target]].');
+    await writeFile(join(vaultRoot, 'Target.md'), '# Target');
+    const transport = new NodeSetupTransport(resolve('dist/sidecar/main.js'), process.execPath);
+    await transport.synchronizeIndex(vaultRoot);
+
+    const response = LocalGraphResponseSchema.parse(
+      await transport.localGraph(vaultRoot, 'Source.md')
+    );
+    expect(response).toMatchObject({ readOnly: true, focus: { relativePath: 'Source.md' } });
+    expect(response.relationships.some((relationship) =>
+      relationship.target.relativePath === 'Target.md'
+    )).toBe(true);
+    await expect(transport.localGraph(vaultRoot, '..\\outside.md')).rejects.toThrow('PATH_OUTSIDE_VAULT');
   }, 15_000);
 
   it('transportiert große Pending-Payloads über JSON-stdin und bewahrt Decision-Codes', async () => {
